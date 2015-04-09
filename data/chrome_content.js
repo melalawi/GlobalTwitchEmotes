@@ -1,7 +1,5 @@
 var content_script = new ContentScript();
 
-var MutationObserver = window.MutationObserver || window.WebkitMutationObserver;
-
 var observer = new MutationObserver(function (mutations) {
     mutations.forEach(function(mutation) {
         for (var index = 0; index < mutation.addedNodes.length; ++index) {
@@ -27,7 +25,7 @@ chrome.runtime.onMessage.addListener(function(request) {
             // Make an observer that looks for nodes being created and ignores all other mutations
 
             // Attach the observer to the node you want to monitor
-            observer.observe(document.body, {childList: true, subtree: true});
+            observer.observe(document, {childList: true, subtree: true});
         }
         
         investigate_body(document);
