@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Global Twitch Emotes - Settings</title>
+		<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+		
+		<script src="js/jquery-2.1.3.min.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/settings.js"></script>
+		
+		<!--match width of window-->
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--what charset to use-->
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		
+	</head>
+	<body>
+		<div class="wrapper">
+		
+			<div id="header" class="wrapper">
+				<div id="header" class="body">
+					<img src="images/title.png">
+				</div><!--header-->
+			</div><!--header-wrapper-->
+			
+			<div id="toolbar" class="wrapper">
+				<div id="toolbar" class="body">
+					<input type="button" class="button-active" id="settingsbutton" value="General">
+					<input type="button" class="button" id="emotesbutton" value="Filter Emotes">
+					<input type="button" class="button" id="sitesbutton" value="Filter Sites">
+					<input type="button" class="button" id="aboutbutton" value="About">
+				</div><!--toolbar-->
+			</div><!--toolbar-wrapper-->
+			
+			<div id="page" class="wrapper">
+				<div id="page" class="body">
+					Use Twitch.tv emote sets:<br>
+					<UL><input type="checkbox"	id="enableGlobal">Global Emotes<br>
+					<input type="checkbox"	id="enableSubscriber">Subscriber Emotes<br>
+					<input type="checkbox"	id="enableBetterTTV">BetterTTV Emotes<br><br></UL>
+					<input type="checkbox"	id="enableSmilies">Use Twitch.tv smilies<br>
+					<UL><form action="">
+						<input type="radio" name="smilies-type" value="Robot">Robot
+						<input type="radio" name="smilies-type" value="Turbo">Turbo
+						<input type="checkbox" id="enableMonkeys">+ Monkeys
+					</form><br></UL>
+					
+					<input type="checkbox"	id="enableDynamic">Replace emotes dynamically<br><br><br>
+					
+					<input type="button" 	id="saveSettings"	value="Save">
+				</div><!--page-->
+			</div><!--page-wrapper-->
+			
+			<div id="footer" class="wrapper">
+				<div id="footer" class="body">
+					<a href="https://twitter.com/m_elalawi" id="twitter" target="_blank"></a>
+					<a href="https://github.com/melalawi" id="github" target="_blank"></a>
+					<a href="https://www.linkedin.com/profile/view?id=400632989" id="linkedin" target="_blank"></a>
+				</div><!--footer-->
+			</div><!--footer-wrapper-->
+			
+		</div><!--wrapper-->
+	</body>
+</html>

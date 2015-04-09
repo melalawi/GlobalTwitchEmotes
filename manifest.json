@@ -1,0 +1,28 @@
+{
+    "manifest_version": 2,
+
+    "name": "Global Twitch Emotes",
+    "short_name": "GTE",
+    "description": "Twitch culture wherever you go! This extension replaces all Twitch.tv emote phrases with their actual emoticons.",
+    "version": "1.0.1",
+
+    "background": {
+        "scripts": ["lib/bkgd.js", "lib/chrome_bkgd.js"],
+        "persistent": false
+    },
+
+    "permissions": [
+        "storage",
+        "tabs",
+        "activeTab",
+        "http://*/",
+        "https://*/"
+    ],
+
+    "icons": { 
+        "64": "images/64.png",
+        "128": "images/128.png" 
+    },
+
+    "options_page": "data/chrome_options/settings.html"
+}
