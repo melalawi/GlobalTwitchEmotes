@@ -19,6 +19,8 @@ self.port.once('data', function(data){
     
     if (data.message === 'data') {
         content_script.emote_list = data.list;
+        content_script.use_tipsy = data.tipsy;
+        content_script.override_maki = data.maki;
         
         if (data.dynamic === true) {
             observer.observe(document, {childList: true, subtree: true});

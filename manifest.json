@@ -24,6 +24,5 @@
         "128": "images/128.png" 
     },
 
-    "options_page": "data/options/options.html",
-    "options_page_scripts": ["lib/bkgd.js", "lib/chrome_bkgd.js"]
+    "options_page": "data/options/options.html"
 }

@@ -44,6 +44,8 @@ function load_settings() {
             $(general_div).find('#enableSubscriber')[0].checked = data.use_subscriber_emotes;
             $(general_div).find('#enableBetterTTV')[0].checked = data.use_betterttv_emotes;
             $(general_div).find('#enableDynamic')[0].checked = data.replace_emotes_dynamically;
+            $(general_div).find('#enableTipsy')[0].checked = data.use_tipsy;
+            $(general_div).find('#enableMaki')[0].checked = data.override_maki;
             $(general_div).find('#enableSmilies')[0].checked = data.use_twitch_smilies;
             $(general_div).find('input[name="smilies-radio"][value="' + data.twitch_smilies_mode + '"]').prop('checked', true);
             $(general_div).find('#enableMonkeys')[0].checked = data.twitch_smilies_monkeys;			
@@ -63,6 +65,8 @@ function save_settings() {
         use_subscriber_emotes: $(general_div).find('#enableSubscriber')[0].checked,
         use_betterttv_emotes: $(general_div).find('#enableBetterTTV')[0].checked,
         replace_emotes_dynamically: $(general_div).find('#enableDynamic')[0].checked,
+        use_tipsy: $(general_div).find('#enableTipsy')[0].checked,
+        override_maki: $(general_div).find('#enableMaki')[0].checked,
         use_twitch_smilies: $(general_div).find('#enableSmilies')[0].checked,
         twitch_smilies_mode: $(general_div).find('input[name="smilies-radio"]:checked').val(),
         twitch_smilies_monkeys: $(general_div).find('#enableMonkeys')[0].checked,
@@ -164,7 +168,9 @@ var general_html = [
 '						<input type="radio" name="smilies-radio" value="Turbo">Turbo',
 '						<input type="checkbox" id="enableMonkeys">+ Monkeys',
 '					</form><br></UL>',
-'					<input type="checkbox"	id="enableDynamic">Replace emotes dynamically<br><br><br>',
+'					<input type="checkbox"	id="enableDynamic">Replace emotes dynamically<br>',
+'					<input type="checkbox"	id="enableTipsy">Enable Twitch-style emote hovering<br>',
+'					<input type="checkbox"	id="enableMaki">Override Hitbox.tv Kappa with GreyFace [BETA]<br><br><br>',
 '					<input type="button" 	id="saveSettings"	value="Save">'
 ].join('');
 

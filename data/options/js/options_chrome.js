@@ -9,6 +9,8 @@ function get_data(on_load) {
 			use_betterttv_emotes: false,
 
 			replace_emotes_dynamically: true,
+			use_tipsy: true,
+			override_maki: false,
 
 			use_twitch_smilies: false,
 			twitch_smilies_mode: 'Robot',
@@ -34,6 +36,8 @@ function set_data(data, on_saved) {
 				use_betterttv_emotes: data.use_betterttv_emotes,
 
 				replace_emotes_dynamically: data.replace_emotes_dynamically,
+				use_tipsy: data.use_tipsy,
+				override_maki: data.override_maki,
 
 				use_twitch_smilies: data.use_twitch_smilies,
 				twitch_smilies_mode: data.twitch_smilies_mode,

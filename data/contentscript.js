@@ -1,5 +1,10 @@
+var MAKI_SRC = 'http://edge.sf.hitbox.tv/static/img/chat/default/maki2.png';
+
 function ContentScript() {
     var self = this;
+    
+    this.use_tipsy = true;
+    this.override_maki = false;
     this.emote_list = {};
     
     //prevent doublechecking
@@ -10,10 +15,14 @@ function ContentScript() {
         if (parent) {
             var nodes = retrieve_text_nodes_under(parent);
 
-            nodes = nodes.filter(filter_node);
+            nodes = nodes.filter(is_valid_node);
 
             for (var index in nodes) {
                 replace_text(nodes[index]);
+            }
+            
+            if (self.override_maki) {
+                replace_maki(parent);
             }
         }
         
@@ -31,85 +40,6 @@ function ContentScript() {
         return all_nodes;
     };
     
-    function filter_node(current_node) {
-        var result = true;
-        
-        if (current_node) {
-            result = result && test_node(current_node.parentElement, 
-                    [{type:'equals', value:'chat-line'}, {type:'indexOf', value:'tipsy'}],
-                    [{type:'equals', value:'textarea'}, {type:'equals', value:'script'}, {type:'equals', value:'style'}]);
-            
-            if (current_node.parentElement) {
-                result = result && test_node(current_node.parentElement.parentElement,
-                [{type:'indexOf', value:'tweet-box'}, {type:'indexOf', value:'rich-normalizer'}, {type:'indexOf', value:'chat-line'}]
-                [{}]);
-            }
-            
-        } else {
-            result = false;
-        }
-        
-
-        return result;
-    };
-    
-    //should clean up
-    function test_node(node, class_rules, tag_rules) {
-        var result = true;
-        
-        if (node) {
-            var node_class = node.className;
-            var node_tag = node.tagName;
-            
-            if (node_class) {
-                var name = node_class.toString();
-                name = name.toLowerCase();
-                
-                for (var index in class_rules) {
-                    var rule = class_rules[index];
-                    if (rule.type === 'indexOf') {
-                        if (name.indexOf(rule.value) !== -1) {
-                            result = false;
-                            break;
-                        }
-                    } else {
-                        if (name === rule.value) {
-                            result = false;
-                            break;
-                        }
-                    }
-                }
-                
-                
-            }
-            
-            if (result === true && node_tag) {
-                var tag = node_tag.toString();
-                tag = tag.toLowerCase();
-                
-                for (var index in tag_rules) {
-                    var rule = tag_rules[index];
-                    if (rule.type === 'indexOf') {
-                        if (tag.indexOf(rule.value) !== -1) {
-                            result = false;
-                            break;
-                        }
-                    } else {
-                        if (tag === rule.value) {
-                            result = false;
-                            break;
-                        }
-                    }
-                }
-            }
-            
-        } else {
-            result = false;
-        }
-        
-        return result;
-    };
-    
     function replace_text(node) {
         var text = node.nodeValue;
         var node_parent = node.parentElement;
@@ -119,23 +49,20 @@ function ContentScript() {
         if (words) {
             words.some(function(word) {
                 if (self.emote_list.hasOwnProperty(word)) {
+                    //need to clean/refactor, ugly to look at atm
+                    var title = (self.use_tipsy === true ? self.emote_list[word].title : word);
+                    
                     var index = text.indexOf(word);
                     var previous = text.substring(0, index);
                     var next = text.substring(index + word.length);
 
                     var prev = document.createTextNode(previous);
-                    var emote = document.createElement('img');                    
-                    
-                    emote.src = self.emote_list[word].url;
-                    emote.title = self.emote_list[word].title;
-                    emote.alt = self.emote_list[word].title;
-                    $(emote).tipsy({gravity: 'se',
-                                    html: true});
+                    var emote = get_emote(title, self.emote_list[word].url, self.use_tipsy);
+
                     node.nodeValue = next;
                     
                     self.processed_nodes.push(prev);
                     self.processed_nodes.push(emote);
-                    
 
                     node_parent.insertBefore(prev, node);
                     node_parent.insertBefore(emote, node);
@@ -150,5 +77,106 @@ function ContentScript() {
             });
         }
     };
+    
+    //beta, will implement ability to only bother with this if on hitbox.tv
+    function replace_maki(node) {
+        if (node && typeof node.getElementsByTagName === "function") {
+            var emotes = node.getElementsByTagName("img");
+        
+            for (var index in emotes) {
+                var maki = emotes[index];
+                if (maki.src === MAKI_SRC) {
+
+                    maki.parentElement.replaceChild(get_emote('*Belch*', self.emote_list['Kappa'].url, self.use_tipsy), maki);
+
+                }
+            }
+        }
+        
+    };
 }
 
+function get_emote(title, url, use_tipsy) {
+    
+    var emote = document.createElement('img');                    
+
+    emote.src = url;
+    emote.title = title;
+    emote.alt = title;
+
+    if (use_tipsy) {
+        $(emote).tipsy({gravity: 'se', html: true});
+    }
+    
+    return emote;
+                    
+}
+
+var parent_rules = [
+    {name:'class', type:'equals', value:'chat-line'},
+    {name:'class', type:'indexOf', value:'tipsy'},
+    {name:'tag', type:'equals', value:'textarea'},
+    {name:'tag', type:'equals', value:'script'},
+    {name:'tag', type:'equals', value:'style'}
+];
+var grandparent_rules = [
+    {name:'class', type:'indexOf', value:'tweet-box'},
+    {name:'class', type:'indexOf', value:'rich-normalizer'},
+    {name:'class', type:'indexOf', value:'chat-line'}
+];
+
+//Really don't like how this turned out
+//should clean up/rethink
+function is_valid_node(node) {
+    var result = true;
+    
+    var parent_node;
+    var grandparent_node;
+
+    if (node) {
+        parent_node = node.parentElement;
+        
+        if (parent_node) {
+            grandparent_node = parent_node.parentElement;
+            result = test_rules(parent_node.className, parent_node.tagName, parent_rules);
+            
+            if (grandparent_node) {
+                result = result && test_rules(grandparent_node.className, grandparent_node.tagName, parent_rules);
+            }
+        }
+        
+    } else {
+        result = false;
+    }
+
+    return result;
+};
+
+function test_rules(class_name, tag_name, ruleset) {
+    var result = true;
+    var test_case;
+    
+    if (typeof class_name === 'string' && typeof tag_name === 'string') {
+        class_name = class_name.toLowerCase();
+        tag_name = tag_name.toLowerCase();
+        
+        for (var index in ruleset) {
+            var rule = ruleset[index];
+            test_case = (rule.name === 'class' ? class_name : tag_name);
+            
+            if (rule.type === 'indexOf') {
+                if (test_case.indexOf(rule.value) !== -1) {
+                    result = false;
+                    break;
+                }
+            } else if (rule.type === 'equals') {
+                if (test_case === rule.value) {
+                    result = false;
+                    break;
+                }
+            }
+        }
+    }
+    
+    return result;
+};

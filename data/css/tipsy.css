@@ -1,5 +1,5 @@
 .tipsy { font-size: 13.3333px; position: absolute; padding: 5px; z-index: 100000; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;}
-  .tipsy-inner { background-color: #000; color: #FFF; max-width: 200px; padding: 5px 8px 4px 8px; text-align: center; }
+  .tipsy-inner { background-color: #000; color: #FFF; max-width: 200px; padding: 8px 8px 8px 8px; text-align: center; }
 
   /* Rounded corners */
   .tipsy-inner { border-radius: 0px; -moz-border-radius: 0px; -webkit-border-radius: 0px; }

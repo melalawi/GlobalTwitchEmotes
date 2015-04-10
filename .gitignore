@@ -3,3 +3,7 @@
 *.DS_Store
 
 test/
+data/options/images/button.psd
+data/options/images/gte.psd
+data/options/images/title.psd
+data/options/images/footer.psd

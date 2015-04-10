@@ -15,12 +15,14 @@ var observer = new MutationObserver(function (mutations) {
     });
 });
 
-chrome.runtime.onMessage.addListener(function(request) {
+chrome.runtime.onMessage.addListener(function(data) {
     
-    if (request.message === 'data') {
-        content_script.emote_list = request.list;
+    if (data.message === 'data') {
+        content_script.emote_list = data.list;
+        content_script.use_tipsy = data.tipsy;
+        content_script.override_maki = data.maki;
     
-        if (request.dynamic === true) {
+        if (data.dynamic === true) {
             // Make an observer that looks for nodes being created and ignores all other mutations
 
             // Attach the observer to the node you want to monitor
