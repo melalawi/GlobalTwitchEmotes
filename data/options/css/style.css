@@ -64,8 +64,27 @@ input[type="button"]:hover {
 	cursor:pointer;
 }
 
+.content {
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	display:table;
+	table-layout: fixed;
+	
+	width:100%;
+	height:100%;
+}
+
+.wrapper {
+	vertical-align: center;
+	text-align: center;
+	
+	display:table-row !important;
+}
+
 .body {
 	width: 70%;
+	height: 100%;
 	
 	background-color: rgba(0,0,0,0);
 	
@@ -74,33 +93,20 @@ input[type="button"]:hover {
 	display:inline-block;
 }
 
-.wrapper {
-	position: relative;
-	overflow: hidden;
-	text-align: center;
-	float:left;
-	display: block;
-	
-	width:100%;
-	height:100%;
-}
-
 #header.wrapper {
 	background:#363636;
 	
 	height:12%;
+	min-height: 80px;
+	width:100%;
 }
 
 #header.body {
 	margin: auto;
-	position: absolute;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
+	display: table-cell;
 	
-	height:25%;
-	min-height: 64px;
+	height: 64px;
+	vertical-align: center;
 	
 	color: #FFFFFF;
 }
@@ -108,23 +114,20 @@ input[type="button"]:hover {
 #toolbar.wrapper {
 	background: #bda9c5;
 	
-	height: 5%;
+	height: 4%;
+	max-height: 4%;
+	width: 100%;
 }
 
 #toolbar.body {
 	height:100%;
-	margin: auto;
-	position: absolute;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
 }
 
 #toolbar.body .button {
 	display:inline-block;
 	float:left;
 	width: 25%;
+	min-width: 96px;
 	height:100%;
 	line-height: 100%;
 	
@@ -141,6 +144,7 @@ input[type="button"]:hover {
 	box-sizing: border-box;
 	
 	border: none;
+	border-radius:0;
 	
 	cursor:pointer;
 	
@@ -170,6 +174,7 @@ input[type="button"]:hover {
 	
 	float:left;
 	width: 25%;
+	min-width: 96px;
 	height:100%;
 	
 	color: white;
@@ -185,6 +190,7 @@ input[type="button"]:hover {
 	box-sizing: border-box;
 	
 	border: none;
+	border-radius:0;
 	
 	cursor:pointer;
 	
@@ -210,20 +216,27 @@ input[type="button"]:hover {
 
 #page.wrapper {
 	background: #f5f3f2;
+	height: 75%;
+	width: 100%;
 }
 
 #page.body {
-	padding: 3% 0 3% 0;
 	text-align: left;
+	overflow: auto;
+}
+
+#page.body p{
+	text-align: left;
+	width: 80%;
+	margin-left:0;
 }
 
 #footer.wrapper {
 	background: #bda9c5;
+	display:table-cell;
 	
 	height: 80px;
-	
-	position: absolute;
-	bottom: 0;
+	width: 100%;
 }
 
 #footer.body {

@@ -8,7 +8,6 @@ var observer = new MutationObserver(function (mutations) {
             if (content_script.processed_nodes.indexOf(next_node) !== -1) {
                 content_script.processed_nodes.splice(content_script.processed_nodes.indexOf(next_node), 1);
             } else {
-                console.log("new");
                 investigate_body(mutation.addedNodes.item(index));
             }
             

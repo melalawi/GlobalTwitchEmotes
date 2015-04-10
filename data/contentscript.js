@@ -80,18 +80,22 @@ function ContentScript() {
                     }
                 }
                 
-                name = node_tag.toString();
-                name = name.toLowerCase();
+                
+            }
+            
+            if (result === true && node_tag) {
+                var tag = node_tag.toString();
+                tag = tag.toLowerCase();
                 
                 for (var index in tag_rules) {
                     var rule = tag_rules[index];
                     if (rule.type === 'indexOf') {
-                        if (name.indexOf(rule.value) !== -1) {
+                        if (tag.indexOf(rule.value) !== -1) {
                             result = false;
                             break;
                         }
                     } else {
-                        if (name === rule.value) {
+                        if (tag === rule.value) {
                             result = false;
                             break;
                         }
@@ -120,9 +124,13 @@ function ContentScript() {
                     var next = text.substring(index + word.length);
 
                     var prev = document.createTextNode(previous);
-                    var emote = document.createElement('span');
+                    var emote = document.createElement('img');                    
                     
-                    emote.innerHTML = self.emote_list[word];
+                    emote.src = self.emote_list[word].url;
+                    emote.title = self.emote_list[word].title;
+                    emote.alt = self.emote_list[word].title;
+                    $(emote).tipsy({gravity: 'se',
+                                    html: true});
                     node.nodeValue = next;
                     
                     self.processed_nodes.push(prev);
