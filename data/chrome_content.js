@@ -21,6 +21,7 @@ chrome.runtime.onMessage.addListener(function(data) {
         content_script.emote_list = data.list;
         content_script.use_tipsy = data.tipsy;
         content_script.override_maki = data.maki;
+        content_script.case_sensitive = data.case_sensitive;
     
         if (data.dynamic === true) {
             // Make an observer that looks for nodes being created and ignores all other mutations

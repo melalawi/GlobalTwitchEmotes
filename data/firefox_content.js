@@ -15,12 +15,13 @@ var observer = new MutationObserver(function (mutations) {
     });
 });
 
-self.port.once('data', function(data){
+self.port.once("data", function(data){
     
     if (data.message === 'data') {
         content_script.emote_list = data.list;
         content_script.use_tipsy = data.tipsy;
         content_script.override_maki = data.maki;
+        content_script.case_sensitive = data.case_sensitive;
         
         if (data.dynamic === true) {
             observer.observe(document, {childList: true, subtree: true});

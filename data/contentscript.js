@@ -1,10 +1,13 @@
 var MAKI_SRC = 'http://edge.sf.hitbox.tv/static/img/chat/default/maki2.png';
 
+var separator = /[\w]+|[:/\\)(<>\]]+/g;
+
 function ContentScript() {
     var self = this;
     
     this.use_tipsy = true;
     this.override_maki = false;
+    this.case_sensitive = true;
     this.emote_list = {};
     
     //prevent doublechecking
@@ -44,20 +47,30 @@ function ContentScript() {
         var text = node.nodeValue;
         var node_parent = node.parentElement;
         
-        var words = text.match(/\S+/g);
+        var words = text.match(separator);
+        
+        var emote_data;
+        var comparison;
 
         if (words) {
             words.some(function(word) {
-                if (self.emote_list.hasOwnProperty(word)) {
+                comparison = word;
+                
+                if (self.case_sensitive === false) {
+                    comparison = comparison.toLowerCase();
+                }
+                
+                if (self.emote_list.hasOwnProperty(comparison)) {
+                    emote_data = self.emote_list[comparison];
                     //need to clean/refactor, ugly to look at atm
-                    var title = (self.use_tipsy === true ? self.emote_list[word].title : word);
+                    var title = (self.use_tipsy === true ? emote_data.title : word);
                     
                     var index = text.indexOf(word);
                     var previous = text.substring(0, index);
                     var next = text.substring(index + word.length);
 
                     var prev = document.createTextNode(previous);
-                    var emote = get_emote(title, self.emote_list[word].url, self.use_tipsy);
+                    var emote = get_emote(title, emote_data.url);
 
                     node.nodeValue = next;
                     
@@ -94,23 +107,25 @@ function ContentScript() {
         }
         
     };
-}
-
-function get_emote(title, url, use_tipsy) {
     
-    var emote = document.createElement('img');                    
+    function get_emote(title, url) {
+    
+        var emote = document.createElement('img');                    
 
-    emote.src = url;
-    emote.title = title;
-    emote.alt = title;
+        emote.src = url;
+        emote.title = title;
+        emote.alt = title;
 
-    if (use_tipsy) {
-        $(emote).tipsy({gravity: 'se', html: true});
+        if (self.use_tipsy) {
+            $(emote).tipsy({gravity: 'se', html: true});
+        }
+
+        return emote;
+
     }
-    
-    return emote;
-                    
 }
+
+
 
 var parent_rules = [
     {name:'class', type:'equals', value:'chat-line'},

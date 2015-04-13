@@ -20,10 +20,25 @@ input[type=checkbox] {
 	width: 1.25em;
 }
 
+input[type=checkbox][disabled] {
+	display:inline-block;
+	height: 1.25em;
+	width: 1.25em;
+	opacity: 0.5;
+}
+
 input[type=radio] {
 	display:inline-block;
 	height: 1.25em;
 	width: 1.25em;
+	opacity: 1;
+}
+
+input[type=radio][disabled] {
+	display:inline-block;
+	height: 1.25em;
+	width: 1.25em;
+	opacity: 0.5;
 }
 
 input[type="button"] {
@@ -105,8 +120,11 @@ input[type="button"]:hover {
 	margin: auto;
 	display: table-cell;
 	
-	height: 64px;
-	vertical-align: center;
+    vertical-align: middle;
+	
+	min-height: 80px;
+	height: 80px;
+	max-height: 128px;
 	
 	color: #FFFFFF;
 }

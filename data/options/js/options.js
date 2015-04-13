@@ -36,6 +36,36 @@ function initialize() {
     change_page('general');
 }
 
+//turns redundant options off appropriately
+function update_selectables() {
+    var smiley_box = $(general_div).find('#enableSmilies')[0];
+    var monkey_box = $(general_div).find('#enableMonkeys')[0];
+    var smiley_radio = $(general_div).find('input[name="smilies-radio"]');
+    
+    var emotes_textarea = $(emotes_div).find('#emotefilter-list')[0];
+    
+    var sites_textarea = $(sites_div).find('#sitefilter-list')[0];
+    
+    if ($(smiley_box).is(':checked')) {
+        $(smiley_radio).removeAttr("disabled");
+        monkey_box.disabled = false;
+    } else {
+        $(smiley_radio).attr("disabled", "disabled");
+        monkey_box.disabled = true;
+    }
+    
+    if ($(emotes_div).find('input[name="emote-radio"][value="None"]').prop('checked') === true) {
+        $(emotes_textarea).attr("disabled", "disabled"); 
+    } else {
+        $(emotes_textarea).removeAttr("disabled");
+    }
+    
+    if ($(sites_div).find('input[name="site-radio"][value="None"]').prop('checked') === true) {
+        $(sites_textarea).attr("disabled", "disabled"); 
+    } else {
+        $(sites_textarea).removeAttr("disabled");
+    }
+}
 
 function load_settings() {
     get_data(function(data) {
@@ -44,6 +74,7 @@ function load_settings() {
             $(general_div).find('#enableSubscriber')[0].checked = data.use_subscriber_emotes;
             $(general_div).find('#enableBetterTTV')[0].checked = data.use_betterttv_emotes;
             $(general_div).find('#enableDynamic')[0].checked = data.replace_emotes_dynamically;
+            $(general_div).find('#enableCaseSensitive')[0].checked = data.case_sensitive;
             $(general_div).find('#enableTipsy')[0].checked = data.use_tipsy;
             $(general_div).find('#enableMaki')[0].checked = data.override_maki;
             $(general_div).find('#enableSmilies')[0].checked = data.use_twitch_smilies;
@@ -56,6 +87,8 @@ function load_settings() {
             $(sites_div).find('input[name="site-radio"][value="' + data.site_filter_mode + '"]').prop('checked', true);
             $(sites_div).find('#sitefilter-list')[0].value = data.site_filter_list;		
         }
+        
+        update_selectables();
     });
 }
 
@@ -65,6 +98,7 @@ function save_settings() {
         use_subscriber_emotes: $(general_div).find('#enableSubscriber')[0].checked,
         use_betterttv_emotes: $(general_div).find('#enableBetterTTV')[0].checked,
         replace_emotes_dynamically: $(general_div).find('#enableDynamic')[0].checked,
+        case_sensitive: $(general_div).find('#enableCaseSensitive')[0].checked,
         use_tipsy: $(general_div).find('#enableTipsy')[0].checked,
         override_maki: $(general_div).find('#enableMaki')[0].checked,
         use_twitch_smilies: $(general_div).find('#enableSmilies')[0].checked,
@@ -95,16 +129,55 @@ function change_page(page_name) {
 
     switch(page_name) {
         case 'general':
+            var smiley_box = $(general_div).find('#enableSmilies')[0];
+            var monkey_box = $(general_div).find('#enableMonkeys')[0];
+            var smiley_radio = $(general_div).find('input[name="smilies-radio"]');
+    
             reset_buttons('#settingsbutton');
             $('#page.body').replaceWith(general_div);
+            
+            //general
+            $(smiley_box).change(function() {
+                if (this.checked) {
+                    $(smiley_radio).removeAttr("disabled");
+                    monkey_box.disabled = false;
+                } else {
+                    $(smiley_radio).attr("disabled", "disabled");
+                    monkey_box.disabled = true;
+                }
+            });
         break;
         case 'emotes':
             reset_buttons('#emotesbutton');
             $('#page.body').replaceWith(emotes_div);
+            
+            var emotes_radio = $(emotes_div).find('input[name="emote-radio"]');
+            var emotes_textarea = $(emotes_div).find('#emotefilter-list')[0];
+    
+            //emotes
+            $(emotes_radio).change(function() {
+                if ($(emotes_div).find('input[name="emote-radio"][value="None"]').prop('checked') === true) {
+                    $(emotes_textarea).attr("disabled", "disabled"); 
+                } else {
+                    $(emotes_textarea).removeAttr("disabled");
+                }
+            });
         break;
         case 'sites':
+            var sites_radio = $(sites_div).find('input[name="site-radio"]');
+            var sites_textarea = $(sites_div).find('#sitefilter-list')[0];
+    
             reset_buttons('#sitesbutton');
             $('#page.body').replaceWith(sites_div);
+            
+            //about
+            $(sites_radio).change(function() {
+                if ($(sites_div).find('input[name="site-radio"][value="None"]').prop('checked') === true) {
+                    $(sites_textarea).attr("disabled", "disabled"); 
+                } else {
+                    $(sites_textarea).removeAttr("disabled");
+                }
+            });
         break;
         case 'about':
             reset_buttons('#aboutbutton');
@@ -169,6 +242,7 @@ var general_html = [
 '						<input type="checkbox" id="enableMonkeys">+ Monkeys',
 '					</form><br></UL>',
 '					<input type="checkbox"	id="enableDynamic">Replace emotes dynamically<br>',
+'					<input type="checkbox"	id="enableCaseSensitive">Case-sensitive matching [HIGHLY Recommended] <br>',
 '					<input type="checkbox"	id="enableTipsy">Enable Twitch-style emote hovering<br>',
 '					<input type="checkbox"	id="enableMaki">Override Hitbox.tv Kappa with GreyFace [BETA]<br><br><br>',
 '					<input type="button" 	id="saveSettings"	value="Save">'
@@ -195,17 +269,17 @@ var sites_html = [
 '						<input type="radio" name="site-radio" value="Blacklist">Blacklist',
 '						<input type="radio" name="site-radio" value="Whitelist">Whitelist<br>',
 '					</form></UL>',
-'					Site filter list (one url per line):<br><br>',
+'					Sites to filter (one url per line):<br><br>',
 '					<textarea cols="30" rows="5" id="sitefilter-list"></textarea><br><br><br>					',
 '					<input type="button" id="saveSettings" value="Save">'
 ].join('');
 
 var about_html = [
 '<h1>Global Twitch Emotes</h1><UL><h2>By Mohamed El-Alawi</h2></UL>',
-'<p style="text-indent: 2em;">Hi there! My name\'s Mohamed El-Alawi and I\'m currently an undergraduate student majoring in computer science. I\'ve been passionate about all things programming for my entire life, and while I\'ve started and finished countless little personal projects, most were just that: personal, private, and unshared. While I truly enjoy tinkering with little bits of code on my own, I had yet to actually release anything into a public space. I won\'t lie, the thought of doing such a thing did scare me at first.</p>',
-'<p style="text-indent: 2em;">Eventually, I realized that the my little private vacuum was inhibiting my own growth as a programmer, and the only way I could truly improve my skills was to put my work out there, to be judged by users such as yourself.',
-'I\'ve been a huge fan of Twitch.tv ever since its debut in 2011, and as a result I figured that my first release should target the Twitch community demographic. So here it is, Global Twitch Emotes. I sincerely hope you enjoy it.</p>',
-'I would love to hear what you have to say:<br><br>',
+'<p style="text-indent: 2em;">Hi there! My name\'s Mohamed El-Alawi and I\'m currently an undergraduate student majoring in computer science. I\'ve been passionate about all things programming for my entire life, and while I\'ve started and finished countless little personal projects, most were just that: personal, private, and unshared. I loved to tinker with little bits of code on my own, but I had yet to actually release anything. I won\'t lie, the thought of doing so did scare me at first.</p>',
+'<p style="text-indent: 2em;">Eventually, I realized that working solely in clandestine was inhibiting my own growth as a programmer, and the only way I could truly improve my skills was to throw my creations out there, to be judged by users such as yourself. ',
+'I\'ve been a huge fan of Twitch.tv ever since its debut in 2011, and I figured that my first \'official\' software release should target the community I love. So here it is, Global Twitch Emotes. I sincerely hope you enjoy it.</p>',
+'I would <i>love</i> to hear what you have to say:<br><br>',
 '<a href="mailto:elalawi_mohamed@yahoo.ca?Subject=GTE Feedback:" target="_blank"><img src="images/email.png"/><br>',
 '<a href="https://twitter.com/m_elalawi" target="_blank"><img src="images/tweet.png"/></a><br><br>',
 '<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">',

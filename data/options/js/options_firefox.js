@@ -7,7 +7,6 @@ function set_data(data, on_saved) {
 }
 
 function get_data(on_load) {
-	console.log('here we go');
 	self.port.emit("get_data", "data");
 	
 	self.port.once("data_received", function(data) {

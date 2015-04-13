@@ -2,13 +2,14 @@
 //the if statements check if chrome exist and prevent firefox from getting upset
 function get_data(on_load) {
 	if (typeof chrome === 'object') {
-		chrome.storage.sync.get( {
+		chrome.storage.local.get( {
 			//defaults
 			use_global_emotes: true,
 			use_subscriber_emotes: true, 
 			use_betterttv_emotes: false,
 
 			replace_emotes_dynamically: true,
+			case_sensitive: true,
 			use_tipsy: true,
 			override_maki: false,
 
@@ -30,12 +31,13 @@ function get_data(on_load) {
 function set_data(data, on_saved) {
 	if (typeof chrome === 'object') {
 		if (data) {
-			chrome.storage.sync.set({
+			chrome.storage.local.set({
 				use_global_emotes: data.use_global_emotes,
 				use_subscriber_emotes: data.use_subscriber_emotes, 
 				use_betterttv_emotes: data.use_betterttv_emotes,
 
 				replace_emotes_dynamically: data.replace_emotes_dynamically,
+				case_sensitive: data.case_sensitive,
 				use_tipsy: data.use_tipsy,
 				override_maki: data.override_maki,
 
