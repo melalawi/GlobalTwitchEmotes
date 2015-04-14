@@ -189,6 +189,8 @@ function change_page(page_name) {
     $("#saveSettings").click(function(){
         save_settings();
     });
+    
+    
 }
 
 function reset_buttons(id) {
@@ -287,7 +289,11 @@ var about_html = [
 '<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----">',
 '<input type="image" title="Support me via Paypal" alt="Support me via Paypal" src="images/support.png" border="0" name="submit">',
 '<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">',
-'</form><br>'
+'</form><br><br>',
+'<i>Thanks to:',
+'<UL><a href="http://twitchemotes.com" target="_blank">Twitchemotes.com</a> for their awesome API.<br>',
+'<a href="http://www.fontalicious.com/font-licensingusage/">Fontalicious.com</a> for the Dimitri font.<br>',
+'P0lip on irc.mozilla.org for his guidance. The Firefox version of GTE would not have been possible without his help.<br></UL></i>'
 ].join('');
 
 var error_html = 'Page not found';

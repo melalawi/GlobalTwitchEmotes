@@ -1,6 +1,7 @@
 var MAKI_SRC = 'http://edge.sf.hitbox.tv/static/img/chat/default/maki2.png';
 
-var separator = /[\w]+|[:/\\)(<>\]]+/g;
+//Regex for separating stuff
+var separator = /([\w]|[:;)(\\\/<>73#\|\]])+/g;
 
 function ContentScript() {
     var self = this;
@@ -8,6 +9,7 @@ function ContentScript() {
     this.use_tipsy = true;
     this.override_maki = false;
     this.case_sensitive = true;
+    this.sanitizer;
     this.emote_list = {};
     
     //prevent doublechecking
@@ -61,7 +63,7 @@ function ContentScript() {
                 }
                 
                 if (self.emote_list.hasOwnProperty(comparison)) {
-                    emote_data = self.emote_list[comparison];
+                    emote_data = get_emote(self.emote_list[comparison]);
                     //need to clean/refactor, ugly to look at atm
                     var title = (self.use_tipsy === true ? emote_data.title : word);
                     
@@ -70,15 +72,16 @@ function ContentScript() {
                     var next = text.substring(index + word.length);
 
                     var prev = document.createTextNode(previous);
-                    var emote = get_emote(title, emote_data.url);
+                    
+                    emote_data.title = title;
 
                     node.nodeValue = next;
                     
                     self.processed_nodes.push(prev);
-                    self.processed_nodes.push(emote);
+                    self.processed_nodes.push(emote_data);
 
                     node_parent.insertBefore(prev, node);
-                    node_parent.insertBefore(emote, node);
+                    node_parent.insertBefore(emote_data, node);
 
                     if (node.nodeValue === '') {
                         node_parent.removeChild(node);
@@ -99,8 +102,11 @@ function ContentScript() {
             for (var index in emotes) {
                 var maki = emotes[index];
                 if (maki.src === MAKI_SRC) {
-
-                    maki.parentElement.replaceChild(get_emote('*Belch*', self.emote_list['Kappa'].url, self.use_tipsy), maki);
+                    var emote = get_emote(self.emote_list['Kappa']);
+                    
+                    emote.title = '*Belch*';
+                    
+                    maki.parentElement.replaceChild(emote, maki);
 
                 }
             }
@@ -108,28 +114,38 @@ function ContentScript() {
         
     };
     
-    function get_emote(title, url) {
-    
-        var emote = document.createElement('img');                    
-
-        emote.src = url;
-        emote.title = title;
-        emote.alt = title;
-
+    function get_emote(emote_data) {
+        
+        var emote = document.createElement('div');
+        var result;
+        
+        emote.innerHTML = sanitize_html(emote_data);
+        result = emote.firstChild;
+        
         if (self.use_tipsy) {
-            $(emote).tipsy({gravity: 'se', html: true});
+            $(result).tipsy({gravity: 'se', html: true});
         }
 
-        return emote;
+        return result;
 
     }
 }
 
+//basic caja sanitizer
+function sanitize_html(html) {
+    var urlTransformer = function(s) { return s; };
+        
+    var nameIdClassTransformer = urlTransformer;
 
+    return html_sanitize(html, urlTransformer, nameIdClassTransformer);
+}
+
+var rules = {name:'tag', type:'equals', value:'textarea'};
 
 var parent_rules = [
     {name:'class', type:'equals', value:'chat-line'},
     {name:'class', type:'indexOf', value:'tipsy'},
+    {name:'class', type:'equals', value:'gsfi'},
     {name:'tag', type:'equals', value:'textarea'},
     {name:'tag', type:'equals', value:'script'},
     {name:'tag', type:'equals', value:'style'}
@@ -150,10 +166,11 @@ function is_valid_node(node) {
 
     if (node) {
         parent_node = node.parentElement;
+        result = test_rules(node.className, node.tagName, rules);
         
         if (parent_node) {
             grandparent_node = parent_node.parentElement;
-            result = test_rules(parent_node.className, parent_node.tagName, parent_rules);
+            result = result && test_rules(parent_node.className, parent_node.tagName, parent_rules);
             
             if (grandparent_node) {
                 result = result && test_rules(grandparent_node.className, grandparent_node.tagName, parent_rules);
