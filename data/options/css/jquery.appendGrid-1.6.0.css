@@ -1,0 +1,136 @@
+﻿/*!
+* jQuery appendGrid v1.6.0
+* https://appendgrid.apphb.com/
+*
+* Copyright 2015 Albert L.
+* Dual licensed under the LGPL (http://www.gnu.org/licenses/lgpl.html)
+* and MIT (http://www.opensource.org/licenses/mit-license.php) licenses.
+*
+* Depends:
+* jQuery v1.11.1+
+* jQuery UI v1.11.1+
+*/
+select {
+    font-family: 'Open Sans';
+}
+div.appendGrid
+{
+}
+div.appendGrid table.head,
+div.appendGrid table.body,
+div.appendGrid table.foot
+{
+    border-collapse: collapse;
+	width: 100%;
+}
+div.appendGrid table.head thead tr.columnHead td
+{
+	width: auto;
+	text-overflow: ellipsis;
+}
+div.appendGrid table.head thead td
+{
+    padding-top: 4px;
+    padding-bottom: 4px;
+    white-space: nowrap;
+}
+div.appendGrid table thead td.caption
+{
+    padding: 4px 0;
+    font-size: 1.5em;
+    font-weight: bold;
+    border: none;
+    border-bottom: 1px solid #bda9c5;
+}
+div.appendGrid table tbody input[type=text]
+{
+    width: 100%;
+    padding: 5px;
+    font-size: 1.2em;
+    font-family: 'Open Sans', sans-serif;
+    border: 1px solid #bda9c5;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+div.appendGrid table tbody input[type=text]::-webkit-input-placeholder
+{
+    color: #bda9c5;
+    font-style: italic;
+    opacity: 1;
+}
+div.appendGrid table tbody input[type=text]::-moz-placeholder
+{
+    color: #bda9c5;
+    font-style: italic;
+    opacity: 1;
+}
+div.appendGrid table tbody td
+{
+    white-space: pre-wrap;
+}
+div.appendGrid table td.first
+{
+    text-align: center;
+    vertical-align: middle;
+}
+div.appendGrid table td.last
+{
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+div.appendGrid table tbody td.last button
+{
+	min-height: 20px;
+    margin: 1px;
+}
+div.appendGrid table tbody td.last button.insert,
+div.appendGrid table tbody td.last button.remove,
+div.appendGrid table tbody td.last button.moveUp,
+div.appendGrid table tbody td.last button.moveDown
+{
+	height: 20px;
+    width: 20px;
+}
+div.appendGrid table tbody td.last div.rowDrag
+{
+    display: inline-block;
+    vertical-align: middle;
+    width: 18px;
+    height: 18px;
+    margin: 1px;
+}
+div.appendGrid table tfoot button
+{
+    min-height: 24px;
+    min-width: 28px;
+}
+div.appendGrid table tfoot button.append,
+div.appendGrid table tfoot button.removeLast
+{
+    height: 24px;
+    min-width: 28px;
+}
+div.appendGrid table input.double
+{
+    text-align: right;
+}
+div.appendGrid table tbody tr.empty td
+{
+	text-align: center;
+}
+div.appendGrid table td.invisible
+{
+	display: none;
+}
+div.appendGrid table thead td.resizable
+{
+}
+div.appendGrid div.scroller
+{
+	overflow: auto;
+	display: block;
+	padding: 0px;
+	margin: 0px;
+}

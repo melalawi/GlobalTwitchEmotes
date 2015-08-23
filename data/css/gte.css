@@ -1,0 +1,58 @@
+.GTETipsy {
+    display: block;
+    visibility: visible;
+    font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    position: absolute;
+    padding: 5px;
+    z-index: 100000;
+
+    white-space: pre-wrap;
+
+    background-color: rgba(0,0,0,0);
+}
+.GTETipsy-inner {
+    border-radius: 0px;
+
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+
+    white-space: pre-wrap;
+
+    line-height: 1.5;
+    background-color: rgba(0,0,0,0.8);
+    color: #FFFFFF;
+    max-width: 200px;
+    padding: 5px 8px 4px 8px;
+    text-align: center;
+}
+
+.GTETipsy-arrow { position: absolute; width: 0; height: 0; line-height: 0; border: 5px dashed #000; opacity: 0.8;}
+
+/* Rules to colour arrows */
+.GTETipsy-arrow-n { border-bottom-color: #000; }
+.GTETipsy-arrow-s { border-top-color: #000; }
+.GTETipsy-arrow-e { border-left-color: #000; }
+.GTETipsy-arrow-w { border-right-color: #000; }
+
+.GTETipsy-n .GTETipsy-arrow { top: 0px; left: 50%; margin-left: -5px; border-bottom-style: solid; border-top: none; border-left-color: transparent; border-right-color: transparent; }
+.GTETipsy-nw .GTETipsy-arrow { top: 0; left: 10px; border-bottom-style: solid; border-top: none; border-left-color: transparent; border-right-color: transparent;}
+.GTETipsy-ne .GTETipsy-arrow { top: 0; right: 10px; border-bottom-style: solid; border-top: none;  border-left-color: transparent; border-right-color: transparent;}
+.GTETipsy-s .GTETipsy-arrow { bottom: 0; left: 50%; margin-left: -5px; border-top-style: solid; border-bottom: none;  border-left-color: transparent; border-right-color: transparent; }
+.GTETipsy-sw .GTETipsy-arrow { bottom: 0; left: 10px; border-top-style: solid; border-bottom: none;  border-left-color: transparent; border-right-color: transparent; }
+.GTETipsy-se .GTETipsy-arrow { bottom: 0; right: 10px; border-top-style: solid; border-bottom: none; border-left-color: transparent; border-right-color: transparent;}
+.GTETipsy-e .GTETipsy-arrow { right: 0; top: 50%; margin-top: -5px; border-left-style: solid; border-right: none; border-top-color: transparent; border-bottom-color: transparent; }
+.GTETipsy-w .GTETipsy-arrow { left: 0; top: 50%; margin-top: -5px; border-right-style: solid; border-left: none; border-top-color: transparent; border-bottom-color: transparent; }
+
+.GTEEmote {
+    width: auto !important;
+    height: auto;
+    display: inline-block;
+    z-index: 99999;
+
+    padding-top: 5px;
+    margin: -5px 0 0 0;
+
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+}
+

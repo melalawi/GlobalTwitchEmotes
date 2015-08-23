@@ -1,0 +1,211 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,700,300,600,800,400);
+
+html, body {
+    padding: 0;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    background: #643da0;
+
+    font-size: 1.0em;
+
+    width: 100%;
+    height: 100%;
+}
+
+table {
+    width: 100%;
+}
+
+.version {
+    margin-left: 10px;
+    font-size: 0.35em;
+    display: inline-block;
+}
+
+.indent {
+    padding-left: 2em;
+}
+
+.wrapper {
+    height: 100%;
+    width: 100%;
+    display: table;
+}
+
+.wrapper>div {
+    width: 100%;
+    display: table-row;
+}
+
+.content {
+    height: 100%;
+    width: 70%;
+    margin: auto;
+    display: block;
+    text-align: center;
+}
+
+.footerContent, .emoteToolbar {
+    height: 100%;
+    width: 50%;
+    margin: auto;
+    display: block;
+    text-align: center;
+}
+
+#header {
+    background: #363636;
+}
+
+#header img {
+    margin: 24px 0;
+}
+
+.toolbar {
+    background: #bda9c5;
+}
+
+.tabbedPage {
+    text-align: left;
+    padding: 16px 0;
+    transition: 0.15s all;
+}
+
+#page {
+    height: 100%;
+    background: #f5f3f2;
+}
+
+/*scrollbar on div only*/
+#page > .content {
+    overflow-y: auto;
+}
+
+.faded {
+    color: #bda9c5;
+    text-align: center;
+    font-style: italic;
+}
+
+#footer {
+}
+
+#footer a {
+    height: 64px;
+    width: 33%;
+    float: left;
+
+    opacity: 0.5;
+
+    box-sizing: border-box;
+
+    transition: opacity .25s ease-in-out, background 0.25s ease-in-out;
+
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#footer a:hover {
+    opacity: 0.75;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/*input buttons and whatnot*/
+
+select {
+    border: 1px solid #bda9c5;
+}
+
+select:focus, input:focus, textarea:focus {
+    outline-color: #7050a0;
+}
+
+input[type=checkbox] {
+    display: inline-block;
+    height: 1.25em;
+    width: 1.25em;
+}
+
+input[type=radio] {
+    display: inline-block;
+    height: 1.25em;
+    width: 1.25em;
+    opacity: 1;
+}
+
+input[disabled] {
+    opacity: 0.5;
+}
+
+.tabSelector  {
+    font-family: 'Open Sans', sans-serif;
+
+    display: inline-block;
+    float: left;
+
+    width: 25%;
+    height: 100%;
+
+    color: white;
+
+    box-sizing: border-box;
+
+    background-color: #bda9c5;
+    outline: 0;
+    border: none;
+    border-radius: 0;
+
+    cursor: pointer;
+
+    transition: 0.15s all;
+}
+
+.tabSelector:hover, .tabSelector.active {
+    background-color: #7050a0;
+}
+
+#navBar .tabSelector  {
+    padding: 5px 0;
+
+    min-width: 96px;
+
+    font-size: 1.20em;
+}
+
+/*save*/
+.triggerButton {
+    outline: none;
+    border: none;
+
+    background: #bda9c5;
+    padding: 10px 20px;
+    font-size: 1.25em;
+    color: #f5f3f2;
+    border-bottom: 3px solid #7050a0;
+    border-radius: 4px;
+
+    transition: 0.25s all;
+}
+
+.triggerButton:hover {
+    padding: 10px 24px;
+
+    border-color: #000000;
+    background: #7050a0;
+
+    transition: 0.25s all;
+
+    cursor: pointer;
+}
+
+/*button images*/
+
+#github { background: url(images/github.png); }
+#github:hover { background: url(images/github_h.png); }
+#linkedin { background: url(images/linkedin.png); }
+#linkedin:hover { background: url(images/linkedin_h.png); }
+#twitter { background: url(images/twitter.png); }
+#twitter:hover { background: url(images/twitter_h.png); }
