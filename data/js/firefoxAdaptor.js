@@ -8,8 +8,8 @@ function initialize(settings) {
     contentScript.initialize(settings);
 }
 
-chrome.runtime.onMessage.addListener(function(message) {
-    initialize(message);
+self.port.once("data", function(data){
+    initialize(data);
 });
 
 })();

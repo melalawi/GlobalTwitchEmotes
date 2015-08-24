@@ -1,0 +1,17 @@
+{  
+    "name": "gte",
+    "title": "Global Twitch Emotes",
+    "id": "gte@melalawi.com",
+    "description": "Twitch culture wherever you go! This extension replaces all Twitch.tv emote phrases with their actual emoticons!",
+    "author": "melalawi",
+    "license": "MPL 2.0",
+    "icon": "./logo/128.png",
+    "version": "1.1.1000",
+
+    "preferences": [{  
+        "type": "control",
+        "label": "Modify Settings",
+        "name": "accessSettings",
+        "title": "Settings"
+    }]
+}

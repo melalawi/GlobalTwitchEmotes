@@ -4,7 +4,7 @@ html, body {
     padding: 0;
     margin: 0;
     font-family: 'Open Sans', sans-serif;
-    background: #643da0;
+    background: #7050a0;
 
     font-size: 1.0em;
 
@@ -21,7 +21,6 @@ table {
     font-size: 0.35em;
     display: inline-block;
 }
-
 .indent {
     padding-left: 2em;
 }
@@ -176,12 +175,29 @@ input[disabled] {
 }
 
 /*save*/
+.saveButtonPanel {
+    display: inline-block;
+    height: 48px;
+}
+
+.loader {
+    display: none;
+    height: 32px;
+    width: 32px;
+
+    margin: -8px 0;
+    padding-left: 8px;
+}
+
+
 .triggerButton {
     outline: none;
     border: none;
+    height: 100%;
 
     background: #bda9c5;
-    padding: 10px 20px;
+    padding-left: 20px;
+    padding-right: 20px;
     font-size: 1.25em;
     color: #f5f3f2;
     border-bottom: 3px solid #7050a0;
@@ -190,8 +206,23 @@ input[disabled] {
     transition: 0.25s all;
 }
 
-.triggerButton:hover {
-    padding: 10px 24px;
+.triggerButton:disabled, .triggerButton:disabled:hover {
+    background: #B0B0B0;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-bottom: 3px solid #6A6A6A;
+    border-radius: 4px;
+
+    cursor: default;
+
+    opacity: 0.5;
+}
+
+.triggerButton:not(disabled):hover {
+    padding-left: 24px;
+    padding-right: 24px;
+
+    /*    padding: 10px 24px;*/
 
     border-color: #000000;
     background: #7050a0;

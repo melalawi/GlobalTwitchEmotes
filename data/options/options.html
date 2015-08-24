@@ -2,15 +2,13 @@
 <html>
 	<head>
 		<title>Global Twitch Emotes - Settings</title>
-		<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
-		<link href="css/jquery-ui.css" rel="stylesheet" type="text/css" media="all" />
-		<link href="css/jquery.appendGrid-1.6.0.css" rel="stylesheet" type="text/css" media="all" />
-
 		<!--match width of window-->
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<!--what charset to use-->
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		
+        <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/jquery-ui.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/jquery.appendGrid-1.6.0.css" rel="stylesheet" type="text/css" media="all" />
 	</head>
 	<body>
 		<div class="wrapper">
@@ -39,7 +37,7 @@
                         <input class="settingsModifier" id="enableTipsyMode" type="checkbox">Twitch-style Emote Hover Effect<br><br>
                         <input class="settingsModifier" id="enableHitboxKappa" type="checkbox">Replace Hitbox.tv's Kappa with GreyFace<br><br><br>
 
-                        <input type="button" class="triggerButton" name="saveButton" value="Save">
+                        <div class="saveButtonPanel"><input type="button" class="triggerButton" name="saveButton" value="Save"><img class="loader" alt="Saving... Please wait..." title="Saving... Please wait..." src="css/images/loader.gif"></div>
                     </div>
                     <div class="mainTab tabbedPage" id="emotesTab" style="display: none;">
                         <div class="emoteToolbar">
@@ -65,9 +63,14 @@
                             </div>
                         </div>
                         <div class="emotesSubTab tabbedPage" id="bttvTab" style="display: none;">
-                            <input class="settingsModifier" id="BTTVGlobals" type="checkbox">Enable BetterTTV Emotes<br><br>
+                            <input class="settingsModifier" id="BTTVGlobals" type="checkbox">Enable BetterTTV Global Emotes<br><br>
 
-                            <div class="faded">Better Twitch.tv Channel Support Not yet Available</div>
+                            <input class="settingsModifier" id="BTTVChannels" type="checkbox">Enable BetterTTV Channel Emotes (Assign below)<br><br>
+
+                            <h1>BetterTTV Channels</h1>
+                            Assign individual BetterTTV channels below (Example: To enable (ditto), add the channel "NightDev")<br><br>
+
+                            <table id="BTTVChannelsList" class="settingsModifier" data-tableinfo='[{"caption":"","initRows":1,"columns":[{"name":"channel","display":"","type":"text","hint":"Type Your Channel Name Here...","ctrlCSS":{"width":"100%"}}]}]'></table>
                         </div>
                         <div class="emotesSubTab tabbedPage" id="ffzTab" style="display: none;">
                             <input class="settingsModifier" id="FFZGlobals" type="checkbox">Enable FrankerFaceZ Global Emotes (ZreknarF, LilZ, etc)<br><br>
@@ -88,7 +91,7 @@
 
                             <table id="emoteFilterList" class="settingsModifier" data-tableinfo='[{"caption":"Filtered Emotes","initRows":1,"columns":[{"name":"host","display":"Host","type":"select","ctrlOptions":"TE:Twitch.tv;BTTV:Better Twitch.tv;FFZ:FrankerFaceZ"},{"name":"type","display":"Filter Type","type":"select","ctrlOptions":"emote:Emote;channel:Channel"},{"name":"name","display":"Text","type":"text","hint":"Type a Single Emote or Channel Name...","ctrlCSS":{"width":"100%"}}]}]'></table></div><br><br><br>
 
-                        <input type="button" class="triggerButton" name="saveButton" value="Save">
+                        <div class="saveButtonPanel"><input type="button" class="triggerButton" name="saveButton" value="Save"><img class="loader" alt="Saving... Please wait..." title="Saving... Please wait..." src="css/images/loader.gif"></div>
                     </div>
                     <div class="mainTab tabbedPage" id="sitesTab" style="display: none;">
                         <h1>Website Filters</h1>
@@ -101,10 +104,10 @@
                         </div><br><br>
                         <table id="webFilterList" class="settingsModifier" data-tableinfo='[{"caption":"Filtered Websites","initRows":1,"columns":[{"name":"url","display":"","type":"text","hint":"Type your URL here...","ctrlCSS":{"width":"100%"}}]}]'></table><br><br><br>
 
-                        <input type="button" class="triggerButton" name="saveButton" value="Save">
+                        <div class="saveButtonPanel"><input type="button" class="triggerButton" name="saveButton" value="Save"><img class="loader" alt="Saving... Please wait..." title="Saving... Please wait..." src="css/images/loader.gif"></div>
                     </div>
                     <div class="mainTab tabbedPage" id="aboutTab" style="display: none;">
-                        <h1>Global Twitch Emotes <div class="version"></div></h1>
+                        <h1>Global Twitch Emotes<div class="version"></div></h1>
                         <ul>
                             <h2>By Mohamed El-Alawi</h2>
                         </ul>
@@ -119,6 +122,7 @@
                         </form><br><br>
                         <i>Thanks to:<ul><a href="http://twitchemotes.com" target="_blank">Twitchemotes.com</a> for their API.<br>
                         Dan Salvato & SirStendec (Mike)for the awesome work they've done with  <a href="http://www.frankerfacez.com/" target="_blank">FrankerFaceZ</a> and providing a clean API.<br>
+                        The guys behind <a href="https://www.nightdev.com/" target="_blank">NightDev</a><br>
                         <a href="http://www.fontalicious.com/font-licensingusage/">Fontalicious.com</a> for the Dimitri font.<br>
                         P0lip on irc.mozilla.org for his guidance. The Firefox version of GTE would not have been possible without his help.<br></ul></i>
                     </div>
@@ -134,9 +138,4 @@
 			</div>
 		</div>
 	</body>
-    <script src="../js/jquery-2.1.4.min.js"></script>
-    <script src="js/jquery-ui.min.js"></script>
-    <script src="js/jquery.appendGrid-1.6.0.js"></script>
-    <script src="js/options.js"></script>
-    <script src="js/options_chrome.js"></script>
 </html>

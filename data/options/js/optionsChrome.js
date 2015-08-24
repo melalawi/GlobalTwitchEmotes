@@ -14,27 +14,15 @@ function getData(onLoad) {
     });
 }
 
-function setData(data) {
+function setData(data, callback) {
     listenerCallback = function(request, sender, sendResponse) {
-        if (request === 'settingsSaved') {
+        if (request.message === 'settingsSaved') {
             chrome.runtime.onMessage.removeListener(listenerCallback);
 
-            alert('Settings Saved!');
+            callback();
         }
     };
     chrome.runtime.onMessage.addListener(listenerCallback);
 
 	chrome.runtime.sendMessage(null, {message: 'saveAll', data: data});
 }
-
-function sendMessage(text) {
-	chrome.runtime.sendMessage({message: text});
-}
-
-(function(){
-	if (document.readyState === 'complete') {
-		initialize();
-	} else {
-		$(document).ready(initialize);
-	}
-}());

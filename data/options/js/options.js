@@ -9,6 +9,7 @@ function initialize() {
     //about page version number
     $('.version').text('Version ' + getVersionNumber());
 
+
     //set main page and emote page
     setTab($('#settings'));
     setTab($('#twitch'));
@@ -19,7 +20,7 @@ function initialize() {
         setTab($(this));
     });
 
-    $('input:button[name="saveButton"]').click(function(){
+    $('.triggerButton[name="saveButton"]').click(function(){
         saveGeneralSettings();
     });
 
@@ -40,6 +41,10 @@ function setTab(button) {
 
 function saveGeneralSettings() {
     var data = {};
+
+    //make loaders visible, buttons disabled
+    $('.triggerButton[name="saveButton"]').attr("disabled", true);
+    $('.loader').css('display', 'inline-block');
 
     settingsModifiers.each(function(){
         if ($(this).prop('type') === "checkbox") {
@@ -68,7 +73,12 @@ function saveGeneralSettings() {
         }
     });
 
-    setData(data);
+    setData(data, function(){
+        $('.triggerButton[name="saveButton"]').attr("disabled", false);
+        $('.loader').css('display', 'none');
+
+        alert('Settings Saved!');
+    });
 }
 
 function loadGeneralSettings() {
@@ -98,8 +108,6 @@ function loadGeneralSettings() {
 }
 
 function resetGeneralSettings() {
-    sendMessage('reset');
-    loadGeneralSettings();
 }
 
 function initializeTables(nodes) {

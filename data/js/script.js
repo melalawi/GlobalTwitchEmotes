@@ -68,42 +68,20 @@ function ContentScript() {
                 if (node.nodeType === Node.TEXT_NODE) {
                     checkTextNode(node);
                 } else {
-                    processTextChildren(node);
+                    processTextNodeChildren(node);
                 }
             }
         }
     }
 
-    /*
-    function processTextChildren(base) {
-        if (base) {
-            var children = [],
-                nextChild,
-                walker = document.createTreeWalker(base, NodeFilter.SHOW_ALL, filterTextAndImages, false);
-
-            while (nextChild = walker.nextNode()) {
-                children.push(nextChild);
-            }
-
-            for (var index = 0; index < children.length; ++index) {
-                if (children[index].tagName === 'IMG') {
-                    if (settingsData.settings.enableHitboxKappa) {
-                        processImage(children[index]);
-                    }
-                } else {
-                    checkTextNode(children[index]);
-                }
-            }
-        }
-    }*/
-
-    function processTextChildren(base) {
+    function processTextNodeChildren(base) {
         if (base) {
             var children = [],
                 nextChild,
                 walker = document.createTreeWalker(base, NodeFilter.SHOW_TEXT, null, false);
 
             while (nextChild = walker.nextNode()) {
+                //don't bother with textnodes that do not contain meaningful data
                 if (nextChild.nodeValue.replace(/\s/g, '').length > 1) {
                     children.push(nextChild);
                 }
@@ -120,8 +98,7 @@ function ContentScript() {
             var textContent = base.nodeValue;
 
             //simple validity check: parents must be of legal types
-            //and textcontent must contain meaningful data
-            if (legallyContained(base) && textContent.replace(/\s/g, '').length > 1) {
+            if (legallyContained(base)) {
                 setLoop: for (var setIndex in settingsData.emotes) {
 
                     if (settingsData.emotes.hasOwnProperty(setIndex)) {
