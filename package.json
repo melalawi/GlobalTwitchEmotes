@@ -1,4 +1,4 @@
-{  
+{
     "name": "gte",
     "title": "Global Twitch Emotes",
     "id": "gte@melalawi.com",
@@ -6,9 +6,9 @@
     "author": "melalawi",
     "license": "MPL 2.0",
     "icon": "./logo/128.png",
-    "version": "1.1.1000",
+    "version": "1.1.1005",
 
-    "preferences": [{  
+    "preferences": [{
         "type": "control",
         "label": "Modify Settings",
         "name": "accessSettings",

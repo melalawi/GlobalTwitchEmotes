@@ -2,6 +2,16 @@ var GTE_SCRIPT = (function () {
 
 "use strict";
 
+$.fn.nthParent = function(n){
+    var p = this;
+
+    for (var i = 0; i < n; i++) {
+        p = p.parent();
+    }
+
+    return p;
+};
+
 const GTE_NODE = 'data-gtenode',
       GTE_CHANNEL = 'gtechannel';
 const HITBOX_KAPPA = 'http://edge.sf.hitbox.tv/static/img/chat/default/maki2.png';
@@ -9,15 +19,15 @@ const HITBOX_KAPPA = 'http://edge.sf.hitbox.tv/static/img/chat/default/maki2.png
 const STRING_SEPARATOR = /([\w]|[:;)(\\\/<>73#\|\]])+/g;
 
 const ILLEGAL_NODES = [
-    [
-        {attrFunc: 'hasClass', attrName: 'message', attrEqual: true},
-        {attrFunc: 'data', attrName: 'raw', attrNotEqual: undefined},
-        {attrFunc: 'data', attrName: 'emotes', attrNotEqual: undefined}
-    ],
-    [{attrFunc: 'hasClass', attrName: 'GTETipsy', attrEqual: true}],
-    [{attrFunc: 'hasClass', attrName: 'tweet-box', attrEqual: true}],
-    [{attrFunc: 'hasClass', attrName: 'tipsy', attrEqual: true}],
-    [{attrFunc: 'prop', attrName: 'tagName', attrEqual: 'TEXTAREA'}]
+    {parentNum: 4, selector: 'div.tse-content'},
+    {parentNum: 5, selector: 'div.tse-content'},
+    {parentNum: 1, selector: 'div.gsfi'},
+    {parentNum: 2, selector: 'div.tipsy'},
+    {parentNum: 2, selector: 'form.tweet-form'},
+    {parentNum: 3, selector: 'form.tweet-form'},
+    {parentNum: 2, selector: 'div.rich-editor'},
+    {parentNum: 3, selector: 'div.rich-editor'},
+    {parentNum: 1, selector: 'textarea'}
 ];
 
 function ContentScript() {
@@ -28,38 +38,40 @@ function ContentScript() {
         if (settingsData === null) {
             settingsData = settings;
 
-            //check whole page
-            investigateNode(document.body);
-
-            if (settingsData.settings.enableDynamicEmotification) {
-                initializeObserver();
-            }
+            initializeObserver();
         }
     };
 
     function initializeObserver() {
-        var observer = new MutationObserver(function (changes) {
-            changes.forEach(function(currentChange) {
-                if (currentChange.type === 'characterData') {
-                    investigateNode(currentChange.target);
-                } else if (currentChange.type === 'childList') {
-                    for (var index = 0; index < currentChange.addedNodes.length; ++index) {
-                        var currentNode = currentChange.addedNodes.item(index);
+        //check whole page
+        investigateNode(document.body);
 
-                        investigateNode(currentNode);
+        if (settingsData.settings.enableDynamicEmotification) {
+            observer = new MutationObserver(onMutationTrigger);
 
-                        //hitbox kappa check
-                        if (currentNode.baseURI && currentNode.baseURI.match('hitbox.tv')) {
-                            processImages(currentNode);
-                        }
+            observer.observe(document.body, {childList: true, subtree: true, characterData: true});
+        }
+    }
+
+    function onMutationTrigger (changes) {
+        changes.forEach(function(currentChange) {
+            if (currentChange.type === 'characterData') {
+
+                investigateNode(currentChange.target);
+
+            } else if (currentChange.type === 'childList') {
+                for (var index = 0; index < currentChange.addedNodes.length; ++index) {
+                    var currentNode = currentChange.addedNodes.item(index);
+
+                    investigateNode(currentNode);
+
+                    //hitbox kappa check
+                    if (currentNode.baseURI && currentNode.baseURI.match('hitbox.tv')) {
+                        processImages(currentNode);
                     }
                 }
-            });
-
-
+            }
         });
-
-        observer.observe(document.body, {childList: true, subtree: true, characterData: true});
     }
 
     function investigateNode(node) {
@@ -106,26 +118,30 @@ function ContentScript() {
                             nextWord;
 
                         while ((nextWord = STRING_SEPARATOR.exec(textContent)) !== null) {
-                           if (currentSet.hasOwnProperty(nextWord[0])) {
-                               var indexEnd = STRING_SEPARATOR.lastIndex;
+                            if (currentSet.hasOwnProperty(nextWord[0])) {
+                                var indexEnd = STRING_SEPARATOR.lastIndex;
 
-                               //reset the regex BEFORE continuing in order to make sure other nodes are checked properly
-                               STRING_SEPARATOR.lastIndex = 0;
+                                //reset the regex BEFORE continuing in order to make sure other nodes are checked properly
+                                STRING_SEPARATOR.lastIndex = 0;
 
-                               emotifyNode(base, nextWord.index, indexEnd, currentSet[nextWord[0]]);
+                                emotifyNode(base, nextWord.index, indexEnd, currentSet[nextWord[0]]);
 
-                               //reset text content as it has changed
-                               textContent = base.nodeValue;
-                               break setLoop;
-                           }
+                                //reset text content as it has changed
+                                textContent = base.nodeValue;
+                                break setLoop;
+
+                            }
                         }
                     }
                 }
-                
-                //done with this node, leave it open for further checking in the future
-                setNodeAttribute(base, GTE_NODE, false);
             }
+
+            STRING_SEPARATOR.lastIndex = 0;
+
+            //done with this node, leave it open for further checking in the future
+            setNodeAttribute(base, GTE_NODE, false);
         }
+
     }
 
     function emotifyNode(baseNode, indexStart, indexEnd, emote) {
@@ -213,41 +229,19 @@ function setNodeAttribute(node, attributeName, attributeValue) {
 //traverses up from provided node to document root, checking to make sure that none of the nodes are 'illegal' as specified by the ILLEGAL_NODES const
 function legallyContained(node) {
     var result = true,
-        parents = $(node).parents().addBack();//include itself as well for checking
+        baseNode = $(node);
 
-    parentLoop: for (var i = parents.length - 1; i >= 0; --i) {
-        var nextParent = $(parents[i]);
+    for (var j = 0; j < ILLEGAL_NODES.length; ++j) {
+        var relevantParent = baseNode.nthParent(ILLEGAL_NODES[j].parentNum);
 
-        for (var j = 0; j < ILLEGAL_NODES.length; ++j) {
-            var testSet = ILLEGAL_NODES[j],
-                setResult = true;
-
-            for (var k = 0; k < testSet.length; ++k) {
-                var currTest = testSet[k],
-                    testValue = nextParent[currTest.attrFunc](currTest.attrName);
-
-                if (currTest.hasOwnProperty('attrEqual')) {
-                    setResult = testValue === currTest.attrEqual;
-                } else {
-                    setResult = testValue !== currTest.attrNotEqual;
-                }
-
-                if (setResult === false) {
-                    break;
-                }
-            }
-
-            //illegal according to set, return false
-            if (setResult === true) {
-                result = false;
-                break parentLoop;
-            }
+        if (relevantParent.is(ILLEGAL_NODES[j].selector)) {
+            result = false;
+            break;
         }
     }
 
     return result;
 }
-
 
 return {
     ContentScript: ContentScript
