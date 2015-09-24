@@ -18,16 +18,11 @@ const HITBOX_KAPPA = 'http://edge.sf.hitbox.tv/static/img/chat/default/maki2.png
     
 const STRING_SEPARATOR = /([\w]|[:;)(\\\/<>73#\|\]])+/g;
 
-const ILLEGAL_NODES = [
-    {parentNum: 4, selector: 'div.tse-content'},
-    {parentNum: 5, selector: 'div.tse-content'},
-    {parentNum: 1, selector: 'div.gsfi'},
-    {parentNum: 2, selector: 'div.tipsy'},
-    {parentNum: 2, selector: 'form.tweet-form'},
-    {parentNum: 3, selector: 'form.tweet-form'},
-    {parentNum: 2, selector: 'div.rich-editor'},
-    {parentNum: 3, selector: 'div.rich-editor'},
-    {parentNum: 1, selector: 'textarea'}
+const ILLEGAL_SELECTORS = [
+    'div.tipsy',
+    '.gsfi',
+    '[contenteditable]',
+    'textarea'
 ];
 
 function ContentScript() {
@@ -109,16 +104,16 @@ function ContentScript() {
         if (base) {
             var textContent = base.nodeValue;
 
-            //simple validity check: parents must be of legal types
-            if (legallyContained(base)) {
-                setLoop: for (var setIndex in settingsData.emotes) {
+            setLoop: for (var setIndex in settingsData.emotes) {
 
-                    if (settingsData.emotes.hasOwnProperty(setIndex)) {
-                        var currentSet = settingsData.emotes[setIndex],
-                            nextWord;
+                if (settingsData.emotes.hasOwnProperty(setIndex)) {
+                    var currentSet = settingsData.emotes[setIndex],
+                        nextWord;
 
-                        while ((nextWord = STRING_SEPARATOR.exec(textContent)) !== null) {
-                            if (currentSet.hasOwnProperty(nextWord[0])) {
+                    while ((nextWord = STRING_SEPARATOR.exec(textContent)) !== null) {
+                        if (currentSet.hasOwnProperty(nextWord[0])) {
+                            //simple validity check: parents must be of legal types
+                            if (legallyContained(base)) {
                                 var indexEnd = STRING_SEPARATOR.lastIndex;
 
                                 //reset the regex BEFORE continuing in order to make sure other nodes are checked properly
@@ -128,13 +123,13 @@ function ContentScript() {
 
                                 //reset text content as it has changed
                                 textContent = base.nodeValue;
-                                break setLoop;
-
                             }
+                            break setLoop;
                         }
                     }
                 }
             }
+
 
             STRING_SEPARATOR.lastIndex = 0;
 
@@ -231,13 +226,14 @@ function legallyContained(node) {
     var result = true,
         baseNode = $(node);
 
-    for (var j = 0; j < ILLEGAL_NODES.length; ++j) {
-        var relevantParent = baseNode.nthParent(ILLEGAL_NODES[j].parentNum);
-
-        if (relevantParent.is(ILLEGAL_NODES[j].selector)) {
-            result = false;
-            break;
+    for (var i = 0; i < 10; ++i) {
+        for (var selector = 0; selector < ILLEGAL_SELECTORS.length; ++selector) {
+            if (baseNode.is(ILLEGAL_SELECTORS[selector])) {
+                result = false;
+                break;
+            }
         }
+        baseNode = baseNode.parent();
     }
 
     return result;
