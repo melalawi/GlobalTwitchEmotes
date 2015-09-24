@@ -2,16 +2,6 @@ var GTE_SCRIPT = (function () {
 
 "use strict";
 
-$.fn.nthParent = function(n){
-    var p = this;
-
-    for (var i = 0; i < n; i++) {
-        p = p.parent();
-    }
-
-    return p;
-};
-
 const GTE_NODE = 'data-gtenode',
       GTE_CHANNEL = 'gtechannel';
 const HITBOX_KAPPA = 'http://edge.sf.hitbox.tv/static/img/chat/default/maki2.png';
@@ -19,6 +9,7 @@ const HITBOX_KAPPA = 'http://edge.sf.hitbox.tv/static/img/chat/default/maki2.png
 const STRING_SEPARATOR = /([\w]|[:;)(\\\/<>73#\|\]])+/g;
 
 const ILLEGAL_SELECTORS = [
+    'div.tse-content',
     'div.tipsy',
     '.gsfi',
     '[contenteditable]',
