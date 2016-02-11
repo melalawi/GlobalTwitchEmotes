@@ -1,17 +1,24 @@
 {
-    "name": "gte",
-    "title": "Global Twitch Emotes",
-    "id": "gte@melalawi.com",
-    "description": "Twitch culture wherever you go! This extension replaces all Twitch.tv emote phrases with their actual emoticons!",
-    "author": "melalawi",
-    "license": "MPL 2.0",
-    "icon": "./logo/128.png",
-    "version": "1.1.1012",
-
-    "preferences": [{
-        "type": "control",
-        "label": "Modify Settings",
-        "name": "accessSettings",
-        "title": "Settings"
-    }]
+  "title": "Global Twitch Emotes",
+  "name": "gte",
+  "id": "gte@melalawi.com",
+  "icon": "resource://gte-at-melalawi-dot-com/logo/128.png",
+  "version": "1.1.1021",
+  "description": "Twitch culture wherever you go! This extension replaces all Twitch.tv emote phrases with their actual emoticons.",
+  "main": "index.js",
+  "author": "melalawi",
+  "engines": {
+    "firefox": ">=38.0a1",
+    "fennec": ">=38.0a1"
+  },
+  "license": "MIT",
+  "keywords": [
+    "jetpack"
+  ],
+  "preferences": [{
+	"type": "control",
+	"label": "Modify Settings",
+	"name": "accessSettings",
+	"title": "Settings"
+  }]
 }

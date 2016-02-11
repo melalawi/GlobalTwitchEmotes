@@ -1,6 +1,6 @@
 "use strict";
 
-var background = require("firefoxBackground"),
+var background = require("lib/firefoxBackground"),
     simplePrefs = require("sdk/simple-prefs"),
     tabs = require("sdk/tabs"),
     self = require("sdk/self");

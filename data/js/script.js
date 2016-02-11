@@ -120,14 +120,11 @@ function ContentScript() {
                     }
                 }
             }
-
-
             STRING_SEPARATOR.lastIndex = 0;
 
             //done with this node, leave it open for further checking in the future
             setNodeAttribute(base, GTE_NODE, false);
         }
-
     }
 
     function emotifyNode(baseNode, indexStart, indexEnd, emote) {

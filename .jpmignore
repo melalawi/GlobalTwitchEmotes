@@ -1,0 +1,21 @@
+# Ignore .DS_Store files created by mac
+.DS_Store
+
+# Ignore any zip or xpi files
+*.zip
+*.xpi
+
+# Ignore large ad images
+/logo/large.png
+/logo/marquee.png
+/logo/small.png
+
+# No chrome
+*[cC]hrome*
+
+# Other
+README.md
+manifest.json
+.jpmignore
+/.git
+/test
