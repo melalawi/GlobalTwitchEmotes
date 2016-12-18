@@ -1,0 +1,33 @@
+{
+    "name": "global-twitch-emotes",
+    "version": "1.2.0",
+    "description": "twitch emote parser",
+    "main": "build.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/melalawi/GlobalTwitchEmotes.git"
+    },
+    "author": "melalawi",
+    "license": "SEE LICENSE IN Readme.MD",
+    "bugs": {
+        "url": "https://github.com/melalawi/GlobalTwitchEmotes/issues"
+    },
+    "homepage": "https://github.com/melalawi/GlobalTwitchEmotes#readme",
+    "devDependencies": {
+        "body-parser": "1.13.2",
+        "browserify": "13.1.0",
+        "clean-css": "3.4.23",
+        "clone": "2.1.0",
+        "compression": "1.6.1",
+        "extend": "3.0.0",
+        "mkdirp": "0.5.1",
+        "ncp": "2.0.0",
+        "pug": "2.0.0-beta6",
+        "rimraf": "2.5.4",
+        "stylus": "0.54.5",
+        "uglifyify": "3.0.3"
+    }
+}

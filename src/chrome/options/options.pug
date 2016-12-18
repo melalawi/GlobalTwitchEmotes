@@ -1,0 +1,20 @@
+doctype html
+html(lang='en')
+    head
+        meta(content='text/html; charset=UTF-8', http-equiv='content-type')
+        meta(name='viewport', content='width=device-width', initial-scale='1')
+
+        title Global Twitch Emotes - Settings
+
+        link(rel='stylesheet', type='text/css', href='/options/css/style.css')
+        script(src='/options/js/options.js')
+    body
+        #header.bodySection
+            img#banner(src=bannerPath, alt='Global Twitch Emotes')
+        #navbar.bodySection
+            each button in navbar
+                input.navButton(type='button', id=button + 'Button', class='button', alt=button, value=button)
+        #content.bodySection
+            include general
+        #footer.bodySection
+            .copyright Copyright © Mohamed El-Alawi, 2016

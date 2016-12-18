@@ -1,0 +1,172 @@
+$backgroundColor = #f5f5f5
+$headerColor = #363636
+
+$navbarBackgroundColor = #bda9c5
+$navbarShadowColor = rgba(99, 87, 109, 0.5)
+$navbarButtonTextColor = #ffffff
+$navbarButtonActiveColor = #7050a0
+$navbarButtonOutlineColor = #433265
+$disabledButtonColor = #B0B0B0
+
+$footerShadowColor = rgba(0, 0, 0, 0.5)
+
+$bodyPaddingSmallestScreen = 0% 2.5%
+$bodyPaddingSmallScreen = 0% 3%
+$bodyPaddingMediumScreen = 0% 5%
+$bodyPaddingLargeScreen = 0% 10%
+$bodyPaddingLargestScreen = 0% 15%
+
+@import url('http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,700,300,600,800,400')
+
+*
+    margin 0
+    box-sizing border-box
+
+    font-family 'Open Sans'
+
+html
+    height 100%
+
+body
+    min-height 100%
+    width 100%
+
+    display flex
+    flex-direction column
+    justify-content flex-start
+    align-content stretch
+
+    background-color $backgroundColor
+
+h1
+    font-size 2.5em
+
+p
+    margin-bottom 1.0em
+    font-size 1.5em
+
+p.line
+    display flex
+    flex-direction row
+    align-items center
+
+input[type=checkbox]
+    margin 0.05em
+    display inline-block
+
+    height 1.25em
+    width 1.25em
+
+.optionsPanel
+    display none
+
+.optionsBody
+    margin 3.0em 0
+
+img.kappa
+    margin-left 0.25em
+
+.saveSettingsButton
+    padding 0.5em 1.0em
+
+    font-size 1.75em
+    color $backgroundColor
+    background $navbarBackgroundColor
+
+    outline none
+    border none
+    border-bottom 3px solid $headerColor
+    border-radius 4px
+    cursor pointer
+
+    transition: 0.25s all
+
+.saveSettingsButton:disabled, .saveSettingsButton:disabled:hover
+    background $disabledButtonColor
+    border-color #6A6A6A
+
+    cursor default
+    opacity 0.5
+
+.saveSettingsButton:not(disabled):hover
+    padding-left 1.5em
+    padding-right 1.5em
+
+    border-color #000000
+    background $navbarButtonActiveColor
+
+#header
+    display flex
+    flex-direction column
+    align-items center
+
+    background-color $headerColor
+
+#banner
+    margin 2em 0
+
+#navbar
+    background-color $navbarBackgroundColor
+    //box-shadow 0 3px 15px 0 $navbarShadowColor
+
+#navbar .navButton
+    padding 0.25em 0
+    width 25%
+    min-width 96px
+
+    font-size 1.75em
+    color $navbarButtonTextColor
+    background-color rgba(0, 0, 0, 0)
+
+    border none
+    border-radius 0
+    outline $navbarButtonOutlineColor
+    cursor pointer
+
+    transition 0.15s all
+
+#navbar .navButton:hover, #navbar .navButton.active
+    background-color $navbarButtonActiveColor
+
+#content
+    padding-top 1.5em
+    padding-bottom 1.5em
+
+    display flex
+    flex-direction column
+    flex-grow 1
+
+#footer
+    padding-top 1.5em
+    padding-bottom 1.5em
+
+    box-shadow 0 -3px 15px 0 $footerShadowColor
+    background-color $headerColor
+
+/****** SMALLEST ******/
+@media only screen and (min-width: 0px) and (max-width: 320px)
+    .bodySection
+        padding $bodyPaddingSmallestScreen
+
+/****** SMALL ******/
+@media only screen and (min-width: 320px) and (max-width: 480px)
+    .bodySection
+        padding $bodyPaddingSmallScreen
+
+
+/****** MEDIUM ******/
+@media only screen and (min-width: 480px) and (max-width: 768px)
+    .bodySection
+        padding $bodyPaddingMediumScreen
+
+
+/****** LARGE ******/
+@media only screen and (min-width: 768px) and (max-width: 992px)
+    .bodySection
+        padding $bodyPaddingLargeScreen
+
+
+/****** LARGEST ******/
+@media only screen and (min-width: 992px)
+    .bodySection
+        padding $bodyPaddingLargestScreen

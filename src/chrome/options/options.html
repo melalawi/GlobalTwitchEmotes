@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Global Twitch Emotes - Settings</title>
+		<!--match width of window-->
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--what charset to use-->
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/jquery-ui.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/jquery.appendGrid-1.6.0.css" rel="stylesheet" type="text/css" media="all" />
+	</head>
+	<body>
+		<div class="wrapper">
+			<div id="header">
+				<div class="content">
+                    <img src="css/images/title.png">
+				</div><!--header-->
+			</div>
+			
+			<div class="toolbar" id="navBar">
+				<div class="content">
+					<input type="button" class="tabSelector" data-tabgroup="mainTab" id="settings" value="Settings">
+					<input type="button" class="tabSelector" data-tabgroup="mainTab" id="emotes" value="Emotes & Channels">
+					<input type="button" class="tabSelector" data-tabgroup="mainTab" id="sites" value="Website Filters">
+					<input type="button" class="tabSelector" data-tabgroup="mainTab" id="about" value="About">
+				</div><!--toolbar-->
+			</div>
+			
+			<div id="page">
+				<div class="content">
+                    <div class="mainTab tabbedPage" id="settingsTab" style="display: none;">
+                        <h1>General Settings</h1>
+                        Some basic settings for Global Twitch Emotes.<br><br>
+
+                        <input class="settingsModifier" id="enableDynamicEmotification" type="checkbox">Replace Emote Dynamically<br><br>
+                        <input class="settingsModifier" id="enableTipsyMode" type="checkbox">Twitch-style Emote Hover Effect<br><br>
+                        <input class="settingsModifier" id="enableHitboxKappa" type="checkbox">Replace Hitbox.tv's Kappa with GreyFace<br><br><br>
+
+                        <div class="saveButtonPanel"><input type="button" class="triggerButton" name="saveButton" value="Save"><img class="loader" alt="Saving... Please wait..." title="Saving... Please wait..." src="css/images/loader.gif"></div>
+                    </div>
+                    <div class="mainTab tabbedPage" id="emotesTab" style="display: none;">
+                        <div class="emoteToolbar">
+                            <input type="button" class="tabSelector" data-tabgroup="emotesSubTab" id="twitch" value="Twitch.tv" class="active">
+                            <input type="button" class="tabSelector" data-tabgroup="emotesSubTab" id="bttv" value="Better Twitch.tv">
+                            <input type="button" class="tabSelector" data-tabgroup="emotesSubTab" id="ffz" value="FrankerFaceZ">
+                            <input type="button" class="tabSelector" data-tabgroup="emotesSubTab" id="filter" value="Filtering">
+                        </div><!--toolbar-->
+                        <h1>Emotes & Channels</h1>
+
+                        Disable (or exclusively enable) certain Emotes and Channels.<br><br>
+                        <div class="emotesSubTab tabbedPage" id="twitchTab" style="display: none;">
+                            <input class="settingsModifier" id="TEGlobals" type="checkbox">Enable Global Twitch.tv Emotes<br><br>
+                            <input class="settingsModifier" id="TEChannels" type="checkbox">Enable Twitch.tv Subscriber Emotes<br><br>
+                            <input class="settingsModifier" id="TSChannels" type="checkbox">Enable Twitch.tv Smilies<br>
+                            <div class="indent">
+                                Smilies Skin:
+                                <select class="settingsModifier" id="TSChannelsList" data-objectname="channel">
+                                    <option value="Robot">Robot</option>
+                                    <option value="Turbo">Turbo</option>
+                                </select>
+                                <input class="settingsModifier" id="TSMonkeys" type="checkbox">+ Monkeys<br><br>
+                            </div>
+                        </div>
+                        <div class="emotesSubTab tabbedPage" id="bttvTab" style="display: none;">
+                            <input class="settingsModifier" id="BTTVGlobals" type="checkbox">Enable BetterTTV Global Emotes<br><br>
+
+                            <input class="settingsModifier" id="BTTVChannels" type="checkbox">Enable BetterTTV Channel Emotes (Assign below)<br><br>
+
+                            <h1>BetterTTV Channels</h1>
+                            Assign individual BetterTTV channels below (Example: To enable (ditto), add the channel "NightDev")<br><br>
+
+                            <table id="BTTVChannelsList" class="settingsModifier" data-tableinfo='[{"caption":"","initRows":1,"columns":[{"name":"channel","display":"","type":"text","hint":"Type Your Channel Name Here...","ctrlCSS":{"width":"100%"}}]}]'></table>
+                        </div>
+                        <div class="emotesSubTab tabbedPage" id="ffzTab" style="display: none;">
+                            <input class="settingsModifier" id="FFZGlobals" type="checkbox">Enable FrankerFaceZ Global Emotes (ZreknarF, LilZ, etc)<br><br>
+                            <input class="settingsModifier" id="FFZChannels" type="checkbox">Enable FrankerFaceZ Channels Emotes (Assign below)<br><br>
+
+                            <h1>FrankerFaceZ Channels</h1>
+                            Assign individual FrankerFaceZ channels below. Note that this feature is in a perpetual state of <b>Beta</b>.<br><br>
+
+                            <table id="FFZChannelsList" class="settingsModifier" data-tableinfo='[{"caption":"","initRows":1,"columns":[{"name":"channel","display":"","type":"text","hint":"Type Your Channel Name Here...","ctrlCSS":{"width":"100%"}}]}]'></table>
+                        </div>
+                        <div class="emotesSubTab tabbedPage" id="filterTab" style="display: none;">
+
+                            <h1>Emote Filters</h1>
+                            Filter Mode:<br><br>
+                            <div class="settingsModifier" id="emoteFilterMode" data-radioGroup="true">
+                                <input type="radio" name="emoteFilter" value="Blacklist">Blacklist <input type="radio" name="emoteFilter" value="Whitelist">Whitelist
+                            </div><br><br>
+
+                            <table id="emoteFilterList" class="settingsModifier" data-tableinfo='[{"caption":"Filtered Emotes","initRows":1,"columns":[{"name":"host","display":"Host","type":"select","ctrlOptions":"TE:Twitch.tv;BTTV:Better Twitch.tv;FFZ:FrankerFaceZ"},{"name":"type","display":"Filter Type","type":"select","ctrlOptions":"emote:Emote;channel:Channel"},{"name":"name","display":"Text","type":"text","hint":"Type a Single Emote or Channel Name...","ctrlCSS":{"width":"100%"}}]}]'></table></div><br><br><br>
+
+                        <div class="saveButtonPanel"><input type="button" class="triggerButton" name="saveButton" value="Save"><img class="loader" alt="Saving... Please wait..." title="Saving... Please wait..." src="css/images/loader.gif"></div>
+                    </div>
+                    <div class="mainTab tabbedPage" id="sitesTab" style="display: none;">
+                        <h1>Website Filters</h1>
+                        Disable (or exclusively enable) Global Twitch Emotes on certain websites.<br>
+                        Asterisk wildcards supported.<br><br>
+
+                        <b>Examples:</b><br>
+                        <p style="text-indent: 1em;"><b>"youtube.com"</b> will trigger ONLY on the homepage of YouTube, while</p>
+                        <p style="text-indent: 1em;"><b>"youtube.com/*"</b> will trigger on ALL addresses starting with youtube.com, such as the following:</p>
+                            <ul>
+                                <li>http://www.youtube.com</li>
+                                <li>https://www.youtube.com/feed/subscriptions</li>
+                                <li>https://www.youtube.com/watch?v=qkUVToIfrKg</li>
+                            </ul><br><br>
+
+                        Filter Mode:<br><br>
+                        <div class="settingsModifier" id="webFilterMode" data-radioGroup="true">
+                            <input type="radio" name="siteFilter" value="Blacklist">Blacklist <input type="radio" name="siteFilter" value="Whitelist">Whitelist
+                        </div><br><br>
+                        <table id="webFilterList" class="settingsModifier" data-tableinfo='[{"caption":"Filtered Websites","initRows":1,"columns":[{"name":"url","display":"","type":"text","hint":"Type your URL here...","ctrlCSS":{"width":"100%"}}]}]'></table><br><br><br>
+
+                        <div class="saveButtonPanel"><input type="button" class="triggerButton" name="saveButton" value="Save"><img class="loader" alt="Saving... Please wait..." title="Saving... Please wait..." src="css/images/loader.gif"></div>
+                    </div>
+                    <div class="mainTab tabbedPage" id="aboutTab" style="display: none;">
+                        <h1>Global Twitch Emotes<div class="version"></div></h1>
+                        <ul>
+                            <h2>By Mohamed El-Alawi</h2>
+                        </ul>
+                        <p>Hi there! My name's Mohamed El-Alawi and I'm currently an undergraduate student majoring in computer science. I've been passionate about all things programming for my entire life, and while I've started and finished countless little personal projects, most were just that: personal, private, and unshared. I loved to tinker with little bits of code on my own, but I had yet to actually release anything. I won't lie, the thought of doing so did scare me at first.</p>
+                        <p>Eventually, I realized that working solely in clandestine was inhibiting my own growth as a programmer, and the only way I could truly improve my skills was to throw my creations out there, to be judged by users such as yourself. I've been a huge fan of Twitch.tv ever since its debut in 2011, and I figured that my first 'official' software release should target the community I love. So here it is, Global Twitch Emotes. I sincerely hope you enjoy it.</p>I would <i>love</i> to hear what you have to say:<br><br>
+                        <a href="mailto:elalawi_mohamed@yahoo.ca?Subject=GTE Feedback:" target="_blank"><img src="css/images/email.png"></a><br><br>
+                        <a href="https://twitter.com/m_elalawi" target="_blank"><img src="css/images/tweet.png"></a><br><br>
+                        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+                            <input type="hidden" name="cmd" value="_s-xclick">
+                            <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----">
+                            <input type="image" title="Support me via Paypal" alt="Support me via Paypal" src="css/images/support.png" border="0" name="submit"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+                        </form><br><br>
+                        <i>Thanks to:<ul><a href="http://twitchemotes.com" target="_blank">Twitchemotes.com</a> for their API.<br>
+                        Dan Salvato & SirStendec (Mike)for the awesome work they've done with  <a href="http://www.frankerfacez.com/" target="_blank">FrankerFaceZ</a> and providing a clean API.<br>
+                        The guys behind <a href="https://www.nightdev.com/" target="_blank">NightDev</a><br>
+                        <a href="http://www.fontalicious.com/font-licensingusage/">Fontalicious.com</a> for the Dimitri font.<br>
+                        P0lip on irc.mozilla.org for his guidance. The Firefox version of GTE would not have been possible without his help.<br></ul></i>
+                    </div>
+				</div><!--page-->
+			</div>
+			
+			<div class="toolbar" id="footer">
+				<div class="footerContent">
+					<a href="https://twitter.com/m_elalawi" id="twitter" target="_blank"></a>
+					<a href="https://github.com/melalawi" id="github" target="_blank"></a>
+					<a href="https://www.linkedin.com/profile/view?id=400632989" id="linkedin" target="_blank"></a>
+				</div><!--footer-->
+			</div>
+		</div>
+		<script src="../js/jquery-2.1.4.min.js"></script>
+		<script src="js/jquery-ui.min.js"></script>
+		<script src="js/jquery.appendGrid-1.6.0.js"></script>
+		<script src="js/optionsChrome.js"></script>
+		<script src="js/options.js"></script>
+	</body>
+</html>
