@@ -12,9 +12,12 @@ html(lang='en')
         #header.bodySection
             img#banner(src=bannerPath, alt='Global Twitch Emotes')
         #navbar.bodySection
-            each button in navbar
-                input.navButton(type='button', id=button + 'Button', class='button', alt=button, value=button)
+            input.navButton(type='button', id='generalNavButton', class='button', alt='General', value='General')
+            input.navButton(type='button', id='emotesNavButton', class='button', alt='Emotes & Channels', value='Emotes & Channels')
+            input.navButton(type='button', id='filtersNavButton', class='button', alt='Filters', value='Filters')
+            input.navButton(type='button', id='aboutNavButton', class='button', alt='About', value='About')
         #content.bodySection
             include general
+            include emotes
         #footer.bodySection
             .copyright Copyright © Mohamed El-Alawi, 2016

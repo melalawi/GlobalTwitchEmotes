@@ -1,0 +1,15 @@
+.hostSettings#bttvSettings
+    h2 BetterTTV Emotes
+    p.line
+        input(type='checkbox' id='bttvGlobalCheckbox')
+        | Enable Global BetterTTV Emotes
+    p.line
+        input(type='checkbox' id='bttvChannelsCheckbox')
+        | Enable BetterTTV Channel Emotes
+    p.line
+        table
+            tbody#bttvChannelList
+                tr
+                    th ChannelName
+                    th
+                        input.addRowButton(type='button', value='+')

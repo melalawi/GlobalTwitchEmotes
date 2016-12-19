@@ -14,13 +14,7 @@ var BIN_DIRECTORY = __dirname + '/bin';
 var DESTINATION_DIRECTORY = __dirname + '/build';
 var OPTIONS_DIRECTORY = __dirname + '/build/options';
 var OPTIONS_METADATA = {
-    bannerPath: 'images/banner.png',
-    navbar: [
-        'General',
-        'Emotes & Channels',
-        'Filtering',
-        'About'
-    ]
+    bannerPath: 'images/banner.png'
 };
 
 function build() {
@@ -102,7 +96,7 @@ function buildOptionsCSS() {
 
     mkdirp(OPTIONS_DIRECTORY + '/css');
 
-    stylus(stylusCSS).render(function(err, css) {
+    stylus(stylusCSS).set('paths', [BIN_DIRECTORY + '/options/css/']).render(function(err, css) {
             if (err) {
             console.error(err);
         } else {

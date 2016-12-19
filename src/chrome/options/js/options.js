@@ -1,19 +1,15 @@
 'use strict';
+var pageEvents = require('./pageEvents');
+var emotesPanelEvents = require('./emotesPanelEvents');
+
 
 function init() {
-    setOptionsPanel('generalOptionsPanel');
+    pageEvents.setNavbarEvents();
+    pageEvents.setOptionsPanel('general');
+
+    emotesPanelEvents.init();
+    emotesPanelEvents.setHostPanel('twitch');
 }
 
-function setOptionsPanel(panelClassName) {
-    var panels = document.getElementsByClassName('optionsPanel');
-    var navbarButtons = document.getElementsByClassName('navButton');
-
-    for (var i = 0; i < panels.length; ++i) {
-        panels[i].style.display = 'none';
-        navbarButtons[i].style.display = 'none';
-    }
-
-    document.query(panelClassName);
-}
 
 document.addEventListener('DOMContentLoaded', init, false);

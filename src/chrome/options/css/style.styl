@@ -18,6 +18,8 @@ $bodyPaddingLargestScreen = 0% 15%
 
 @import url('http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,700,300,600,800,400')
 
+@require '/table.styl'
+
 *
     margin 0
     box-sizing border-box
@@ -41,6 +43,10 @@ body
 h1
     font-size 2.5em
 
+h2
+    margin-bottom 1.0em
+    font-size 2.0em
+
 p
     margin-bottom 1.0em
     font-size 1.5em
@@ -51,7 +57,7 @@ p.line
     align-items center
 
 input[type=checkbox]
-    margin 0.05em
+    margin 0.10em
     display inline-block
 
     height 1.25em
@@ -61,7 +67,40 @@ input[type=checkbox]
     display none
 
 .optionsBody
-    margin 3.0em 0
+    margin 2.0em 0
+
+#hostsbar
+    width 75%
+    margin-left auto
+    margin-right auto
+    margin-bottom 2.0em
+
+    display flex
+    flex-direction row
+
+    background-color $navbarBackgroundColor
+
+#hostsbar .hostButton
+    padding 0.15em 0
+    width 25%
+    min-width 96px
+
+    font-size 1.25em
+    color $navbarButtonTextColor
+    background-color rgba(0, 0, 0, 0)
+
+    border none
+    border-radius 0
+    outline $navbarButtonOutlineColor
+    cursor pointer
+
+    transition 0.15s all
+
+#hostsbar .hostButton:hover, #hostsbar .hostButton.active
+    background-color $navbarButtonActiveColor
+
+.hostSettings
+    display none
 
 img.kappa
     margin-left 0.25em
