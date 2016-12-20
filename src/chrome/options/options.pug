@@ -13,11 +13,13 @@ html(lang='en')
             img#banner(src=bannerPath, alt='Global Twitch Emotes')
         #navbar.bodySection
             input.navButton(type='button', id='generalNavButton', class='button', alt='General', value='General')
-            input.navButton(type='button', id='emotesNavButton', class='button', alt='Emotes & Channels', value='Emotes & Channels')
-            input.navButton(type='button', id='filtersNavButton', class='button', alt='Filters', value='Filters')
+            input.navButton(type='button', id='emotesAndChannelsNavButton', class='button', alt='Emotes & Channels', value='Emotes & Channels')
+            input.navButton(type='button', id='filterNavButton', class='button', alt='Filters', value='Filters')
             input.navButton(type='button', id='aboutNavButton', class='button', alt='About', value='About')
         #content.bodySection
-            include general
-            include emotes
+            include jade/generalPanel
+            include jade/emotesAndChannelsPanel
+            include jade/filterPanel
+            //include jade/aboutPanel
         #footer.bodySection
             .copyright Copyright © Mohamed El-Alawi, 2016

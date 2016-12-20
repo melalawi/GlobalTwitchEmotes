@@ -1,16 +1,17 @@
 'use strict';
-var bttv = require('./bttv');
-var listJS = require('list.js');
+var bttv = require('./bttvSubpanel');
+var ffz = require('./ffzSubpanel');
+var customEmotes = require('./customEmotesSubpanel');
 
 
 function setHostPanel(panelName) {
-    var panels = document.getElementsByClassName('hostSettings');
+    var panels = document.getElementsByClassName('subpanel');
     var hostButtons = document.getElementsByClassName('hostButton');
 
     for (var i = 0; i < panels.length; ++i) {
         var nextPanel = panels[i];
 
-        if (nextPanel.id === panelName + 'Settings') {
+        if (nextPanel.id === panelName + 'Subpanel') {
             nextPanel.style.display = 'inline';
         } else {
             nextPanel.style.display = 'none';
@@ -42,6 +43,8 @@ function init() {
     setHostbarButtonEvents();
 
     bttv.init();
+    ffz.init();
+    customEmotes.init();
 }
 
 module.exports = {

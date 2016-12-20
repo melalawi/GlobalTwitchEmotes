@@ -1,13 +1,13 @@
 'use strict';
 
 function setOptionsPanel(panelName) {
-    var panels = document.getElementsByClassName('optionsPanel');
+    var panels = document.getElementsByClassName('panel');
     var navbarButtons = document.getElementsByClassName('navButton');
 
     for (var i = 0; i < panels.length; ++i) {
         var nextPanel = panels[i];
 
-        if (nextPanel.id === panelName + 'OptionsPanel') {
+        if (nextPanel.id === panelName + 'Panel') {
             nextPanel.style.display = 'inline';
         } else {
             nextPanel.style.display = 'none';

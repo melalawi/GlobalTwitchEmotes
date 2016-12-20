@@ -25,6 +25,7 @@ $bodyPaddingLargestScreen = 0% 15%
     box-sizing border-box
 
     font-family 'Open Sans'
+    outline-color $navbarButtonOutlineColor
 
 html
     height 100%
@@ -63,7 +64,14 @@ input[type=checkbox]
     height 1.25em
     width 1.25em
 
-.optionsPanel
+input[type=radio]
+    margin 0.20em
+    display inline-block
+
+    height 1.25em
+    width 1.25em
+
+.panel
     display none
 
 .optionsBody
@@ -91,7 +99,6 @@ input[type=checkbox]
 
     border none
     border-radius 0
-    outline $navbarButtonOutlineColor
     cursor pointer
 
     transition 0.15s all
@@ -99,7 +106,7 @@ input[type=checkbox]
 #hostsbar .hostButton:hover, #hostsbar .hostButton.active
     background-color $navbarButtonActiveColor
 
-.hostSettings
+.subpanel
     display none
 
 img.kappa

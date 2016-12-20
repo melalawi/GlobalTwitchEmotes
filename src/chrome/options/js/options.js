@@ -1,14 +1,17 @@
 'use strict';
 var pageEvents = require('./pageEvents');
-var emotesPanelEvents = require('./emotesPanelEvents');
+var emotesPanel = require('./emotesAndChannelsPanel');
+var filterPanel = require('./filterPanel');
 
 
 function init() {
     pageEvents.setNavbarEvents();
     pageEvents.setOptionsPanel('general');
 
-    emotesPanelEvents.init();
-    emotesPanelEvents.setHostPanel('twitch');
+    emotesPanel.init();
+    emotesPanel.setHostPanel('twitch');
+
+    filterPanel.init();
 }
 
 

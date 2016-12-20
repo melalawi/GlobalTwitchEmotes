@@ -1,0 +1,23 @@
+.panel#filterPanel
+    h1 General Settings
+    .optionsBody
+        h2 Emotes
+        p.line
+            | Filter Mode:
+        p.line.tabbed
+            input(type='radio', value='Blacklist', name='emoteFilterMode')
+            | Blacklist
+            input(type='radio', value='Whitelist', name='emoteFilterMode')
+            | Whitelist
+        table#emoteFilterList
+        h2 Filter List
+        p.line
+            | Filter Mode:
+        p.line.tabbed
+            input(type='radio', value='Blacklist', name='domainFilterMode')
+            | Blacklist
+            input(type='radio', value='Whitelist', name='domainFilterMode')
+            | Whitelist
+        table#domainFilterList
+
+    input.saveSettingsButton(type='button', value='Save Settings')
