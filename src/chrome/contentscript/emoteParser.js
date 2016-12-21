@@ -1,13 +1,16 @@
 'use strict';
 var pageObserver = require('./pageObserver');
+var Tipsy = require('./tipsy/tipsy.js');
 
 
 var STRING_SEPARATOR = /([\w]|[:;)(\\\/<>73#\|\]])+/g;
 var emoteLibrary;
+var useTipsy;
 
 
 function runParser(extensionEmotes, extensionSettings) {
     emoteLibrary = extensionEmotes;
+    useTipsy = extensionSettings.twitchStyleTooltips;
 
     pageObserver.observe(searchAndParseEmoteStrings);
 }
@@ -64,10 +67,25 @@ function parseEmoteString(node, index, emoteKey, emoteChannel, emoteURL) {
 
 function createEmote(emoteKey, emoteChannel, emoteURL) {
     var emote = document.createElement('img');
+    var altText = emoteKey;
 
     emote.setAttribute('src', emoteURL);
-    emote.setAttribute('alt', emoteKey);
     emote.setAttribute('title', emoteKey);
+
+    if (useTipsy === true) {
+        if (emoteChannel) {
+            altText = 'Emote:' + emoteKey + '\nChannel: ' + emoteChannel;
+        }
+
+        Tipsy.bind(emote, {
+            html: true,
+            title: function() {
+                return altText;
+            }
+        });
+    }
+
+    emote.setAttribute('alt', emoteKey);
 
     return emote;
 }

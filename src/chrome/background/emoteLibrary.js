@@ -15,6 +15,7 @@ var filterMode;
 var ready = false;
 
 
+// TODO Retries
 function buildEmoteLibrary(settings) {
     var libraryPromise;
 

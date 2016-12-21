@@ -1,8 +1,5 @@
 'use strict';
-var httpRequest = require('../httpRequest');
-
-
-var URL = 'https://twitchemotes.com/api_cache/v2/global.json';
+var BASE64_PREFIX = 'data:image/png;base64,';
 
 
 function extractEmotesFromJSON(json) {
@@ -10,7 +7,7 @@ function extractEmotesFromJSON(json) {
 
     for (var i = 0; i < json.length; ++i) {
         result[json[i].key] = {
-            url: json[i].url,
+            url: BASE64_PREFIX + json[i].url,
             channel: 'Custom GTE Emote'
         };
     }

@@ -1,5 +1,4 @@
 'use strict';
-
 var browserify = require('browserify');
 var CleanCSS = require('clean-css');
 var fs = require('fs');
@@ -9,6 +8,7 @@ var pug = require('pug');
 var rimraf = require('rimraf');
 var stylus = require('stylus');
 
+
 var SOURCE_DIRECTORY = __dirname + '/src/chrome';
 var BIN_DIRECTORY = __dirname + '/bin';
 var DESTINATION_DIRECTORY = __dirname + '/build';
@@ -16,6 +16,10 @@ var OPTIONS_DIRECTORY = __dirname + '/build/options';
 var OPTIONS_METADATA = {
     bannerPath: 'images/banner.png'
 };
+var BROWSERIFY_SETTINGS = {
+    paths: [SOURCE_DIRECTORY]
+};
+
 
 function build() {
     rimraf.sync(BIN_DIRECTORY);
@@ -38,7 +42,7 @@ function build() {
 }
 
 function buildContentScript() {
-    var bundler = browserify();
+    var bundler = browserify(BROWSERIFY_SETTINGS);
 
     /*
     bundler.transform({
@@ -52,7 +56,7 @@ function buildContentScript() {
 }
 
 function buildBackgroundScript() {
-    var bundler = browserify();
+    var bundler = browserify(BROWSERIFY_SETTINGS);
 
     /*
     bundler.transform({
@@ -76,7 +80,7 @@ function buildOptions() {
 }
 
 function buildOptionsJS() {
-    var bundler = browserify();
+    var bundler = browserify(BROWSERIFY_SETTINGS);
 
     mkdirp(OPTIONS_DIRECTORY + '/js');
 

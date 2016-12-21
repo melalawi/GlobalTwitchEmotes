@@ -1,4 +1,15 @@
 'use strict';
+var $ = require('jquery');
+var settingsInterface = require('./settingsInterface');
+
+
+var saveButtons;
+
+
+function init() {
+    setNavbarButtonEvents();
+    setSaveButtonEvent();
+}
 
 function setOptionsPanel(panelName) {
     var panels = document.getElementsByClassName('panel');
@@ -26,16 +37,26 @@ function setOptionsPanel(panelName) {
 }
 
 function setNavbarButtonEvents() {
-    var navbarButtons = document.getElementsByClassName('navButton');
+    $('.navButton').click(function() {
+        setOptionsPanel(this.id.replace('NavButton', ''));
+    });
+}
 
-    for (var i = 0; i < navbarButtons.length; ++i) {
-        navbarButtons[i].onclick = function() {
-            setOptionsPanel(this.id.replace('NavButton', ''));
-        };
-    }
+function setSaveButtonEvent() {
+    saveButtons = $('input.saveSettingsButton[type="button"]');
+
+    saveButtons.click(function() {
+        saveButtons.attr('disabled', true);
+
+        settingsInterface.saveSettingsToStorage().then(enableSaveButtons);
+    });
+}
+
+function enableSaveButtons() {
+    saveButtons.removeAttr('disabled');
 }
 
 module.exports = {
-    setNavbarEvents: setNavbarButtonEvents,
+    init: init,
     setOptionsPanel: setOptionsPanel
 };

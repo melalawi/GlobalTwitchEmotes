@@ -16,10 +16,29 @@ function buildEmoteFilterListTable() {
     emoteFilterListTable = $('#emoteFilterList').EditableTable({
         columns: [
             {
-                name: 'name',
-                displayName: 'Emote Name',
+                name: 'host',
+                displayName: 'Host',
+                type: 'select',
+                options: [
+                    'Twitch.tv',
+                    'BetterTTV',
+                    'FrankerFaceZ'
+                ]
+            },
+            {
+                name: 'type',
+                displayName: 'Filter Type',
+                type: 'select',
+                options: [
+                    'Channel',
+                    'Emote'
+                ]
+            },
+            {
+                name: 'value',
+                displayName: 'Value',
                 type: 'text',
-                placeholder: 'Insert Emote Name here...'
+                placeholder: 'Emote or Channel to Filter'
             }
         ]
     });
