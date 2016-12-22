@@ -8,22 +8,69 @@ var twitchChannels = require('./hosts/twitchChannels');
 var twitchGlobal = require('./hosts/twitchGlobal');
 
 
+var FILTER_TO_HOST_MAPPING = {
+    'Twitch.tv': {
+        global: 'twitchGlobal',
+        channels: 'twitchChannels'
+    },
+    BetterTTV: {
+        global: 'bttvGlobal',
+        channels: 'bttvChannels'
+    },
+    FrankerFaceZ: {
+        global: 'ffzGlobal',
+        channels: 'ffzChannels'
+    }
+};
 var promises = [];
 var cachedEmotes = null;
-var filteredEmotes = null;
+var filteredEmotes = [];
 var filterMode;
 var ready = false;
 
 
-// TODO Retries
-function buildEmoteLibrary(settings) {
+function updateEmoteLibrary(settings) {
     var libraryPromise;
 
-    cachedEmotes = {};
+    cachedEmotes = cachedEmotes || {};
+
+    resetFilterRules();
 
     filteredEmotes = settings.emoteFilterList;
     filterMode = settings.emoteFilterMode;
 
+    if (cachedEmotes.twitchGlobal != null) {
+        if (settings.twitchGlobal === false) {
+            delete cachedEmotes['twitchGlobal'];
+        }
+    } else {
+        if (settings.twitchGlobal === true) {
+            var twitchGlobalPromise = twitchGlobal.build();
+
+            promises.push(twitchGlobalPromise);
+
+            twitchGlobalPromise.then(function(emotes) {
+                cachedEmotes['twitchGlobal'] = emotes;
+            });
+        }
+    }
+
+    if (cachedEmotes.twitchChannels != null) {
+        if (settings.twitchChannels === false) {
+            delete cachedEmotes['twitchChannels'];
+        }
+    } else {
+        if (settings.twitchChannels === true) {
+            var twitchChannelsPromise = twitchChannels.build();
+
+            promises.push(twitchChannelsPromise);
+
+            twitchChannelsPromise.then(function(emotes) {
+                cachedEmotes['twitchChannels'] = emotes;
+            });
+        }
+    }
+    /*
     if (settings.twitchGlobal === true) {
         var twitchGlobalPromise = twitchGlobal.build();
 
@@ -32,6 +79,8 @@ function buildEmoteLibrary(settings) {
         twitchGlobalPromise.then(function(emotes) {
             addEmotes('twitchGlobal', emotes);
         });
+    } else {
+        delete cachedEmotes.twitchGlobal;
     }
 
     if (settings.twitchChannels === true) {
@@ -97,44 +146,61 @@ function buildEmoteLibrary(settings) {
             addEmotes('customEmotes', emotes);
         });
     }
-
+*/
     libraryPromise = Promise.all(promises);
 
-    libraryPromise.then(function(){
+    libraryPromise.then(function() {
+        applyFilterRules();
+
         ready = true;
     });
 
     return libraryPromise;
 }
 
-function addEmotes(host, emotes) {
-    cachedEmotes[host] = {};
-
-    for (var emoteKey in emotes) {
-        if (emotes.hasOwnProperty(emoteKey)) {
-            cachedEmotes[host][emoteKey] = createEmoteEntry(host, emoteKey, emotes[emoteKey].channel, emotes[emoteKey].url);
-        }
-    }
+function resetFilterRules() {
+    applyFilterRules(true);
 }
 
-function createEmoteEntry(emoteHost, emoteKey, emoteChannel, emoteURL) {
-    var isFiltered = false;
-
+function applyFilterRules(resetRulesBoolean) {
     for (var i = 0; i < filteredEmotes.length; ++i) {
-        var nextFilteredEmote = filteredEmotes[i];
+        var rule = filteredEmotes[i];
+        var host = FILTER_TO_HOST_MAPPING[rule.set];
+        var globalSet = cachedEmotes[host.global];
+        var channelSet = cachedEmotes[host.channels];
 
-        if (nextFilteredEmote.host === emoteHost && nextFilteredEmote.channel === emoteChannel && nextFilteredEmote.key === emoteKey) {
-            isFiltered = true;
-            break;
+        if (rule.type === 'Emote') {
+            if (globalSet.hasOwnProperty(rule.emote)) {
+                if (resetRulesBoolean) {
+                    delete globalSet[rule.emote].filtered;
+                } else {
+                    globalSet[rule.emote].filtered = true;
+                }
+            } else if (channelSet.hasOwnProperty(rule.emote)) {
+                if (resetRulesBoolean) {
+                    delete channelSet[rule.emote].filtered;
+                } else {
+                    channelSet[rule.emote].filtered = true;
+                }
+            }
+        } else if (rule.type === 'Channel') {
+            for (var emoteKey in channelSet) {
+                if (channelSet.hasOwnProperty(emoteKey)) {
+                    var emote = channelSet[emoteKey];
+
+                    if (emote.channel === rule.channel) {
+                        if (resetRulesBoolean) {
+                            delete emote.filtered;
+                        } else {
+                            emote.filtered = true;
+                        }
+                    }
+                }
+            }
         }
     }
-
-    return {
-        channel: emoteChannel,
-        url: emoteURL,
-        allowed: (filterMode === 'Whitelist') === isFiltered
-    };
 }
+
 
 function getEmotes() {
     if (!ready) {
@@ -145,6 +211,6 @@ function getEmotes() {
 }
 
 module.exports = {
-    build: buildEmoteLibrary,
+    update: updateEmoteLibrary,
     getEmotes: getEmotes
 };

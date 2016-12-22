@@ -3,6 +3,7 @@ var emoteLibrary = require('./emoteLibrary');
 var extensionSettings = require('../extensionSettings');
 var domainFilter = require('./domainFilter');
 
+
 var CONTENTSCRIPT = {
     file: 'contentscript.js'
 };
@@ -10,22 +11,33 @@ var pendingTabs = [];
 var userSettings;
 var ready = false;
 
+
 function init() {
     listenForTabs();
     var settingsPromise = extensionSettings.getSettings();
 
     settingsPromise.then(function(settings) {
-        var libraryPromise = emoteLibrary.build(settings);
+        var libraryPromise = emoteLibrary.update(settings);
 
         userSettings = settings;
 
         libraryPromise.then(function() {
             ready = true;
 
+            extensionSettings.onSettingsChange(respondToSettingsChanges);
+
             flushPendingTabs();
         }, function(error) {
             console.error('Error', error);
         });
+    });
+}
+
+function respondToSettingsChanges(changes) {
+    extensionSettings.getSettings().then(function(settings) {
+        userSettings = settings;
+
+        emoteLibrary.update(settings);
     });
 }
 
@@ -51,12 +63,9 @@ function flushPendingTabs() {
 
 function injectScriptToTab(tab) {
     if (domainFilter.isFiltered(tab.url, userSettings) === false) {
-        console.log('Allowing ' + tab.url);
         chrome.tabs.executeScript(tab.id, CONTENTSCRIPT, function () {
             chrome.tabs.sendMessage(tab.id, emoteLibrary.getEmotes());
         });
-    } else {
-        console.log('Filtered ' + tab.url);
     }
 }
 

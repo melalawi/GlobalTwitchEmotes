@@ -33,12 +33,15 @@ function buildEmoteList(channelList) {
     for (var i = 0; i < channelList.length; ++i) {
         var nextChannel = channelList[i];
         var nextPromise = new Promise(function(resolve, reject) {
-            var getRequestPromise = httpRequest(URL + 'room/' + nextChannel.toLowerCase());
+            var getRequestPromise = httpRequest(URL + 'room/' + this);
 
             getRequestPromise.then(function(responseText) {
                 resolve(extractEmotesFromJSON(JSON.parse(responseText)));
-            }, reject);
-        });
+            }, function() {
+                console.log('Could not load FFZ emotes for channel "' + this + '"');
+                resolve({});
+            }.bind(this));
+        }.bind(nextChannel.toLowerCase()));
 
         promises.push(nextPromise);
     }

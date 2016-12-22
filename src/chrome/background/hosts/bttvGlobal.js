@@ -15,7 +15,7 @@ function extractEmotesFromJSON(json) {
 
         result[emote.code] = {
             url: templateURL.replace('{{id}}/{{image}}', emote.id + '/1x'),
-            channel: 'BetterTTV Emotes'
+            channel: 'BetterTTV Emote'
         };
     }
 
@@ -28,7 +28,10 @@ function buildEmoteList() {
 
         getRequestPromise.then(function(responseText) {
             resolve(extractEmotesFromJSON(JSON.parse(responseText)));
-        }, reject);
+        }, function() {
+            console.log('Could not reach betterttv.net');
+            resolve({});
+        });
     });
 }
 

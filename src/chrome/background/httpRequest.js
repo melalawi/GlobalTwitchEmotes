@@ -1,26 +1,60 @@
 'use strict';
+var TIMEOUT = 2000;
 
 
-function makeHTTPRequest(url) {
-    return new Promise(function(resolve, reject) {
-        var XML_REQUEST;
+function sendXMLHttpRequest(url, successCallback, failureCallback) {
+    var xmlRequest;
 
-        XML_REQUEST = new XMLHttpRequest();
-        XML_REQUEST.open('GET', url);
+    xmlRequest = new XMLHttpRequest();
+    xmlRequest.open('GET', url);
+    xmlRequest.timeout = TIMEOUT;
 
-        XML_REQUEST.onreadystatechange = function() {
-            //completed
-            if (XML_REQUEST.readyState === 4) {
-                if (XML_REQUEST.status === 200) {
-                    resolve(XML_REQUEST.responseText);
-                } else {
-                    reject();
-                }
+    xmlRequest.onreadystatechange = function() {
+        if (xmlRequest.readyState === 4) {
+            if (xmlRequest.status === 200) {
+                successCallback(xmlRequest.responseText);
+            } else if (xmlRequest.status === 404) {
+                xmlRequest.abort();
+                failureCallback();
             }
-        };
+        }
+    };
 
-        XML_REQUEST.send();
-    });
+    xmlRequest.ontimeout = function() {
+        xmlRequest.abort();
+        failureCallback();
+    };
+
+    xmlRequest.onerror = function() {
+        xmlRequest.abort();
+        failureCallback();
+    };
+
+    xmlRequest.send();
 }
 
-module.exports = makeHTTPRequest;
+
+function attemptRequest(url, successCallback, failureCallback, retryCount) {
+    retryCount = retryCount || 0;
+
+    if (retryCount >= 3) {
+        console.log('Couldn\'t reach ' + url);
+        failureCallback();
+    } else {
+        console.log('Attempting to reach ' + url + ' - Attempt number: ' + retryCount);
+        sendXMLHttpRequest(url, function(responseText) {
+            console.log('Ayy... ' + url);
+            successCallback(responseText);
+        }, function() {
+            console.log('Retrying...');
+            attemptRequest(url, successCallback, failureCallback, retryCount + 1);
+        });
+    }
+}
+
+
+module.exports = function(url) {
+    return new Promise(function(resolve, reject) {
+        attemptRequest(url, resolve, reject, 0);
+    });
+};

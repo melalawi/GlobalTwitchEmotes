@@ -1,6 +1,7 @@
 'use strict';
 var clone = require('clone');
 var extend = require('extend');
+var browserStorage = require('./browserStorage');
 
 
 var DEFAULT_SETTINGS = {
@@ -29,47 +30,37 @@ var DEFAULT_SETTINGS = {
     emoteFilterMode: 'Blacklist',
     emoteFilterList: [
         {
-            host: 'Twitch.tv',
+            set: 'Twitch.tv',
             type: 'Emote',
-            value: 'ggg1'
+            channel: 'goodguygarry',
+            emote: 'ggg1'
+        },
+        {
+            set: 'Twitch.tv',
+            type: 'Channel',
+            channel: 'imaqtpie',
+            emote: ''
         }
     ]
 };
-var cachedSettings = null;
 
 
-// TODO Somehow check date of saved settings and compare
-function chromeLoad() {
+function getSettings() {
     return new Promise(function(resolve, reject) {
-        if (cachedSettings !== null) {
-            resolve(clone(cachedSettings));
-        } else {
-            chrome.storage.sync.get(null, function(data) {
-                if (chrome.runtime.lastError) {
-                    console.error('Chrome Storage Error', chrome.runtime.lastError.message);
-
-                    reject(chrome.runtime.lastError.message);
-                }
-
-                cachedSettings = extendSettings(data);
-                resolve(clone(cachedSettings));
-            });
-        }
+        browserStorage.load().then(function(data) {
+            resolve(extendSettings(data));
+        }).catch(function() {
+            resolve(extendSettings({}));
+        });
     });
 }
 
-function chromeSave(data) {
-    cachedSettings = extendSettings(data);
-
+function setSettings(data) {
     return new Promise(function(resolve, reject) {
-        chrome.storage.sync.set(cachedSettings, function() {
-            if (chrome.runtime.lastError) {
-                console.error('Chrome Storage Error', chrome.runtime.lastError.message);
-
-                reject(chrome.runtime.lastError.message);
-            } else {
-                resolve(clone(cachedSettings));
-            }
+        browserStorage.save(data).then(function() {
+            resolve();
+        }).catch(function() {
+            reject();
         });
     });
 }
@@ -80,7 +71,7 @@ function extendSettings(settings) {
     extend(finalSettings, settings);
 
     for (var key in finalSettings) {
-        if (DEFAULT_SETTINGS.hasOwnProperty(key) == false) {
+        if (DEFAULT_SETTINGS.hasOwnProperty(key) === false) {
             delete finalSettings[key];
         }
     }
@@ -88,7 +79,15 @@ function extendSettings(settings) {
     return finalSettings;
 }
 
+function bindEventToSettingsChange(callback) {
+    browserStorage.bindOnStorageChange(function(changes) {
+        callback(changes);
+    });
+}
+
+
 module.exports = {
-    getSettings: chromeLoad,
-    setSettings: chromeSave
+    getSettings: getSettings,
+    setSettings: setSettings,
+    onSettingsChange: bindEventToSettingsChange
 };

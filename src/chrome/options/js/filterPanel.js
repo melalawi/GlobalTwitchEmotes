@@ -16,8 +16,8 @@ function buildEmoteFilterListTable() {
     emoteFilterListTable = $('#emoteFilterList').EditableTable({
         columns: [
             {
-                name: 'host',
-                displayName: 'Host',
+                name: 'set',
+                displayName: 'Emote Set',
                 type: 'select',
                 options: [
                     'Twitch.tv',
@@ -27,18 +27,34 @@ function buildEmoteFilterListTable() {
             },
             {
                 name: 'type',
-                displayName: 'Filter Type',
+                displayName: 'Rule Type',
                 type: 'select',
                 options: [
                     'Channel',
                     'Emote'
-                ]
+                ],
+                onchange: function(row, value) {
+                    console.log('trigger: ' + row + ' ' + value);
+                    if (value === 'Channel') {
+                        row.find('td.channel input').prop('disabled', false);
+                        row.find('td.emote input').prop('disabled', true);
+                    } else {
+                        row.find('td.channel input').prop('disabled', true);
+                        row.find('td.emote input').prop('disabled', false);
+                    }
+                }
             },
             {
-                name: 'value',
-                displayName: 'Value',
+                name: 'channel',
+                displayName: '',
                 type: 'text',
-                placeholder: 'Emote or Channel to Filter'
+                placeholder: 'Channel Name'
+            },
+            {
+                name: 'emote',
+                displayName: '',
+                type: 'text',
+                placeholder: 'Emote Name'
             }
         ]
     });

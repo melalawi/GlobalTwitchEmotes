@@ -13,9 +13,6 @@ var SOURCE_DIRECTORY = __dirname + '/src/chrome';
 var BIN_DIRECTORY = __dirname + '/bin';
 var DESTINATION_DIRECTORY = __dirname + '/build';
 var OPTIONS_DIRECTORY = __dirname + '/build/options';
-var OPTIONS_METADATA = {
-    bannerPath: 'images/banner.png'
-};
 var BROWSERIFY_SETTINGS = {
     paths: [SOURCE_DIRECTORY]
 };
@@ -73,7 +70,7 @@ function buildOptions() {
     var optionsHTML = pug.compileFile(BIN_DIRECTORY + '/options/options.pug');
     ncp(BIN_DIRECTORY + '/options/images', OPTIONS_DIRECTORY + '/images');
 
-    fs.writeFileSync(OPTIONS_DIRECTORY + '/index.html', optionsHTML(OPTIONS_METADATA));
+    fs.writeFileSync(OPTIONS_DIRECTORY + '/index.html', optionsHTML());
 
     buildOptionsJS();
     buildOptionsCSS();

@@ -18,7 +18,7 @@ function extractEmotesFromJSON(json) {
 
                 result[emote.name] = {
                     url: 'https:' + emote.urls['1'],
-                    channel: 'FrankerFaceZ Emotes'
+                    channel: 'FrankerFaceZ Emote'
                 };
             }
         }
@@ -33,7 +33,10 @@ function buildEmoteList() {
 
         getRequestPromise.then(function(responseText) {
             resolve(extractEmotesFromJSON(JSON.parse(responseText)));
-        }, reject);
+        }, function() {
+            console.log('Could not reach frankerfacez.com');
+            resolve({});
+        });
     });
 }
 

@@ -5,11 +5,14 @@ var Tipsy = require('./tipsy/tipsy.js');
 
 var STRING_SEPARATOR = /([\w]|[:;)(\\\/<>73#\|\]])+/g;
 var emoteLibrary;
+var emoteFilterMode;
 var useTipsy;
 
 
 function runParser(extensionEmotes, extensionSettings) {
     emoteLibrary = extensionEmotes;
+
+    emoteFilterMode = extensionSettings.emoteFilterMode;
     useTipsy = extensionSettings.twitchStyleTooltips;
 
     pageObserver.observe(searchAndParseEmoteStrings);
@@ -27,15 +30,17 @@ function searchAndParseEmoteStrings(node) {
             if (emoteLibrary.hasOwnProperty(host)) {
                 var allEmotes = emoteLibrary[host];
 
-                if (allEmotes.hasOwnProperty(emote) && allEmotes[emote].allowed === true) {
+                if (allEmotes.hasOwnProperty(emote)) {
                     var emoteData = allEmotes[emote];
 
-                    // Reset the regex BEFORE continuing in order to make sure other nodes are checked properly
-                    STRING_SEPARATOR.lastIndex = 0;
+                    if ((emoteFilterMode === 'Blacklist') !== emoteData.hasOwnProperty('filtered')) {
+                        // Reset the regex BEFORE continuing in order to make sure other nodes are checked properly
+                        STRING_SEPARATOR.lastIndex = 0;
 
-                    parseEmoteString(node, nextWord.index, emote, emoteData.channel, emoteData.url);
+                        parseEmoteString(node, nextWord.index, emote, emoteData.channel, emoteData.url);
 
-                    break wordLoop;
+                        break wordLoop;
+                    }
                 }
             }
         }
@@ -74,7 +79,7 @@ function createEmote(emoteKey, emoteChannel, emoteURL) {
 
     if (useTipsy === true) {
         if (emoteChannel) {
-            altText = 'Emote:' + emoteKey + '\nChannel: ' + emoteChannel;
+            altText = generateTipsyAlt(emoteKey, emoteChannel);
         }
 
         Tipsy.bind(emote, {
@@ -88,6 +93,18 @@ function createEmote(emoteKey, emoteChannel, emoteURL) {
     emote.setAttribute('alt', emoteKey);
 
     return emote;
+}
+
+function generateTipsyAlt(emoteKey, emoteChannel) {
+    var result = 'Emote: ' + emoteKey + '\n';
+
+    if (emoteChannel === 'FrankerFaceZ Emote' || emoteChannel === 'BetterTTV Emote') {
+        result += emoteChannel
+    } else {
+        result += 'Channel: ' + emoteChannel;
+    }
+
+    return result;
 }
 
 module.exports = {

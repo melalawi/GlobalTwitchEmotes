@@ -1,13 +1,16 @@
 .panel#emotesAndChannelsPanel
     h1 Emotes & Channel Settings
+
     .optionsBody
         #hostsbar
             input.hostButton(type='button', id='twitchHostButton', class='button', alt='Twitch.tv', value='Twitch.tv')
             input.hostButton(type='button', id='bttvHostButton', class='button', alt='BetterTTV', value='BetterTTV')
             input.hostButton(type='button', id='ffzHostButton', class='button', alt='FrankerFaceZ', value='FrankerFaceZ')
             input.hostButton(type='button', id='customEmotesHostButton', class='button', alt='Custom Emotes', value='Custom Emotes')
+
         include twitchSubpanel
         include bttvSubpanel
         include ffzSubpanel
         include customEmotesSubpanel
+
     input.saveSettingsButton(type='button', value='Save Settings')

@@ -28,7 +28,10 @@ function buildEmoteList() {
 
         getRequestPromise.then(function(responseText) {
             resolve(extractEmotesFromJSON(JSON.parse(responseText)));
-        }, reject);
+        }, function() {
+            console.log('Could not reach twitchemotes.com');
+            resolve({});
+        });
     });
 }
 

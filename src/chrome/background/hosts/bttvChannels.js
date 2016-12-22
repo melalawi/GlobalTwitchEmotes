@@ -27,13 +27,17 @@ function buildEmoteList(channelList) {
 
     for (var i = 0; i < channelList.length; ++i) {
         var nextChannel = channelList[i];
+
         var nextPromise = new Promise(function(resolve, reject) {
-            var getRequestPromise = httpRequest(URL + '/' + nextChannel);
+            var getRequestPromise = httpRequest(URL + '/' + this);
 
             getRequestPromise.then(function(responseText) {
                 resolve(extractEmotesFromJSON(JSON.parse(responseText)));
-            }, reject);
-        });
+            }, function() {
+                console.log('Could not load BTTV emotes for channel "' + this + '"');
+                resolve({});
+            }.bind(this));
+        }.bind(nextChannel));
 
         promises.push(nextPromise);
     }
