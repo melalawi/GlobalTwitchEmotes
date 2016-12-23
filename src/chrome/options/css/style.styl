@@ -164,11 +164,32 @@ input[type=button].saveSettingsButton:enabled:hover, input[type=button].saveSett
     border-color #000000
     background $navbarButtonActiveColor
 
-
-#importContainer
+.importExportContainer
     display flex
     flex-direction row
     align-items center
+    padding 2.0em 1.0em
+
+.importExportContainer > *
+    margin 0 1.0em
+
+#importIcon
+    width 2.0em
+    height 2.0em
+
+    background-image url('/options/images/upload.png')
+    background-size 100%
+    background-position center center
+    background-repeat no-repeat
+
+#exportIcon
+    width 2.0em
+    height 2.0em
+
+    background-image url('/options/images/download.png')
+    background-size 100%
+    background-position center center
+    background-repeat no-repeat
 
 #importStatus
     margin-left 1.0em

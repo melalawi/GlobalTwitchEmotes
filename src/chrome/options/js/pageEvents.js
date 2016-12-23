@@ -56,7 +56,11 @@ function setImportExportEvents() {
 
     $('#importButton').click(function() {
         $importBrowser.trigger('click');
-    })
+    });
+
+    $('#exportButton').click(function() {
+        importExport.exportSettingsToFile();
+    });
 }
 
 function setSaveButtonEvent() {

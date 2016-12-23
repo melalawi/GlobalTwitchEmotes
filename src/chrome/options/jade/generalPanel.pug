@@ -11,14 +11,19 @@
             img.kappa(src='images/kappa.png')
 
     h2 Import/Export Settings
-    p.line.blurb
-        | Import and or export settings!
     input.fileBrowser#importBrowser(type='file', accept='text/*')
 
-    #importContainer
-        input#importButton(type='button', value='Import Settings From File')
-        div#importStatus
+    .importExportContainer
+        #importIcon
+        input#importButton(type='button', value='Import Settings', alt='Import Settings from File', title='Import Settings from File')
+        #importStatus
             div.statusIcon
             div.statusText
+
+    hr
+
+    .importExportContainer
+        #exportIcon
+        input#exportButton(type='button', value='Export Settings', alt='Export Settings to File', title='Export Settings to File')
 
     input.saveSettingsButton(type='button', value='Save Settings')

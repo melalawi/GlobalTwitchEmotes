@@ -1,5 +1,6 @@
 'use strict';
 var $ = require('jquery');
+var FileSaver = require('file-saver');
 var settingsInterface = require('./settingsInterface');
 var extensionSettings = require('extensionSettings');
 
@@ -8,11 +9,13 @@ var IMPORT_SUCCESS_DURATION = 3000;
 var $importStatus;
 var $importStatusIcon;
 var $importStatusText;
+var $saveButtons;
 
 function init() {
     $importStatus = $('#importStatus');
     $importStatusIcon = $importStatus.find('.statusIcon').eq(0);
     $importStatusText = $importStatus.find('.statusText').eq(0);
+    $saveButtons = $('input.saveSettingsButton[type="button"]');
 }
 
 function triggerImportBrowser(browser) {
@@ -21,7 +24,9 @@ function triggerImportBrowser(browser) {
 
     fileReader.addEventListener('load', function() {
         applyJSONToPage(fileReader.result);
-    }, false);
+
+        this.value = '';
+    }.bind(browser), false);
 
     fileReader.readAsText(textFile);
 }
@@ -43,7 +48,9 @@ function applyJSONToPage(text) {
 
         if (valid === true) {
             settingsInterface.setPageSettings(jsonifiedSettings);
+            $saveButtons.eq(0).trigger('click');
             triggerValidImportNotification();
+
         }
     } catch(e) {
         triggerInvalidImportNotification();
@@ -52,7 +59,7 @@ function applyJSONToPage(text) {
 
 function triggerInvalidImportNotification() {
     $importStatus.css('display', 'flex');
-    $importStatusText.text('Invalid import file.').removeClass('success').addClass('error');
+    $importStatusText.text('Invalid or corrupt file.').removeClass('success').addClass('error');
     $importStatusIcon.show().removeClass('success').addClass('error');
 }
 
@@ -66,17 +73,19 @@ function triggerValidImportNotification() {
 
 function hideImportNotification() {
     $importStatus.css('display', 'none');
-    $importStatusText.removeClass();
-    $importStatusIcon.removeClass();
 }
 
-function generateSettingsJSON() {
-    var pageSettings = settingsInterface.getPageSettings();
+function exportSettingsToFile() {
+    var pageSettings = JSON.stringify(settingsInterface.getPageSettings(), null, 4);
+    var fileBlob = new Blob([pageSettings], {
+        type: 'text/plain; charset=utf-8'
+    });
 
-    return JSON.stringify(pageSettings);
+    FileSaver.saveAs(fileBlob, 'GTESettings.txt');
 }
 
 module.exports = {
     init: init,
-    triggerImportBrowser: triggerImportBrowser
+    triggerImportBrowser: triggerImportBrowser,
+    exportSettingsToFile: exportSettingsToFile
 };
