@@ -1,4 +1,5 @@
 'use strict';
+var extend = require('extend');
 var httpRequest = require('../httpRequest');
 
 
@@ -22,7 +23,7 @@ function extractEmotesFromJSON(json) {
     return result;
 }
 
-function buildEmoteList(channelList) {
+function retrieveAllChannelsEmotes(channelList) {
     var promises = [];
 
     for (var i = 0; i < channelList.length; ++i) {
@@ -45,6 +46,21 @@ function buildEmoteList(channelList) {
     return Promise.all(promises);
 }
 
+function buildEmoteList(channelList) {
+    return new Promise(function(resolve, reject) {
+        retrieveAllChannelsEmotes(channelList).then(function(channelsEmotes) {
+            var result = {};
+
+            for (var i = 0; i < channelsEmotes.length; ++i) {
+                extend(true, result, channelsEmotes[i]);
+            }
+
+            resolve(result);
+        });
+    });
+}
+
 module.exports = {
-    build: buildEmoteList
+    build: buildEmoteList,
+    requiresChannelList: true
 };

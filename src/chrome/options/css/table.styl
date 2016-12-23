@@ -2,7 +2,7 @@ $tableGradient = linear-gradient(to bottom, #e7e7e7 0%, $backgroundColor 100%)
 
 table
     width 100%
-    padding 3.0em 0
+    margin 3.0em 0
     border-collapse collapse
 
     text-align left
@@ -42,9 +42,15 @@ th
 .controlCell input[type=button].addRowButton
     background-image url('/options/images/plus.png')
 
+table#customEmotesList tbody tr
+    height 32px
+
 table#customEmotesList td.url
+    height 32px
+
     display flex
     flex-direction row
+    justify-content space-between
     align-items center
 
 table#customEmotesList td.url:first-child
@@ -54,20 +60,17 @@ table#customEmotesList td.url:last-child
 
 .browseButton
     padding 0 0.25em
-    margin-left 0.25em
-    background-color $backgroundColor
-
-    cursor pointer
-    border 1px solid $navbarBackgroundColor
-    border-radius 2px
+    margin-right 1.0em
 
 .GTEEmote
+    margin-left 1.0em
     max-height 32px
     max-width 32px
 
     border 1px solid #dedede
 
 table select
+    width 100%
     height 100%
 
 table input[type=text]:disabled

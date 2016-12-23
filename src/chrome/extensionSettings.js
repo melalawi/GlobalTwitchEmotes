@@ -1,9 +1,11 @@
 'use strict';
 var clone = require('clone');
 var extend = require('extend');
+var unique = require('uniq');
 var browserStorage = require('./browserStorage');
 
 
+var URL_EXTRACTION_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\s\/]+(?:\/[^\s\/]+)*)\/*$/i;
 var DEFAULT_SETTINGS = {
     twitchStyleTooltips: true,
     hitboxKappas: true,
@@ -16,32 +18,14 @@ var DEFAULT_SETTINGS = {
     ffzChannels: true,
     customEmotes: false,
 
-    bttvChannelList: ['insentience', 'ph34rm3333'],
-    ffzChannelList: ['insentience', 'ph34rm3333'],
-    customEmotesList: [
-        {
-            key: 'mog',
-            url: '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'
-        }
-    ],
+    bttvChannelsList: [],
+    ffzChannelsList: [],
+    customEmotesList: [],
 
     domainFilterMode: 'Blacklist',
     domainFilterList: [],
     emoteFilterMode: 'Blacklist',
-    emoteFilterList: [
-        {
-            set: 'Twitch.tv',
-            type: 'Emote',
-            channel: 'goodguygarry',
-            emote: 'ggg1'
-        },
-        {
-            set: 'Twitch.tv',
-            type: 'Channel',
-            channel: 'imaqtpie',
-            emote: ''
-        }
-    ]
+    emoteFilterList: []
 };
 
 
@@ -57,7 +41,7 @@ function getSettings() {
 
 function setSettings(data) {
     return new Promise(function(resolve, reject) {
-        browserStorage.save(data).then(function() {
+        browserStorage.save(extendSettings(data)).then(function() {
             resolve();
         }).catch(function() {
             reject();
@@ -68,15 +52,83 @@ function setSettings(data) {
 function extendSettings(settings) {
     var finalSettings = clone(DEFAULT_SETTINGS);
 
-    extend(finalSettings, settings);
-
     for (var key in finalSettings) {
-        if (DEFAULT_SETTINGS.hasOwnProperty(key) === false) {
-            delete finalSettings[key];
+        if (finalSettings.hasOwnProperty(key) && settings[key] !== undefined) {
+            if (typeof finalSettings[key] === 'boolean') {
+                finalSettings[key] = settings[key] === true;
+            } else if (Array.isArray(finalSettings[key])) {
+                finalSettings[key] = filterInvalidListEntries(settings[key]);
+            } else {
+                finalSettings[key] = settings[key] === 'Whitelist' ? 'Whitelist' : 'Blacklist';
+            }
         }
     }
 
+    finalSettings.domainFilterList = replaceInvalidFilteredURLs(finalSettings.domainFilterList);
+
     return finalSettings;
+}
+
+function filterInvalidListEntries(list) {
+    var result = list || [];
+
+    for (var i = result.length - 1; i >= 0; --i) {
+        var entry = result[i];
+
+        if (!entry) {
+            result.splice(i, 1);
+        } else if (typeof entry === 'string' && !entry.trim()) {
+            result.splice(i, 1);
+        } else if (typeof entry === 'object') {
+            for (var key in entry) {
+                if (entry.hasOwnProperty(key)) {
+                    if (!entry[key]) {
+                        result.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    unique(list, function(first, second) {
+        var equal = -1;
+
+        if (typeof first === typeof second) {
+            equal = 0;
+
+            if (typeof first === 'object') {
+                for (var key in first) {
+                    if (first.hasOwnProperty(key) && first[key] != second[key]) {
+                        equal = -1;
+                        break;
+                    }
+                }
+            } else if (typeof first === 'string') {
+                equal = first.toLowerCase() === second.toLowerCase() ? 0 : -1;
+            } else {
+                equal = first === second ? 0 : -1;
+            }
+        }
+
+        return equal;
+    });
+
+    return result;
+}
+
+function replaceInvalidFilteredURLs(urlList) {
+    var result = [];
+
+    for (var i = 0; i < urlList.length; ++i) {
+        var isURL = URL_EXTRACTION_REGEX.test(urlList[i]);
+
+        if (isURL) {
+            result.push(URL_EXTRACTION_REGEX.exec(urlList[i])[1]);
+        }
+    }
+
+    return result;
 }
 
 function bindEventToSettingsChange(callback) {
@@ -85,9 +137,14 @@ function bindEventToSettingsChange(callback) {
     });
 }
 
+function doesSettingExist(settingName) {
+    return DEFAULT_SETTINGS.hasOwnProperty(settingName);
+}
+
 
 module.exports = {
     getSettings: getSettings,
     setSettings: setSettings,
-    onSettingsChange: bindEventToSettingsChange
+    onSettingsChange: bindEventToSettingsChange,
+    doesSettingExist: doesSettingExist
 };

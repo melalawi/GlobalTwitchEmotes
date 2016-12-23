@@ -79,6 +79,13 @@ input[type=radio]
     height 1.25em
     width 1.25em
 
+input[type=button]
+    background-color $backgroundColor
+
+    cursor pointer
+    border 1px solid $navbarBackgroundColor
+    border-radius 2px
+
 .panel
     display none
 
@@ -112,7 +119,7 @@ input[type=radio]
 
     transition 0.15s all
 
-#hostsbar .hostButton:hover, #hostsbar .hostButton.active
+#hostsbar .hostButton:hover, #hostsbar .hostButton.active, #hostsbar .hostButton:focus
     background-color $navbarButtonActiveColor
 
 .subpanel
@@ -121,7 +128,8 @@ input[type=radio]
 img.kappa
     margin-left 0.25em
 
-.saveSettingsButton
+input[type=button].saveSettingsButton
+    margin-top 2.0em
     padding 0.5em 1.0em
 
     font-size 1.75em
@@ -136,19 +144,60 @@ img.kappa
 
     transition: 0.25s all
 
-.saveSettingsButton:disabled, .saveSettingsButton:disabled:hover
-    background $disabledButtonColor
+input[type=button].saveSettingsButton:disabled
+    background-color $disabledButtonColor
+    background-image url('/options/images/spinner.gif')
+    background-size contain
+    background-repeat no-repeat
+    background-position center center
+
+    color rgba(0,0,0,0)
     border-color #6A6A6A
 
     cursor default
     opacity 0.5
 
-.saveSettingsButton:not(disabled):hover
+input[type=button].saveSettingsButton:enabled:hover, input[type=button].saveSettingsButton:enabled:focus
     padding-left 1.5em
     padding-right 1.5em
 
     border-color #000000
     background $navbarButtonActiveColor
+
+
+#importContainer
+    display flex
+    flex-direction row
+    align-items center
+
+#importStatus
+    margin-left 1.0em
+
+    display none
+    justify-content flex-start
+    align-items center
+
+#importStatus .statusText
+    font-weight bold
+    font-size 1.25em
+
+#importStatus .statusText.error
+    color #c21111
+
+#importStatus .statusText.success
+    color $navbarButtonActiveColor
+
+#importStatus .statusIcon
+    width 1.5em
+    height 1.5em
+    margin-right 0.25em
+
+    background-size 100%
+    background-position center center
+    background-repeat no-repeat
+
+#importStatus .statusIcon.error
+    background-image url('/options/images/cross.png')
 
 #header
     display flex
@@ -180,7 +229,7 @@ img.kappa
 
     transition 0.15s all
 
-#navbar .navButton:hover, #navbar .navButton.active
+#navbar .navButton:hover, #navbar .navButton.active, #navbar .navButton:focus
     background-color $navbarButtonActiveColor
 
 #content

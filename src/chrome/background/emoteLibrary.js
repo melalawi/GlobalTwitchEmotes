@@ -1,11 +1,13 @@
 'use strict';
-var bttvChannels = require('./hosts/bttvChannels');
-var bttvGlobal = require('./hosts/bttvGlobal');
-var customEmotes = require('./hosts/customEmotes');
-var ffzChannels = require('./hosts/ffzChannels');
-var ffzGlobal = require('./hosts/ffzGlobal');
-var twitchChannels = require('./hosts/twitchChannels');
-var twitchGlobal = require('./hosts/twitchGlobal');
+var HOSTS = {
+    bttvChannels: require('./hosts/bttvChannels'),
+    bttvGlobal: require('./hosts/bttvGlobal'),
+    customEmotes: require('./hosts/customEmotes'),
+    ffzChannels: require('./hosts/ffzChannels'),
+    ffzGlobal: require('./hosts/ffzGlobal'),
+    twitchChannels: require('./hosts/twitchChannels'),
+    twitchGlobal: require('./hosts/twitchGlobal')
+};
 
 
 var FILTER_TO_HOST_MAPPING = {
@@ -24,9 +26,8 @@ var FILTER_TO_HOST_MAPPING = {
 };
 var promises = [];
 var cachedEmotes = null;
-var filteredEmotes = [];
-var filterMode;
 var ready = false;
+var userSettings = {};
 
 
 function updateEmoteLibrary(settings) {
@@ -36,117 +37,30 @@ function updateEmoteLibrary(settings) {
 
     resetFilterRules();
 
-    filteredEmotes = settings.emoteFilterList;
-    filterMode = settings.emoteFilterMode;
+    userSettings = settings;
 
-    if (cachedEmotes.twitchGlobal != null) {
-        if (settings.twitchGlobal === false) {
-            delete cachedEmotes['twitchGlobal'];
-        }
-    } else {
-        if (settings.twitchGlobal === true) {
-            var twitchGlobalPromise = twitchGlobal.build();
-
-            promises.push(twitchGlobalPromise);
-
-            twitchGlobalPromise.then(function(emotes) {
-                cachedEmotes['twitchGlobal'] = emotes;
-            });
-        }
-    }
-
-    if (cachedEmotes.twitchChannels != null) {
-        if (settings.twitchChannels === false) {
-            delete cachedEmotes['twitchChannels'];
-        }
-    } else {
-        if (settings.twitchChannels === true) {
-            var twitchChannelsPromise = twitchChannels.build();
-
-            promises.push(twitchChannelsPromise);
-
-            twitchChannelsPromise.then(function(emotes) {
-                cachedEmotes['twitchChannels'] = emotes;
-            });
-        }
-    }
-    /*
-    if (settings.twitchGlobal === true) {
-        var twitchGlobalPromise = twitchGlobal.build();
-
-        promises.push(twitchGlobalPromise);
-
-        twitchGlobalPromise.then(function(emotes) {
-            addEmotes('twitchGlobal', emotes);
-        });
-    } else {
-        delete cachedEmotes.twitchGlobal;
-    }
-
-    if (settings.twitchChannels === true) {
-        var twitchChannelsPromise = twitchChannels.build();
-
-        promises.push(twitchChannelsPromise);
-
-        twitchChannelsPromise.then(function(emotes) {
-            addEmotes('twitchChannels', emotes);
-        });
-    }
-
-    if (settings.bttvGlobal === true) {
-        var bttvGlobalPromise = bttvGlobal.build();
-
-        promises.push(bttvGlobalPromise);
-
-        bttvGlobalPromise.then(function(emotes) {
-            addEmotes('bttvGlobal', emotes);
-        });
-    }
-
-    if (settings.bttvChannels === true) {
-        var bttvChannelsPromise = bttvChannels.build(settings.bttvChannelList);
-
-        promises.push(bttvChannelsPromise);
-
-        bttvChannelsPromise.then(function(channelEmotesList) {
-            for (var i = 0; i < channelEmotesList.length; ++i) {
-                addEmotes('bttvChannels', channelEmotesList[i]);
+    for (var host in HOSTS) {
+        if (HOSTS.hasOwnProperty(host)) {
+            // Saved emotes for this particular host exist
+            if (cachedEmotes[host] != null) {
+                // Get rid of them if the user doesn't want them anymore
+                if (settings[host] === false) {
+                    delete cachedEmotes[host];
+                } else {
+                    // Adding more bttv/ffz channels without changing host preferences should be handled more gracefully
+                    if (HOSTS[host].requiresChannelList === true) {
+                        promises.push(getHostEmotes(host));
+                    }
+                }
+            } else {
+                // No saved emotes for this host found, and the user desires them
+                if (settings[host] === true) {
+                    promises.push(getHostEmotes(host));
+                }
             }
-        });
+        }
     }
 
-    if (settings.ffzGlobal === true) {
-        var ffzGlobalPromise = ffzGlobal.build();
-
-        promises.push(ffzGlobalPromise);
-
-        ffzGlobalPromise.then(function(emotes) {
-            addEmotes('ffzGlobal', emotes);
-        });
-    }
-
-    if (settings.ffzChannels === true) {
-        var ffzChannelsPromise = ffzChannels.build(settings.ffzChannelList);
-
-        promises.push(ffzChannelsPromise);
-
-        ffzChannelsPromise.then(function(channelEmotesList) {
-            for (var i = 0; i < channelEmotesList.length; ++i) {
-                addEmotes('ffzChannels', channelEmotesList[i]);
-            }
-        });
-    }
-
-    if (settings.customEmotes === true) {
-        var customEmotesPromise = customEmotes.build(settings.customEmotesList);
-
-        promises.push(customEmotesPromise);
-
-        customEmotesPromise.then(function(emotes) {
-            addEmotes('customEmotes', emotes);
-        });
-    }
-*/
     libraryPromise = Promise.all(promises);
 
     libraryPromise.then(function() {
@@ -158,29 +72,47 @@ function updateEmoteLibrary(settings) {
     return libraryPromise;
 }
 
+function getHostEmotes(host) {
+    var nextPromise;
+
+    if (HOSTS[host].requiresChannelList === true) {
+        nextPromise = HOSTS[host].build(userSettings[host + 'List']);
+    } else {
+        nextPromise = HOSTS[host].build();
+    }
+
+    nextPromise.then(function(emotes) {
+        cachedEmotes[this] = emotes;
+    }.bind(host));
+
+    return nextPromise;
+}
+
 function resetFilterRules() {
+    userSettings.emoteFilterList = userSettings.emoteFilterList || [];
+
     applyFilterRules(true);
 }
 
 function applyFilterRules(resetRulesBoolean) {
-    for (var i = 0; i < filteredEmotes.length; ++i) {
-        var rule = filteredEmotes[i];
+    for (var i = 0; i < userSettings.emoteFilterList.length; ++i) {
+        var rule = userSettings.emoteFilterList[i];
         var host = FILTER_TO_HOST_MAPPING[rule.set];
         var globalSet = cachedEmotes[host.global];
         var channelSet = cachedEmotes[host.channels];
 
         if (rule.type === 'Emote') {
-            if (globalSet.hasOwnProperty(rule.emote)) {
+            if (globalSet.hasOwnProperty(rule.value)) {
                 if (resetRulesBoolean) {
-                    delete globalSet[rule.emote].filtered;
+                    delete globalSet[rule.value].filtered;
                 } else {
-                    globalSet[rule.emote].filtered = true;
+                    globalSet[rule.value].filtered = true;
                 }
-            } else if (channelSet.hasOwnProperty(rule.emote)) {
+            } else if (channelSet.hasOwnProperty(rule.value)) {
                 if (resetRulesBoolean) {
-                    delete channelSet[rule.emote].filtered;
+                    delete channelSet[rule.value].filtered;
                 } else {
-                    channelSet[rule.emote].filtered = true;
+                    channelSet[rule.value].filtered = true;
                 }
             }
         } else if (rule.type === 'Channel') {
@@ -188,7 +120,7 @@ function applyFilterRules(resetRulesBoolean) {
                 if (channelSet.hasOwnProperty(emoteKey)) {
                     var emote = channelSet[emoteKey];
 
-                    if (emote.channel === rule.channel) {
+                    if (emote.channel === rule.value) {
                         if (resetRulesBoolean) {
                             delete emote.filtered;
                         } else {
@@ -201,7 +133,6 @@ function applyFilterRules(resetRulesBoolean) {
     }
 }
 
-
 function getEmotes() {
     if (!ready) {
         throw 'Attempt to retrieve emotes before caching';
@@ -209,6 +140,7 @@ function getEmotes() {
 
     return cachedEmotes;
 }
+
 
 module.exports = {
     update: updateEmoteLibrary,

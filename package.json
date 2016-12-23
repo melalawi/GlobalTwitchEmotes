@@ -27,6 +27,7 @@
         "mkdirp": "0.5.1",
         "ncp": "2.0.0",
         "pug": "2.0.0-beta6",
+        "uniq": "1.0.1",
         "rimraf": "2.5.4",
         "stylus": "0.54.5",
         "uglifyify": "3.0.3"

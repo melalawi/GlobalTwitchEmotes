@@ -6,6 +6,7 @@
       <w>hitbox</w>
       <w>jsgrid</w>
       <w>smilies</w>
+      <w>whitelist</w>
     </words>
   </dictionary>
 </component>

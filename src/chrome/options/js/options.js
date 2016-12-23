@@ -17,7 +17,7 @@ function init() {
 
     filterPanel.init();
 
-    settingsInterface.loadSettingsToPage();
+    settingsInterface.loadStoredSettingsToPage();
 }
 
 

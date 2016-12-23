@@ -6,7 +6,7 @@ var $table;
 
 
 function init() {
-    $table = $('#bttvChannelList').EditableTable({
+    $table = $('#bttvChannelsList').EditableTable({
         columns: [
             {
                 name: 'name',

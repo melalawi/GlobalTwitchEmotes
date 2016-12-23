@@ -1,12 +1,15 @@
 'use strict';
 var $ = require('jquery');
 var settingsInterface = require('./settingsInterface');
+var importExport = require('./importExport');
 
 
+var SAVE_DELAY_TIMEOUT = 500;
 var saveButtons;
 
 
 function init() {
+    setImportExportEvents();
     setNavbarButtonEvents();
     setSaveButtonEvent();
 }
@@ -42,17 +45,33 @@ function setNavbarButtonEvents() {
     });
 }
 
+function setImportExportEvents() {
+    var $importBrowser = $('#importBrowser');
+
+    importExport.init();
+
+    $importBrowser.on('change', function() {
+        importExport.triggerImportBrowser(this);
+    });
+
+    $('#importButton').click(function() {
+        $importBrowser.trigger('click');
+    })
+}
+
 function setSaveButtonEvent() {
     saveButtons = $('input.saveSettingsButton[type="button"]');
 
     saveButtons.click(function() {
         saveButtons.attr('disabled', true);
 
-        settingsInterface.saveSettingsToStorage().then(enableSaveButtons);
+        setTimeout(function() {
+            settingsInterface.savePageSettingsToStorage().then(displaySaveSuccessful);
+        }, SAVE_DELAY_TIMEOUT);
     });
 }
 
-function enableSaveButtons() {
+function displaySaveSuccessful() {
     saveButtons.removeAttr('disabled');
 }
 

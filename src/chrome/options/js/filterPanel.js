@@ -36,25 +36,17 @@ function buildEmoteFilterListTable() {
                 onchange: function(row, value) {
                     console.log('trigger: ' + row + ' ' + value);
                     if (value === 'Channel') {
-                        row.find('td.channel input').prop('disabled', false);
-                        row.find('td.emote input').prop('disabled', true);
+                        row.find('td.value input').attr('placeholder', 'Channel Name');
                     } else {
-                        row.find('td.channel input').prop('disabled', true);
-                        row.find('td.emote input').prop('disabled', false);
+                        row.find('td.value input').attr('placeholder', 'Emote Name');
                     }
                 }
             },
             {
-                name: 'channel',
+                name: 'value',
                 displayName: '',
                 type: 'text',
                 placeholder: 'Channel Name'
-            },
-            {
-                name: 'emote',
-                displayName: '',
-                type: 'text',
-                placeholder: 'Emote Name'
             }
         ]
     });

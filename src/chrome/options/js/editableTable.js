@@ -141,7 +141,9 @@ var METHODS = {
                 if ($cell.prop('type') === 'text' || $cell.is('select')) {
                     exported[nextCol.name] = $cell.val();
                 } else if ($cell.is('img')) {
-                    exported[nextCol.name] = $cell.attr('src').replace(BASE64_PREFIX, '');
+                    var emoteSrc = $cell.attr('src') || '';
+
+                    exported[nextCol.name] = emoteSrc.replace(BASE64_PREFIX, '');
                 }
             }
 

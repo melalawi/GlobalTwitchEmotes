@@ -15,8 +15,8 @@ var SETTINGS_SELECTORS = {
     ffzChannels: '#ffzChannelsCheckbox',
     customEmotes: '#customEmotesCheckbox',
 
-    bttvChannelList: '#bttvChannelList',
-    ffzChannelList: '#ffzChannelList',
+    bttvChannelsList: '#bttvChannelsList',
+    ffzChannelsList: '#ffzChannelsList',
     customEmotesList: '#customEmotesList',
 
     domainFilterMode: '[name="domainFilterMode"]',
@@ -26,26 +26,7 @@ var SETTINGS_SELECTORS = {
 };
 
 
-function loadSettingsToPage() {
-    return extensionSettings.getSettings().then(function(data) {
-        for (var key in SETTINGS_SELECTORS) {
-            if (SETTINGS_SELECTORS.hasOwnProperty(key)) {
-                var $settingDOMElement = $(SETTINGS_SELECTORS[key]);
-                var settingValue = data[key];
-
-                if ($settingDOMElement.attr('type') === 'checkbox') {
-                    $settingDOMElement.prop('checked', settingValue === true);
-                } else if ($settingDOMElement.eq(0).attr('type') === 'radio') {
-                    $settingDOMElement.filter('[value=' + settingValue + ']').prop('checked', true);
-                } else if ($settingDOMElement.is('table')) {
-                    setTableEntries($settingDOMElement, settingValue);
-                }
-            }
-        }
-    });
-}
-
-function saveSettingsToStorage() {
+function getPageSettings() {
     var pageSettings = {};
 
     for (var key in SETTINGS_SELECTORS) {
@@ -62,7 +43,32 @@ function saveSettingsToStorage() {
         }
     }
 
-    return extensionSettings.setSettings(pageSettings);
+    return pageSettings;
+}
+
+function setPageSettings(settings) {
+    for (var key in SETTINGS_SELECTORS) {
+        if (SETTINGS_SELECTORS.hasOwnProperty(key)) {
+            var $settingDOMElement = $(SETTINGS_SELECTORS[key]);
+            var settingValue = settings[key];
+
+            if ($settingDOMElement.attr('type') === 'checkbox') {
+                $settingDOMElement.prop('checked', settingValue === true);
+            } else if ($settingDOMElement.eq(0).attr('type') === 'radio') {
+                $settingDOMElement.filter('[value=' + settingValue + ']').prop('checked', true);
+            } else if ($settingDOMElement.is('table')) {
+                setTableEntries($settingDOMElement, settingValue);
+            }
+        }
+    }
+}
+
+function loadStoredSettingsToPage() {
+    return extensionSettings.getSettings().then(setPageSettings);
+}
+
+function savePageSettingsToStorage() {
+    return extensionSettings.setSettings(getPageSettings());
 }
 
 function setTableEntries($table, entries) {
@@ -102,6 +108,8 @@ function getTableEntries($table) {
 
 
 module.exports = {
-    loadSettingsToPage: loadSettingsToPage,
-    saveSettingsToStorage: saveSettingsToStorage
+    loadStoredSettingsToPage: loadStoredSettingsToPage,
+    savePageSettingsToStorage: savePageSettingsToStorage,
+    setPageSettings: setPageSettings,
+    getPageSettings: getPageSettings
 };

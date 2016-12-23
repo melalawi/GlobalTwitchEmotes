@@ -1,20 +1,20 @@
 'use strict';
+var browserBackend = require('./browserBackend');
 var emoteLibrary = require('./emoteLibrary');
 var extensionSettings = require('../extensionSettings');
 var domainFilter = require('./domainFilter');
 
 
-var CONTENTSCRIPT = {
-    file: 'contentscript.js'
-};
+var CONTENTSCRIPT = 'contentscript.js';
 var pendingTabs = [];
 var userSettings;
 var ready = false;
 
 
 function init() {
-    listenForTabs();
     var settingsPromise = extensionSettings.getSettings();
+
+    browserBackend.listenForTabs(newTabEvent);
 
     settingsPromise.then(function(settings) {
         var libraryPromise = emoteLibrary.update(settings);
@@ -41,32 +41,29 @@ function respondToSettingsChanges(changes) {
     });
 }
 
-function listenForTabs() {
-    chrome.tabs.onUpdated.addListener(function(tabID, changeInfo, tab) {
-        if (changeInfo.status === 'complete') {
-            if (ready) {
-                injectScriptToTab(tab);
-            } else {
-                pendingTabs.push(tab);
-            }
-        }
-    });
+function newTabEvent(tab) {
+    if (ready) {
+        instantiateGTEToTab(tab);
+    } else {
+        pendingTabs.push(tab);
+    }
+}
+
+function instantiateGTEToTab(tab) {
+    if (domainFilter.isFiltered(tab.url, userSettings) === false) {
+        browserBackend.injectScriptToTab(tab, CONTENTSCRIPT).then(function() {
+            browserBackend.sendMessageToTab(tab, emoteLibrary.getEmotes());
+        });
+    }
 }
 
 function flushPendingTabs() {
     for (var i = 0; i < pendingTabs.length; ++i) {
-        injectScriptToTab(pendingTabs[i]);
+        instantiateGTEToTab(pendingTabs[i]);
     }
 
     pendingTabs = [];
 }
 
-function injectScriptToTab(tab) {
-    if (domainFilter.isFiltered(tab.url, userSettings) === false) {
-        chrome.tabs.executeScript(tab.id, CONTENTSCRIPT, function () {
-            chrome.tabs.sendMessage(tab.id, emoteLibrary.getEmotes());
-        });
-    }
-}
 
 init();

@@ -36,5 +36,6 @@ function buildEmoteList() {
 }
 
 module.exports = {
-    build: buildEmoteList
+    build: buildEmoteList,
+    requiresChannelList: false
 };

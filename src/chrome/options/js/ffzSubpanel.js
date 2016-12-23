@@ -6,7 +6,7 @@ var table;
 
 
 function init() {
-    table = $('#ffzChannelList').EditableTable({
+    table = $('#ffzChannelsList').EditableTable({
         columns: [
             {
                 name: 'name',

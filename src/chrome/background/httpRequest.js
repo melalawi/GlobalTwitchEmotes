@@ -38,15 +38,11 @@ function attemptRequest(url, successCallback, failureCallback, retryCount) {
     retryCount = retryCount || 0;
 
     if (retryCount >= 3) {
-        console.log('Couldn\'t reach ' + url);
         failureCallback();
     } else {
-        console.log('Attempting to reach ' + url + ' - Attempt number: ' + retryCount);
         sendXMLHttpRequest(url, function(responseText) {
-            console.log('Ayy... ' + url);
             successCallback(responseText);
         }, function() {
-            console.log('Retrying...');
             attemptRequest(url, successCallback, failureCallback, retryCount + 1);
         });
     }

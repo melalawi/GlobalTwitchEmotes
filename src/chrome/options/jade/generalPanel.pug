@@ -10,4 +10,15 @@
             | Replace Hitbox.tv's Kappa with GreyFace
             img.kappa(src='images/kappa.png')
 
+    h2 Import/Export Settings
+    p.line.blurb
+        | Import and or export settings!
+    input.fileBrowser#importBrowser(type='file', accept='text/*')
+
+    #importContainer
+        input#importButton(type='button', value='Import Settings From File')
+        div#importStatus
+            div.statusIcon
+            div.statusText
+
     input.saveSettingsButton(type='button', value='Save Settings')
