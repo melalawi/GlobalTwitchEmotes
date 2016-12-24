@@ -7,6 +7,10 @@ var SETTINGS_SELECTORS = {
     twitchStyleTooltips: '#twitchStyleTooltipsCheckbox',
     hitboxKappas: '#hitboxKappasCheckbox',
 
+    twitchSmilies: '#twitchSmiliesCheckbox',
+    smiliesType: '[name="smiliesType"]',
+    useMonkeySmilies: '#useMonkeySmiliesCheckbox',
+
     twitchGlobal: '#twitchGlobalCheckbox',
     twitchChannels: '#twitchChannelsCheckbox',
     bttvGlobal: '#bttvGlobalCheckbox',

@@ -4,6 +4,7 @@ table
     width 100%
     margin 3.0em 0
     border-collapse collapse
+    table-layout fixed
 
     text-align left
     font-size 1.25em
@@ -11,6 +12,7 @@ table
     background $tableGradient
 
 th
+    width 100%
     font-size 1.25em
 
 .fileBrowser
@@ -20,12 +22,13 @@ th
     top -1000px
 
 .controlCell
-    width 1%
+    width 32px
+    height 32px
     white-space nowrap
 
 .controlCell input[type=button]
-    width 2.5em
-    height 2.5em
+    width 32px
+    height 100%
 
     background-color $backgroundColor
     background-size 50%
@@ -42,11 +45,9 @@ th
 .controlCell input[type=button].addRowButton
     background-image url('/options/images/plus.png')
 
-table#customEmotesList tbody tr
-    height 32px
-
 table#customEmotesList td.url
     height 32px
+    width 30%
 
     display flex
     flex-direction row
@@ -62,12 +63,24 @@ table#customEmotesList td.url:last-child
     padding 0 0.25em
     margin-right 1.0em
 
-.GTEEmote
-    margin-left 1.0em
+.emoteContainer
+    margin 0 0.25em
+
+    display flex
+    flex-direction row
+    justify-content center
+    align-items center
+
+    border 1px solid #dedede
+
+.emote
     max-height 32px
     max-width 32px
 
-    border 1px solid #dedede
+.emoteError
+    font-weight bold
+    color $errorColor
+    white-space nowrap
 
 table select
     width 100%
@@ -84,7 +97,7 @@ table input[type=text]:disabled::-moz-placeholder
 
 table input[type=text]
     width 100%
-    height 100%
+    height 32px
     padding-left 0.25em
 
     font-size: 1.10em
@@ -98,3 +111,15 @@ table input[type=text]::-webkit-input-placeholder
 table input[type=text]::-moz-placeholder
     font-style italic
     color $navbarBackgroundColor
+
+td.nothingHere
+    width 100%
+
+    background-color #ffffff
+    border-top 1px solid $disabledButtonColor
+    border-bottom 1px solid $disabledButtonColor
+
+    color $disabledButtonColor
+    line-height 3.0em
+    text-align center
+    font-style italic

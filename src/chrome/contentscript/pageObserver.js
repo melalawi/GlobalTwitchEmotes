@@ -6,7 +6,7 @@ var PAGE_OBSERVER_PARAMETERS = {
     subtree: true
 };
 var ILLEGAL_TAGNAMES = [
-    'IMG', 'SCRIPT', 'TEXTAREA'
+    'IMG', 'SCRIPT', 'TEXTAREA', 'STYLE'
 ];
 var mutationObserver;
 var nodeCallback;
@@ -79,6 +79,8 @@ function isIllegalNode(n) {
     } else if (ILLEGAL_TAGNAMES.indexOf(node.tagName) !== -1) {
         isIllegal = true;
     } else if (node.isContentEditable) {
+        isIllegal = true;
+    } else if (node.type === 'text') {
         isIllegal = true;
     } else if (n.nodeType === Node.TEXT_NODE && n.nodeValue.replace(/\s/g, '').length < 2) {
         // Textnodes with little to no text can be disregarded

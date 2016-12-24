@@ -1,6 +1,4 @@
 'use strict';
-
-
 var FORBIDDEN_DOMAINS = [
     'twitch.tv',
     'chrome.google.com'
@@ -25,21 +23,23 @@ function isURLFiltered(address, extensionSettings) {
 
         result = isForbiddenURL(url);
 
-        if (result === false) {
+        if (result === false && extensionSettings.domainFilterList.length) {
+            var isFiltered = false;
+
             for (var i = 0; i < extensionSettings.domainFilterList.length; ++i) {
                 var domainRegex = createRegexFromRule(extensionSettings.domainFilterList[i]);
 
                 if (domainRegex !== null && domainRegex.test(url) === true) {
-                    result = true;
+                    isFiltered = true;
                     break;
                 }
             }
-        }
 
-        result = result === (extensionSettings.domainFilterMode === 'Whitelist');
+            result = !(isFiltered === (extensionSettings.domainFilterMode === 'Whitelist'));
+        }
     }
 
-    return !result;
+    return result;
 }
 
 function createRegexFromRule(rule) {

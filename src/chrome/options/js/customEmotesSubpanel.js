@@ -13,7 +13,7 @@ function init() {
         var image = this.files[0];
         var fileReader = new FileReader();
 
-        fileReader.addEventListener('load', function() {
+        fileReader.addEventListener('loadend', function() {
             this.attr('src', fileReader.result);
         }.bind(event.data.data('emote')), false);
 

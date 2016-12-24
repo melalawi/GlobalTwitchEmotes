@@ -3,7 +3,10 @@ var $ = require('jquery');
 
 
 var PLUGIN_NAME = 'EditableTable';
-var BASE64_PREFIX = 'data:image/png;base64,';
+var NOTHING_HERE_PROPERTIES = {
+    class: 'nothingHere',
+    colspan: 2000
+};
 var ADD_ROW_BUTTON_PROPERTIES = {
     type: 'button',
     class: 'addRowButton'
@@ -18,7 +21,7 @@ var BROWSE_BUTTON_PROPERTIES = {
     value: 'Browse'
 };
 var EMOTE_PROPERTIES = {
-    class: 'GTEEmote'
+    class: 'emote'
 };
 
 
@@ -52,8 +55,13 @@ var METHODS = {
         var $deleteRowButton = $('<input>', DELETE_ROW_BUTTON_PROPERTIES);
 
         $deleteRowButton.click(function() {
-            this.remove();
-        }.bind($tr));
+            this.self._deleteRow(this.row);
+        }.bind({
+            self: this,
+            row: $tr
+        }));
+
+        this.$tbody.find('tr.nothingHere').remove();
 
         for (var i = 0; i < this.options.columns.length; ++i) {
             var nextCol = this.options.columns[i];
@@ -64,15 +72,30 @@ var METHODS = {
 
             if (nextCol.type === 'emote') {
                 var $browseButton = $('<input>', BROWSE_BUTTON_PROPERTIES);
-                $input = $('<img>', EMOTE_PROPERTIES);
+                var $emote = $('<img>', EMOTE_PROPERTIES);
+                var $emoteError = $('<div>', {class: 'emoteError'}).text('No Emote');
+                $input = $('<div>', {class: 'emoteContainer'});
 
-                $browseButton.click($input, function(event) {
+                $browseButton.click($emote, function(event) {
                     var emoteBrowser = $('#emoteBrowser');
 
                     emoteBrowser.data('emote', event.data);
                     emoteBrowser.trigger('click');
                 });
 
+                $emote.one('error', {emoteError: $emoteError, emote: $emote}, function(event) {
+                    event.data.emote.attr('src', '');
+                    event.data.emote.hide();
+                    event.data.emoteError.text('No Emote');
+                });
+
+                $emote.on('load',  {emoteError: $emoteError, emote: $emote}, function(event) {
+                    event.data.emote.show();
+                    event.data.emoteError.text('');
+                });
+
+                $input.append($emote);
+                $input.append($emoteError);
                 $td.append($browseButton);
             } else if (nextCol.type === 'select') {
                 $input = $('<select>');
@@ -104,6 +127,18 @@ var METHODS = {
 
         return $tr;
     },
+    _deleteRow: function(row) {
+        row.remove();
+
+        this._addDummyRow();
+    },
+    _addDummyRow: function() {
+        var rows = this.$tbody.find('tr');
+
+        if (rows.length === 0) {
+            this.$tbody.append($('<tr>', {class: 'nothingHere'}).append($('<td>', NOTHING_HERE_PROPERTIES).text('Nothing here!')));
+        }
+    },
     importData: function(entries) {
         this.$tbody.find('tr').remove();
 
@@ -117,13 +152,15 @@ var METHODS = {
 
                 if ($cell.prop('type') === 'text' || $cell.is('select')) {
                     $cell.val(entry[nextCol.name]);
-                } else if ($cell.is('img')) {
-                    $cell.attr('src', BASE64_PREFIX + entry[nextCol.name]);
+                } else if ($cell.hasClass('emoteContainer')) {
+                    $cell.find('img').attr('src', entry[nextCol.name]);
                 }
 
                 $cell.trigger('change');
             }
         }
+
+        this._addDummyRow();
     },
     exportData: function() {
         var result = [];
@@ -140,10 +177,10 @@ var METHODS = {
 
                 if ($cell.prop('type') === 'text' || $cell.is('select')) {
                     exported[nextCol.name] = $cell.val();
-                } else if ($cell.is('img')) {
-                    var emoteSrc = $cell.attr('src') || '';
+                } else if ($cell.hasClass('emoteContainer')) {
+                    var emoteSrc = $cell.find('img').attr('src') || '';
 
-                    exported[nextCol.name] = emoteSrc.replace(BASE64_PREFIX, '');
+                    exported[nextCol.name] = emoteSrc;
                 }
             }
 

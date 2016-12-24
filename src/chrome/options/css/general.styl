@@ -1,0 +1,59 @@
+img.kappa
+    margin-left 0.25em
+
+#importExport, #importExport .importExportContainer
+    display flex
+    flex-direction row
+    align-items center
+
+.importExportContainer input[type=button]
+    padding 0.5em
+    font-size 1.5em
+
+.importExportIcon
+    margin 0 1.5em
+    width 2.0em
+    height 2.0em
+
+    opacity 0.75
+    background-size 100%
+    background-position center center
+    background-repeat no-repeat
+
+#export .importExportIcon
+    background-image url('/options/images/download.png')
+
+#import
+    margin-left 1.0em
+
+#import .importExportIcon
+    background-image url('/options/images/upload.png')
+
+#importStatus
+    margin-left 1.0em
+
+    display none
+    justify-content flex-start
+    align-items center
+
+#importStatus .statusText
+    font-weight bold
+    font-size 1.25em
+
+#importStatus .statusText.error
+    color $errorColor
+
+#importStatus .statusText.success
+    color $navbarButtonActiveColor
+
+#importStatus .statusIcon
+    width 1.5em
+    height 1.5em
+    margin-right 0.25em
+
+    background-size 100%
+    background-position center center
+    background-repeat no-repeat
+
+#importStatus .statusIcon.error
+    background-image url('/options/images/cross.png')

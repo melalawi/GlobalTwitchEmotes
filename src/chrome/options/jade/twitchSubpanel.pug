@@ -1,12 +1,26 @@
 .subpanel#twitchSubpanel
     h2 Twitch.tv Emotes
 
-    p.line
+    label.line
         input(type='checkbox' id='twitchGlobalCheckbox')
         | Enable Global Twitch.tv Emotes
-    p.line
+    label.line
         input(type='checkbox' id='twitchChannelsCheckbox')
         | Enable Subscriber Channel Emotes
-    p.line
+    label.line
         input(type='checkbox' id='twitchSmiliesCheckbox')
-        | Enable Smilies (do soon)
+        | Enable Twitch.tv Smilies
+    p.line
+        | Smilies Type:
+    label.line.floatLeft
+        input(type='radio', value='Robot', name='smiliesType')
+        | Robot
+        img.kappa(src='images/robot.png')
+    label.line
+        input(type='radio', value='Turbo', name='smiliesType')
+        | Turbo
+        img.kappa(src='images/turbo.png')
+    label.line
+        input(type='checkbox' id='useMonkeySmiliesCheckbox')
+        | Include Monkey Smilies
+        img.kappa(src='images/monkey.png')

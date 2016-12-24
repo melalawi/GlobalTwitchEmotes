@@ -260,7 +260,7 @@ class Tipsy {
             this.tip = document.createElement('div');
             this.tip.classList.add('tipsy');
             this.tip.classList.add('GTETipsy');
-            this.tip.innerHTML = '<div class="GTETipsy tipsy-arrow" style="position:absolute;width:0;height:0;line-height:0;border: 5px solid transparent;opacity:0.8;"></div><div class="GTETipsy tipsy-inner" style="font-size:12.5px;line-height:18px;font-family:\'Helvetica Neue\',Helvetica,sans-serif;background-color:rgba(0,0,0,0.8);color:#FFF;max-width:200px;padding:5px 8px 4px;text-align:center;white-space:pre-wrap;"></div>';
+            this.tip.innerHTML = '<div class="GTETipsy tipsy-arrow" style="position:absolute;width:0;height:0;line-height:0;border:5px solid transparent;opacity:0.8;"></div><div class="GTETipsy tipsy-inner" style="font-size:12.5px;line-height:18px;font-family:\'Helvetica Neue\',Helvetica,sans-serif;background-color:rgba(0,0,0,0.8);color:#FFF;max-width:200px;padding:5px 8px 4px;text-align:center;white-space:pre-wrap;"></div>';
             this.tip.pointee = this.element;
 
             if (this.options.fade) {
@@ -277,7 +277,7 @@ class Tipsy {
 
             this.tip.className = 'GTETipsy tipsy';
             this.tip.removeEventListener('transitionend', this.onTransitionEnd);
-            Utils.css(this.tip, {top: 0, left: 0, display: 'block', opacity: 0, visibility: 'hidden', 'font-size':'12px', position:'absolute', padding:'5px', 'z-index': 100000});
+            Utils.css(this.tip, {top: 0, left: 0, display: 'block', 'border-radius': '0px !important', opacity: 0, visibility: 'hidden', 'font-size':'12px', position:'absolute', padding:'5px', 'z-index': 100000});
         }
     }
 

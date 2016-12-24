@@ -22,7 +22,7 @@ function triggerImportBrowser(browser) {
     var textFile = browser.files[0];
     var fileReader = new FileReader();
 
-    fileReader.addEventListener('load', function() {
+    fileReader.addEventListener('loadend', function() {
         applyJSONToPage(fileReader.result);
 
         this.value = '';

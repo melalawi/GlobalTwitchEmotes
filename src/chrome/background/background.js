@@ -1,7 +1,7 @@
 'use strict';
-var browserBackend = require('./browserBackend');
+var browserBackend = require('browserBackend');
 var emoteLibrary = require('./emoteLibrary');
-var extensionSettings = require('../extensionSettings');
+var extensionSettings = require('extensionSettings');
 var domainFilter = require('./domainFilter');
 
 

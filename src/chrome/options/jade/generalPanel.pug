@@ -2,10 +2,10 @@
     h1 General Settings
 
     .optionsBody
-        p.line
+        label.line
             input(type='checkbox' id='twitchStyleTooltipsCheckbox')
             | Twitch-style Emote Tooltips
-        p.line
+        label.line
             input(type='checkbox' id='hitboxKappasCheckbox')
             | Replace Hitbox.tv's Kappa with GreyFace
             img.kappa(src='images/kappa.png')
@@ -13,17 +13,15 @@
     h2 Import/Export Settings
     input.fileBrowser#importBrowser(type='file', accept='text/*')
 
-    .importExportContainer
-        #importIcon
-        input#importButton(type='button', value='Import Settings', alt='Import Settings from File', title='Import Settings from File')
-        #importStatus
-            div.statusIcon
-            div.statusText
-
-    hr
-
-    .importExportContainer
-        #exportIcon
-        input#exportButton(type='button', value='Export Settings', alt='Export Settings to File', title='Export Settings to File')
+    #importExport
+        .importExportContainer#export
+            .importExportIcon
+            input#exportButton(type='button', value='Export Settings', alt='Export Settings to File', title='Export Settings to File')
+        .importExportContainer#import
+            .importExportIcon
+            input#importButton(type='button', value='Import Settings', alt='Import Settings from File', title='Import Settings from File')
+            #importStatus
+                div.statusIcon
+                div.statusText
 
     input.saveSettingsButton(type='button', value='Save Settings')

@@ -31,10 +31,10 @@ function build() {
             return console.error(err);
         }
 
-        buildContentScript();
         buildBackgroundScript();
+        buildContentScript();
+        buildMetadata();
         buildOptions();
-        buildMetaFile();
     });
 }
 
@@ -116,8 +116,8 @@ function buildOptionsCSS() {
     });
 }
 
-function buildMetaFile() {
-    fs.createReadStream(SOURCE_DIRECTORY + '/manifest.json').pipe(fs.createWriteStream(DESTINATION_DIRECTORY + '/manifest.json'));
+function buildMetadata() {
+    ncp(BIN_DIRECTORY + '/metadata', DESTINATION_DIRECTORY);
 }
 
 build();

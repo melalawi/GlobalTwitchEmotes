@@ -1,4 +1,7 @@
 'use strict';
+var twitchSmilies = require('./hosts/twitchSmilies');
+
+
 var HOSTS = {
     bttvChannels: require('./hosts/bttvChannels'),
     bttvGlobal: require('./hosts/bttvGlobal'),
@@ -8,8 +11,6 @@ var HOSTS = {
     twitchChannels: require('./hosts/twitchChannels'),
     twitchGlobal: require('./hosts/twitchGlobal')
 };
-
-
 var FILTER_TO_HOST_MAPPING = {
     'Twitch.tv': {
         global: 'twitchGlobal',
@@ -24,7 +25,6 @@ var FILTER_TO_HOST_MAPPING = {
         channels: 'ffzChannels'
     }
 };
-var promises = [];
 var cachedEmotes = null;
 var ready = false;
 var userSettings = {};
@@ -32,6 +32,7 @@ var userSettings = {};
 
 function updateEmoteLibrary(settings) {
     var libraryPromise;
+    var promises = [];
 
     cachedEmotes = cachedEmotes || {};
 
@@ -61,6 +62,11 @@ function updateEmoteLibrary(settings) {
         }
     }
 
+    delete cachedEmotes['twitchSmilies'];
+    if (userSettings.twitchSmilies) {
+        promises.push(updateTwitchSmilies());
+    }
+
     libraryPromise = Promise.all(promises);
 
     libraryPromise.then(function() {
@@ -70,6 +76,15 @@ function updateEmoteLibrary(settings) {
     });
 
     return libraryPromise;
+}
+
+function updateTwitchSmilies() {
+    return new Promise(function(resolve, reject) {
+        twitchSmilies.build(userSettings.smiliesType, userSettings.useMonkeySmilies).then(function(emotes) {
+            cachedEmotes['twitchSmilies'] = emotes;
+            resolve();
+        });
+    });
 }
 
 function getHostEmotes(host) {

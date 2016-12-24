@@ -5,9 +5,10 @@
 
         p.line
             | Filter Mode:
-        p.line.tabbed
+        label.line.floatLeft
             input(type='radio', value='Blacklist', name='emoteFilterMode')
             | Blacklist
+        label.line
             input(type='radio', value='Whitelist', name='emoteFilterMode')
             | Whitelist
 
@@ -19,9 +20,10 @@
 
         p.line
             | Filter Mode:
-        p.line.tabbed
+        label.line.floatLeft
             input(type='radio', value='Blacklist', name='domainFilterMode')
             | Blacklist
+        label.line
             input(type='radio', value='Whitelist', name='domainFilterMode')
             | Whitelist
 

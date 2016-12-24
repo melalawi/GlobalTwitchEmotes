@@ -10,12 +10,16 @@ var DEFAULT_SETTINGS = {
     twitchStyleTooltips: true,
     hitboxKappas: true,
 
+    twitchSmilies: false,
+    smiliesType: 'Robot',
+    useMonkeySmilies: false,
+
     twitchGlobal: true,
     twitchChannels: true,
-    bttvGlobal: true,
-    bttvChannels: true,
-    ffzGlobal: true,
-    ffzChannels: true,
+    bttvGlobal: false,
+    bttvChannels: false,
+    ffzGlobal: false,
+    ffzChannels: false,
     customEmotes: false,
 
     bttvChannelsList: [],
@@ -59,7 +63,7 @@ function extendSettings(settings) {
             } else if (Array.isArray(finalSettings[key])) {
                 finalSettings[key] = filterInvalidListEntries(settings[key]);
             } else {
-                finalSettings[key] = settings[key] === 'Whitelist' ? 'Whitelist' : 'Blacklist';
+                finalSettings[key] = settings[key];// === 'Whitelist' ? 'Whitelist' : 'Blacklist';
             }
         }
     }
@@ -80,11 +84,15 @@ function filterInvalidListEntries(list) {
         } else if (typeof entry === 'string' && !entry.trim()) {
             result.splice(i, 1);
         } else if (typeof entry === 'object') {
-            for (var key in entry) {
-                if (entry.hasOwnProperty(key)) {
-                    if (!entry[key]) {
-                        result.splice(i, 1);
-                        break;
+            if (Object.keys(entry).length === 0) {
+                result.splice(i, 1);
+            } else {
+                for (var key in entry) {
+                    if (entry.hasOwnProperty(key)) {
+                        if (!entry[key]) {
+                            result.splice(i, 1);
+                            break;
+                        }
                     }
                 }
             }
