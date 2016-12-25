@@ -83,13 +83,13 @@ var METHODS = {
                     emoteBrowser.trigger('click');
                 });
 
-                $emote.one('error', {emoteError: $emoteError, emote: $emote}, function(event) {
+                $emote.on('error', {emoteError: $emoteError, emote: $emote}, function(event) {
                     event.data.emote.attr('src', '');
                     event.data.emote.hide();
-                    event.data.emoteError.text('No Emote');
+                    event.data.emoteError.text('Invalid Emote');
                 });
 
-                $emote.on('load',  {emoteError: $emoteError, emote: $emote}, function(event) {
+                $emote.on('load', {emoteError: $emoteError, emote: $emote}, function(event) {
                     event.data.emote.show();
                     event.data.emoteError.text('');
                 });
@@ -164,7 +164,7 @@ var METHODS = {
     },
     exportData: function() {
         var result = [];
-        var $entries = this.$tbody.find('tr');
+        var $entries = this.$tbody.find('tr:not(.nothingHere)');
 
 
         for (var i = 0; i < $entries.length; ++i) {

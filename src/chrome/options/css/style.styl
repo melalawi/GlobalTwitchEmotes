@@ -3,7 +3,9 @@
 @require '/properties.styl'
 @require '/generics.styl'
 @require '/general.styl'
+@require '/about.styl'
 @require '/table.styl'
+@require '/tooltips.styl'
 
 .panel
     display none
@@ -91,7 +93,6 @@ input[type=button].saveSettingsButton:enabled:hover, input[type=button].saveSett
 
 #navbar
     background-color $navbarBackgroundColor
-    //box-shadow 0 3px 15px 0 $navbarShadowColor
 
 #navbar .navButton
     padding 0.25em 0
@@ -122,10 +123,26 @@ input[type=button].saveSettingsButton:enabled:hover, input[type=button].saveSett
 
 #footer
     padding-top 1.5em
-    padding-bottom 1.5em
+
+    display flex
+    flex-direction column
+    align-items center
+
+    color $backgroundColor
 
     box-shadow 0 -3px 15px 0 $footerShadowColor
     background-color $headerColor
+
+.socialLinks img
+    height 2.5em
+    width 2.5em
+    margin 1.0em 0.75em
+
+    opacity 0.75
+
+.socialLinks img:hover
+    opacity 1.0
+
 
 /****** SMALLEST ******/
 @media only screen and (min-width: 0px) and (max-width: 320px)

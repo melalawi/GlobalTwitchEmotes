@@ -1,9 +1,15 @@
 .subpanel#customEmotesSubpanel
-    h2 Custom Emotes
+    strong
+        div Custom Emotes
 
-    label.line
+    label.inline
         input(type='checkbox' id='customEmotesCheckbox')
         | Enable Custom Emotes
+    .tooltipTrigger(data-tooltip-html='#CustomEmotesTooltipHTML') ?
 
     input.fileBrowser#emoteBrowser(type='file', accept='image/*')
     table#customEmotesList
+
+    #CustomEmotesTooltipHTML.tooltipHTML You can assign your own custom emotes for Global Twitch Emotes to render by adding entries to the table below. All emotes will automatically be scaled down to 32x32 pixels.
+        br
+        | Maximum file size per emote: 1MB

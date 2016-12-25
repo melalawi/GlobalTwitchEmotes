@@ -1,11 +1,23 @@
 .subpanel#ffzSubpanel
-    h2 FrankerFaceZ Emotes
+    strong
+        div FrankerFaceZ Emotes
+        .tooltipTrigger(data-tooltip-html='#FrankerFaceZEmotesTooltipHTML') ?
 
     label.line
         input(type='checkbox' id='ffzGlobalCheckbox')
         | Enable Global FrankerFaceZ Emotes
-    label.line
+        img.kappa(src='images/CatBag.png')
+    label.inline
         input(type='checkbox' id='ffzChannelsCheckbox')
         | Enable FrankerFaceZ Channel Emotes
+    .tooltipTrigger(data-tooltip-html='#ffzChannelsCheckboxTooltipHTML') ?
 
     table#ffzChannelsList
+
+    #FrankerFaceZEmotesTooltipHTML.tooltipHTML Allows Global Twitch Emotes to render emotes managed by&nbsp;
+        a(href='https://www.frankerfacez.com/', target='_blank') FrankerFaceZ
+    #ffzChannelsCheckboxTooltipHTML.tooltipHTML Enables Global Twitch Emotes to fetch and render FrankerFaceZ emotes associated with the channels in the table below.
+        br
+        | For example, to enable&nbsp;
+        img.kappa(src='images/HeavyBreathing.png')
+        | &nbsp; add the channel 'dansalvato' to the table below.

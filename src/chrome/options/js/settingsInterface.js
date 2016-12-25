@@ -5,7 +5,6 @@ var extensionSettings = require('extensionSettings');
 
 var SETTINGS_SELECTORS = {
     twitchStyleTooltips: '#twitchStyleTooltipsCheckbox',
-    hitboxKappas: '#hitboxKappasCheckbox',
 
     twitchSmilies: '#twitchSmiliesCheckbox',
     smiliesType: '[name="smiliesType"]',
@@ -30,7 +29,7 @@ var SETTINGS_SELECTORS = {
 };
 
 
-function getPageSettings() {
+function getPageSettings(sanitize) {
     var pageSettings = {};
 
     for (var key in SETTINGS_SELECTORS) {
@@ -47,7 +46,7 @@ function getPageSettings() {
         }
     }
 
-    return pageSettings;
+    return sanitize === true ? extensionSettings.sanitizeSettings(pageSettings) : pageSettings;
 }
 
 function setPageSettings(settings) {

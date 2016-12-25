@@ -31,7 +31,6 @@
         "uniq": "1.0.1",
         "rimraf": "2.5.4",
         "stylus": "0.54.5",
-        "tooltipster": "4.1.6",
         "uglifyify": "3.0.3"
     }
 }

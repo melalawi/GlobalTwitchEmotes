@@ -34,7 +34,6 @@ function buildEmoteFilterListTable() {
                     'Emote'
                 ],
                 onchange: function(row, value) {
-                    console.log('trigger: ' + row + ' ' + value);
                     if (value === 'Channel') {
                         row.find('td.value input').attr('placeholder', 'Channel Name');
                     } else {

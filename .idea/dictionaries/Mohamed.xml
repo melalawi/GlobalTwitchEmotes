@@ -2,10 +2,13 @@
   <dictionary name="Mohamed">
     <words>
       <w>bttv</w>
+      <w>clickoutside</w>
       <w>contentscript</w>
       <w>hitbox</w>
       <w>jsgrid</w>
       <w>smilies</w>
+      <w>tipsify</w>
+      <w>tooltipster</w>
       <w>whitelist</w>
     </words>
   </dictionary>

@@ -1,10 +1,14 @@
 .panel#filterPanel
     h1 Filter Settings
     .optionsBody
-        h2 Emotes
+        strong
+            div Emotes
+            .tooltipTrigger(data-tooltip-html='#FilterEmotesTooltipHTML') ?
 
+        label.inline Filter Mode:
+        .tooltipTrigger(data-tooltip-html='#emoteFilterModeTooltipHTML') ?
         p.line
-            | Filter Mode:
+
         label.line.floatLeft
             input(type='radio', value='Blacklist', name='emoteFilterMode')
             | Blacklist
@@ -16,10 +20,14 @@
 
         hr
 
-        h2 Websites
+        strong
+            div Websites
+            .tooltipTrigger(data-tooltip-html='#FilterWebsitesTooltipHTML') ?
 
+        label.inline Filter Mode:
+        .tooltipTrigger(data-tooltip-html='#domainFilterModeTooltipHTML') ?
         p.line
-            | Filter Mode:
+
         label.line.floatLeft
             input(type='radio', value='Blacklist', name='domainFilterMode')
             | Blacklist
@@ -30,3 +38,41 @@
         table#domainFilterList
 
     input.saveSettingsButton(type='button', value='Save Settings')
+
+    #FilterEmotesTooltipHTML.tooltipHTML Allows you to disable or exclusively enable the rendering of certain emoticons.
+        br
+        b Emote Set:&nbsp;
+        | The set of emoticons the given filter rule corresponds to, whether being Twitch.tv emotes, BetterTTV emotes, or FrankerFaceZ emotes.
+        br
+        b Rule Type:&nbsp;
+        | Channel rules apply to all emotes belonging to the given channel. Emote rules apply only to the emote with the given name.
+        br
+        b Value:&nbsp;
+        | Either the name of the channel or the name of the emote to filter, depending on the selected rule type.
+    #emoteFilterModeTooltipHTML.tooltipHTML
+        b Blacklist mode:&nbsp;
+        | The emotes listed in the table directly below will not be rendered.
+        br
+        b Whitelist mode:&nbsp;
+        | ONLY the emotes listed in the table below will be rendered.
+
+    #FilterWebsitesTooltipHTML.tooltipHTML Allows you to disable or exclusively enable Global Twitch Emotes from running on certain websites. Asterisk wildcards supported.
+        br
+        b Example:
+        br
+        | "youtube.com" will trigger ONLY on the homepage of YouTube, while
+        br
+        | "youtube.com/*" will trigger on ALL addresses starting with youtube.com, such as the following:
+        br
+        a(href='https://www.youtube.com', target='_blank') https://www.youtube.com
+        br
+        a(href='https://www.youtube.com/feed/subscriptions', target='_blank') https://www.youtube.com/feed/subscriptions
+        br
+        a(href='https://www.youtube.com/watch?v=IW--ZGJd5Fg', target='_blank') https://www.youtube.com/watch?v=IW--ZGJd5Fg
+
+    #domainFilterModeTooltipHTML.tooltipHTML
+        b Blacklist mode:&nbsp;
+        | Global Twitch Emotes will not run on websites listed in the table directly below.
+        br
+        b Whitelist mode:&nbsp;
+        | Global Twitch Emotes will ONLY run on websites listed in the table directly below.

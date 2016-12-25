@@ -2,15 +2,15 @@
     h1 General Settings
 
     .optionsBody
-        label.line
+        label.inline
             input(type='checkbox' id='twitchStyleTooltipsCheckbox')
             | Twitch-style Emote Tooltips
-        label.line
-            input(type='checkbox' id='hitboxKappasCheckbox')
-            | Replace Hitbox.tv's Kappa with GreyFace
-            img.kappa(src='images/kappa.png')
+        .tooltipTrigger(data-tooltip-html='#twitchStyleTooltipsCheckboxTooltipHTML') ?
 
-    h2 Import/Export Settings
+    strong
+        div Import/Export Settings
+        .tooltipTrigger(data-tooltip-html='#importExportTooltipHTML') ?
+
     input.fileBrowser#importBrowser(type='file', accept='text/*')
 
     #importExport
@@ -25,3 +25,9 @@
                 div.statusText
 
     input.saveSettingsButton(type='button', value='Save Settings')
+
+    #importExportTooltipHTML.tooltipHTML You can backup your Global Twitch Emotes settings to a text file and restore them anytime by using the UI below.
+    #twitchStyleTooltipsCheckboxTooltipHTML.tooltipHTML
+        .imageContainer
+            img(src='images/tooltipExample.png')
+        | Enables Twitch-Style Tooltips on emotes when hovered over.

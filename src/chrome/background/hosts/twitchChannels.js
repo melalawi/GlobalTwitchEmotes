@@ -9,6 +9,7 @@ var OLD_CHANNELS = [
     'beyondthesummit',
     'canadacup',
     'delovely',
+    'esg',
     'fahr3nh3it_ftw',
     'fwiz',
     'gomexp_2014_season_two',

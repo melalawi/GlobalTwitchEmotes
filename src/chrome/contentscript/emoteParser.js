@@ -1,20 +1,18 @@
 'use strict';
 var pageObserver = require('./pageObserver');
-var Tipsy = require('./tipsy/tipsy.js');
 
 
 var EMOTE_CSS = 'display:inline !important;max-height:32px !important;max-width:32px !important;height:auto !important;width:auto !important;opacity:1 !important;outline:0 !important;border:0 !important;margin:0 !important;padding:0 !important;z-index:auto !important;visibility:visible !important;';
 var STRING_SEPARATOR = /([\w]|[:;)(\\\/<>73#\|\]])+/g;
+var TIPSY_DATA_ATTRIBUTE = 'gte-tipsy-text';
 var emoteLibrary;
 var emoteFilterMode;
-var useTipsy;
 
 
 function runParser(extensionEmotes, extensionSettings) {
     emoteLibrary = extensionEmotes;
 
     emoteFilterMode = extensionSettings.emoteFilterList.length === 0 ? 'AllowAll' : extensionSettings.emoteFilterMode;
-    useTipsy = extensionSettings.twitchStyleTooltips;
 
     pageObserver.observe(searchAndParseEmoteStrings);
 }
@@ -77,37 +75,26 @@ function parseEmoteString(node, index, emoteKey, emoteChannel, emoteURL) {
 
 function createEmote(emoteKey, emoteChannel, emoteURL) {
     var emote = document.createElement('img');
-    var altText = emoteKey;
 
+    emote.setAttribute('class', 'GTEEmote');
     emote.setAttribute('src', emoteURL);
     emote.setAttribute('title', emoteKey);
-
-    if (useTipsy === true) {
-        if (emoteChannel) {
-            altText = generateTipsyAlt(emoteKey, emoteChannel);
-        }
-
-        Tipsy.bind(emote, {
-            html: true,
-            title: function() {
-                return altText;
-            }
-        });
-    }
-
-    emote.style.cssText = EMOTE_CSS;
+    emote.setAttribute(TIPSY_DATA_ATTRIBUTE, generateTipsyAlt(emoteKey, emoteChannel));
     emote.setAttribute('alt', emoteKey);
+    emote.style.cssText = EMOTE_CSS;
 
     return emote;
 }
 
 function generateTipsyAlt(emoteKey, emoteChannel) {
-    var result = 'Emote: ' + emoteKey + '\n';
+    var result;
 
     if (emoteChannel === 'FrankerFaceZ Emote' || emoteChannel === 'BetterTTV Emote' || emoteChannel === 'Custom GTE Emote') {
-        result += emoteChannel
+        result = 'Emote: ' + emoteKey + '\n' + emoteChannel;
+    } else if (emoteChannel !== '') {
+        result = 'Emote: ' + emoteKey + '\n' + 'Channel: ' + emoteChannel;
     } else {
-        result += 'Channel: ' + emoteChannel;
+        result = emoteKey;
     }
 
     return result;

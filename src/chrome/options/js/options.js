@@ -1,6 +1,8 @@
 'use strict';
 var $ = require('jquery');
+require('./tooltips')($);
 require('./editableTable')($);
+
 
 var pageEvents = require('./pageEvents');
 var emotesPanel = require('./emotesAndChannelsPanel');
@@ -9,15 +11,17 @@ var settingsInterface = require('./settingsInterface');
 
 
 function init() {
-    pageEvents.init();
-    pageEvents.setOptionsPanel('general');
-
     emotesPanel.init();
     emotesPanel.setHostPanel('twitch');
 
     filterPanel.init();
 
-    settingsInterface.loadStoredSettingsToPage();
+    $('.tooltipTrigger').Tooltip();
+
+    settingsInterface.loadStoredSettingsToPage().then(function() {
+        pageEvents.init();
+        pageEvents.setOptionsPanel('general');
+    });
 }
 
 

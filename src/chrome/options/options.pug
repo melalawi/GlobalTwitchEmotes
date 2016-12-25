@@ -7,7 +7,6 @@ html(lang='en')
 
         title Global Twitch Emotes - Settings
 
-        link(rel='shortcut icon' href='options/images/monkey.png' type='image/x-icon')
         link(rel='stylesheet', type='text/css', href='/options/css/style.css')
         script(src='/options/js/options.js')
     body
@@ -22,6 +21,13 @@ html(lang='en')
             include jade/generalPanel
             include jade/emotesAndChannelsPanel
             include jade/filterPanel
-            //include jade/aboutPanel
+            include jade/aboutPanel
         #footer.bodySection
             .copyright Copyright © Mohamed El-Alawi, 2016
+            .socialLinks
+                a(href='https://ca.linkedin.com/in/melalawi', target='_blank')
+                    img(src='images/linkedin.png')
+                a(href='https://github.com/melalawi', target='_blank')
+                    img(src='images/github.png')
+                a(href='https://twitter.com/m_elalawi', target='_blank')
+                    img(src='images/twitter.png')

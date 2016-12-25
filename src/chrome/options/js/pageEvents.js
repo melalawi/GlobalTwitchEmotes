@@ -6,12 +6,14 @@ var importExport = require('./importExport');
 
 var SAVE_DELAY_TIMEOUT = 500;
 var saveButtons;
+var $correspondingSmiliesInputs;
 
 
 function init() {
     setImportExportEvents();
     setNavbarButtonEvents();
     setSaveButtonEvent();
+    setSmiliesButtonEvent();
 }
 
 function setOptionsPanel(panelName) {
@@ -61,6 +63,16 @@ function setImportExportEvents() {
     $('#exportButton').click(function() {
         importExport.exportSettingsToFile();
     });
+}
+
+function setSmiliesButtonEvent() {
+    var $smiliesCheckbox = $('#twitchSmiliesCheckbox');
+
+    $correspondingSmiliesInputs = $('#useMonkeySmiliesCheckbox, [name="smiliesType"]');
+
+    $smiliesCheckbox.change($correspondingSmiliesInputs, function(event) {
+        event.data.prop('disabled', this.checked === false);
+    }).trigger('change');
 }
 
 function setSaveButtonEvent() {

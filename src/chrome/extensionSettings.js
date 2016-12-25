@@ -8,7 +8,6 @@ var browserStorage = require('./browserStorage');
 var URL_EXTRACTION_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\s\/]+(?:\/[^\s\/]+)*)\/*$/i;
 var DEFAULT_SETTINGS = {
     twitchStyleTooltips: true,
-    hitboxKappas: true,
 
     twitchSmilies: false,
     smiliesType: 'Robot',
@@ -36,16 +35,16 @@ var DEFAULT_SETTINGS = {
 function getSettings() {
     return new Promise(function(resolve, reject) {
         browserStorage.load().then(function(data) {
-            resolve(extendSettings(data));
+            resolve(sanitizeSettings(data));
         }).catch(function() {
-            resolve(extendSettings({}));
+            resolve(sanitizeSettings({}));
         });
     });
 }
 
 function setSettings(data) {
     return new Promise(function(resolve, reject) {
-        browserStorage.save(extendSettings(data)).then(function() {
+        browserStorage.save(sanitizeSettings(data)).then(function() {
             resolve();
         }).catch(function() {
             reject();
@@ -53,7 +52,7 @@ function setSettings(data) {
     });
 }
 
-function extendSettings(settings) {
+function sanitizeSettings(settings) {
     var finalSettings = clone(DEFAULT_SETTINGS);
 
     for (var key in finalSettings) {
@@ -63,7 +62,7 @@ function extendSettings(settings) {
             } else if (Array.isArray(finalSettings[key])) {
                 finalSettings[key] = filterInvalidListEntries(settings[key]);
             } else {
-                finalSettings[key] = settings[key];// === 'Whitelist' ? 'Whitelist' : 'Blacklist';
+                finalSettings[key] = settings[key];
             }
         }
     }
@@ -154,5 +153,6 @@ module.exports = {
     getSettings: getSettings,
     setSettings: setSettings,
     onSettingsChange: bindEventToSettingsChange,
-    doesSettingExist: doesSettingExist
+    doesSettingExist: doesSettingExist,
+    sanitizeSettings: sanitizeSettings
 };
