@@ -1,13 +1,14 @@
 'use strict';
 var messageListener = null;
 var messageCallback = null;
-var installedListener = null;
-var installedCallback = null;
+var FORBIDDEN_DOMAINS = [
+    'chrome.google.com'
+];
 
 
 function injectScriptToTab(tab, script) {
     return new Promise(function(resolve, reject) {
-        chrome.tabs.executeScript(tab.id, {file: script}, function() {
+        chrome.tabs.executeScript(tab.id, {file: script, runAt: 'document_idle'}, function() {
             if (!chrome.runtime.lastError) {
                 resolve(tab);
             }
@@ -45,29 +46,10 @@ function listenForMessages(callback) {
     });
 }
 
-function onExtensionInstall(callback) {
-    if (installedListener != null) {
-        chrome.runtime.onInstalled.removeListener(installedListener);
-    }
-
-    installedCallback = callback;
-    installedListener = chrome.runtime.onInstalled.addListener(function(object) {
-        installedCallback();
-    });
-}
-
-
-function openExtensionSettings() {
-    chrome.runtime.openOptionsPage(function(object) {
-        console.log('asdf');
-    });
-}
-
 module.exports = {
     injectScriptToTab: injectScriptToTab,
     listenForTabs: listenForTabs,
     sendMessageToTab: sendMessageToTab,
     listenForMessages: listenForMessages,
-    onExtensionInstall: onExtensionInstall,
-    openExtensionSettings: openExtensionSettings
+    forbiddenDomains: FORBIDDEN_DOMAINS
 };

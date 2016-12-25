@@ -63,12 +63,14 @@ function hideTipsy() {
 }
 
 function positionTipsy(emoteNode) {
+    var bodyScrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    var bodyScrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft;
     var actualWidth = tipsy.outer.offsetWidth;
     var actualHeight = tipsy.outer.offsetHeight;
 
     var offset = {
-        top: emoteNode.getBoundingClientRect().top + document.body.scrollTop,
-        left: emoteNode.getBoundingClientRect().left + document.body.scrollLeft
+        top: emoteNode.getBoundingClientRect().top + bodyScrollTop,
+        left: emoteNode.getBoundingClientRect().left + bodyScrollLeft
     };
     var emotePosition = {
         top: offset.top,
@@ -77,7 +79,7 @@ function positionTipsy(emoteNode) {
         width: emoteNode.offsetWidth
     };
 
-    var forceTipsySouth = (offset.top - actualHeight) < document.body.scrollTop;
+    var forceTipsySouth = (offset.top - actualHeight) < bodyScrollTop;
 
 
     if (forceTipsySouth === false) {

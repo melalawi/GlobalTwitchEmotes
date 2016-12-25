@@ -56,6 +56,8 @@ function parseEmoteString(node, index, emoteKey, emoteChannel, emoteURL) {
         return;
     }
 
+    googleSearchResultsQOLFix(parent);
+
     parent.insertBefore(emoteNode, node.nextSibling);
 
     // Checks for and arranges text after the new emote
@@ -98,6 +100,12 @@ function generateTipsyAlt(emoteKey, emoteChannel) {
     }
 
     return result;
+}
+
+function googleSearchResultsQOLFix(node) {
+    if (node.parentNode.tagName === 'CITE') {
+        node.parentNode.parentNode.style.height = 'auto';
+    }
 }
 
 module.exports = {

@@ -3,10 +3,6 @@ var $ = require('jquery');
 
 
 var PLUGIN_NAME = 'EditableTable';
-var NOTHING_HERE_PROPERTIES = {
-    class: 'nothingHere',
-    colspan: 2000
-};
 var ADD_ROW_BUTTON_PROPERTIES = {
     type: 'button',
     class: 'addRowButton'
@@ -136,7 +132,14 @@ var METHODS = {
         var rows = this.$tbody.find('tr');
 
         if (rows.length === 0) {
-            this.$tbody.append($('<tr>', {class: 'nothingHere'}).append($('<td>', NOTHING_HERE_PROPERTIES).text('Nothing here!')));
+            var $tr = $('<tr>', {class: 'nothingHere'});
+
+            $tr.append($('<td>', {
+                class: 'nothingHere',
+                colspan: this.options.columns.length + 1
+            }).text('Nothing here!'));
+
+            this.$tbody.append($tr);
         }
     },
     importData: function(entries) {

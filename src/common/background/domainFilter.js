@@ -1,8 +1,8 @@
 'use strict';
-var FORBIDDEN_DOMAINS = [
-    'twitch.tv',
-    'chrome.google.com'
-];
+var browserBackend = require('browserBackend');
+
+
+var FORBIDDEN_TWITCH_DOMAIN = 'twitch.tv';
 var VALID_URL_TEST_REGEX = /^(http|https)/i;
 var URL_EXTRACTION_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\s\/]+(?:\/[^\s\/]+)*)\/*$/i;
 var URL_REPLACEMENT_CHARACTERS = {
@@ -59,11 +59,14 @@ function createRegexFromRule(rule) {
 }
 
 function isForbiddenURL(url) {
-    var result = false;
+    var result = url.indexOf(FORBIDDEN_TWITCH_DOMAIN) !== -1;
 
-    for (var i = 0; i < FORBIDDEN_DOMAINS.length; ++i) {
-        if (url.indexOf(FORBIDDEN_DOMAINS[i]) !== -1) {
-            result = true;
+    if (result === false) {
+        for (var i = 0; i < browserBackend.forbiddenDomains.length; ++i) {
+            if (url.indexOf(browserBackend.forbiddenDomains[i]) !== -1) {
+                result = true;
+                break;
+            }
         }
     }
 

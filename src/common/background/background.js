@@ -5,7 +5,7 @@ var extensionSettings = require('extensionSettings');
 var domainFilter = require('./domainFilter');
 
 
-var CONTENTSCRIPT = 'contentscript.js';
+var CONTENTSCRIPT = '/contentscript.js';
 var pendingTabs = [];
 var userSettings;
 var ready = false;
