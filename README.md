@@ -4,7 +4,7 @@ A browser extension which replaces all Twitch.tv emote phrases with their actual
 
 Currently supports Chrome, Firefox, and Opera. Edge support is planned, Safari support is not.
 
-##  Installation
+##  Building
 
 Global Twitch Emotes is built using Node.js. Download and install the latest version of Node.js [here](https://nodejs.org/).
 
@@ -22,6 +22,9 @@ Global Twitch Emotes is built using Node.js. Download and install the latest ver
 
     *Release builds are minified and zipped into a .zip file for distribution, whilst test builds are not minified, to allow for easier debugging.*
 
+##  Installation and Testing
+
+Most browser will allow you to sideload unpacked extensions for testing. Please refer to your browser's extension installation guide.
 
 ##  Support
 
