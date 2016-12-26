@@ -12,15 +12,11 @@ Global Twitch Emotes is built using Node.js. Download and install the latest ver
 2.  Run ```npm install```
 3.  Then run <pre>npm run-script build_<b>BROWSER VERSION</b></pre> 
 
-*   **BROWSER:**
-
-*   The browser type you want to build for.
+    **BROWSER:** The browser type you want to build for.
 
     `chrome` | `firefox`
 
-*   **VERSION:**
-
-    Extension version to build.
+    **VERSION:** Extension version to build.
 
     `test` | `release`
 
