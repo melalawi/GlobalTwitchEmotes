@@ -11,18 +11,20 @@ function init() {
     $emoteBrowser = $('#emoteBrowser');
 
     $emoteBrowser.on('change', $emoteBrowser, function(event) {
-        var image = this.files[0];
-        var fileReader = new FileReader();
+        if (this.files.length > 0) {
+            var image = this.files[0];
+            var fileReader = new FileReader();
 
-        fileReader.addEventListener('loadend', function() {
-            if (image.size > MAX_EMOTE_SIZE) {
-                this.attr('src', 'null');
-            } else {
-                this.attr('src', fileReader.result);
-            }
-        }.bind(event.data.data('emote')), false);
+            fileReader.addEventListener('loadend', function() {
+                if (image.size > MAX_EMOTE_SIZE) {
+                    this.attr('src', 'null');
+                } else {
+                    this.attr('src', fileReader.result);
+                }
+            }.bind(event.data.data('emote')), false);
 
-        fileReader.readAsDataURL(image);
+            fileReader.readAsDataURL(image);
+        }
     });
 
     $table = $('#customEmotesList').EditableTable({

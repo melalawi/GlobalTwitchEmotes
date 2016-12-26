@@ -85,11 +85,15 @@ function isIllegalNode(n) {
     } else if (n.nodeType === Node.TEXT_NODE && n.nodeValue.replace(/\s/g, '').length < 2) {
         // Textnodes with little to no text can be disregarded
         isIllegal = true;
-    } else if (node.className && node.className.indexOf('GTETipsy') !== -1) {
+    } else if (getClassName(node).indexOf('GTETipsy') !== -1) {
         isIllegal = true;
     }
 
     return isIllegal;
+}
+
+function getClassName(node) {
+    return node.className.baseVal || node.className || '';
 }
 
 module.exports = {

@@ -8,7 +8,11 @@ var FORBIDDEN_DOMAINS = [
 
 function injectScriptToTab(tab, script) {
     return new Promise(function(resolve, reject) {
-        chrome.tabs.executeScript(tab.id, {file: script, runAt: 'document_idle'}, function() {
+        chrome.tabs.executeScript(tab.id, {
+            file: script,
+            runAt: 'document_idle',
+            allFrames: true
+        }, function() {
             if (!chrome.runtime.lastError) {
                 resolve(tab);
             }

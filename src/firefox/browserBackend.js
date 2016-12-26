@@ -9,7 +9,8 @@ var FORBIDDEN_DOMAINS = [
 function injectScriptToTab(tab, script) {
     return browser.tabs.executeScript(tab.id, {
         file: script,
-        runAt: 'document_idle'
+        runAt: 'document_idle',
+        allFrames: true
     });
 }
 

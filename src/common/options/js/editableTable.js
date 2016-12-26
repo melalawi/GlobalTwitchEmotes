@@ -82,12 +82,21 @@ var METHODS = {
                 $emote.on('error', {emoteError: $emoteError, emote: $emote}, function(event) {
                     event.data.emote.attr('src', '');
                     event.data.emote.hide();
-                    event.data.emoteError.text('Invalid Emote');
+                    if (this.naturalWidth > 80 || this.naturalHeight > 80) {
+                        event.data.emoteError.text('Emote too large');
+                    } else {
+                        event.data.emoteError.text('Invalid Emote');
+                    }
                 });
 
                 $emote.on('load', {emoteError: $emoteError, emote: $emote}, function(event) {
-                    event.data.emote.show();
-                    event.data.emoteError.text('');
+                    if (this.naturalWidth > 80 || this.naturalHeight > 80) {
+                        event.data.emote.attr('src', '');
+                        event.data.emote.hide();
+                    } else {
+                        event.data.emote.show();
+                        event.data.emoteError.text('');
+                    }
                 });
 
                 $input.append($emote);

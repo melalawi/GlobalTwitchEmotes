@@ -2,7 +2,7 @@
 var pageObserver = require('./pageObserver');
 
 
-var EMOTE_CSS = 'display:inline !important;max-height:32px !important;max-width:32px !important;height:auto !important;width:auto !important;opacity:1 !important;outline:0 !important;border:0 !important;margin:0 !important;padding:0 !important;z-index:auto !important;visibility:visible !important;';
+var EMOTE_CSS = 'display:inline !important;height:auto !important;width:auto !important;max-height:100% !important;max-width:auto !important;opacity:1 !important;outline:0 !important;border:0 !important;margin:0 !important;padding:0 !important;z-index:auto !important;visibility:visible !important;';
 var STRING_SEPARATOR = /([\w]|[:;)(\\\/<>73#\|\]])+/g;
 var TIPSY_DATA_ATTRIBUTE = 'gte-tipsy-text';
 var emoteLibrary;
