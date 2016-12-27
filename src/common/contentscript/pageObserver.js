@@ -93,7 +93,13 @@ function isIllegalNode(n) {
 }
 
 function getClassName(node) {
-    return node.className.baseVal || node.className || '';
+    var className = '';
+
+    if (node && node.className) {
+        className = node.className.baseVal || node.className;
+    }
+
+    return className;
 }
 
 module.exports = {

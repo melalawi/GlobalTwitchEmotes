@@ -50,7 +50,6 @@ function applyJSONToPage(text) {
             settingsInterface.setPageSettings(jsonifiedSettings);
             $saveButtons.eq(0).trigger('click');
             triggerValidImportNotification();
-
         }
     } catch(e) {
         triggerInvalidImportNotification();
