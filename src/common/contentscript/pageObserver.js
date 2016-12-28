@@ -46,7 +46,6 @@ function addMutatedNode(node) {
     }
 }
 
-//TODO slow on google images
 function iterateThroughNodes() {
     if (currentlyInvestigating === false) {
         currentlyInvestigating = true;

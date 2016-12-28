@@ -45,8 +45,14 @@ function listenForMessages(callback) {
     }
 
     messageCallback = callback;
-    messageListener = chrome.runtime.onMessage.addListener(function(message) {
-        messageCallback(message);
+    messageListener = chrome.runtime.onMessage.addListener(messageCallback);
+}
+
+function sendMessage(message) {
+    return new Promise(function(resolve, reject) {
+        chrome.runtime.sendMessage(message, function(response) {
+            resolve(response);
+        });
     });
 }
 
@@ -55,5 +61,6 @@ module.exports = {
     listenForTabs: listenForTabs,
     sendMessageToTab: sendMessageToTab,
     listenForMessages: listenForMessages,
+    sendMessage: sendMessage,
     forbiddenDomains: FORBIDDEN_DOMAINS
 };

@@ -1,11 +1,8 @@
 'use strict';
-var httpRequest = require('../httpRequest');
-
-
 var URL = 'https://api.betterttv.net/2/emotes';
 
 
-function extractEmotesFromJSON(json) {
+function parseEmotes(json) {
     var emotes = json.emotes;
     var templateURL = 'https:' + json.urlTemplate;
     var result = {};
@@ -22,20 +19,12 @@ function extractEmotesFromJSON(json) {
     return result;
 }
 
-function buildEmoteList() {
-    return new Promise(function(resolve, reject) {
-        var getRequestPromise = httpRequest(URL);
-
-        getRequestPromise.then(function(responseText) {
-            resolve(extractEmotesFromJSON(JSON.parse(responseText)));
-        }, function() {
-            console.log('Could not reach betterttv.net');
-            resolve({});
-        });
-    });
-}
 
 module.exports = {
-    build: buildEmoteList,
-    requiresChannelList: false
+    name: 'bttvGlobal',
+    parseEmotes: parseEmotes,
+    getURL: function() {
+        return URL;
+    },
+    requiresChannel: false
 };

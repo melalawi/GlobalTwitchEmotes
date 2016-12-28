@@ -7,22 +7,30 @@
             | Twitch-style Emote Tooltips
         .tooltipTrigger(data-tooltip-html='#twitchStyleTooltipsCheckboxTooltipHTML') ?
 
-    strong
-        div Import/Export Settings
-        .tooltipTrigger(data-tooltip-html='#importExportTooltipHTML') ?
+        strong
+            div Import/Export Settings
+            .tooltipTrigger(data-tooltip-html='#importExportTooltipHTML') ?
 
-    input.fileBrowser#importBrowser(type='file', accept='text/*')
+        input.fileBrowser#importBrowser(type='file', accept='text/*')
 
-    #importExport
-        .importExportContainer#export
-            .importExportIcon
-            input#exportButton(type='button', value='Export Settings', alt='Export Settings to File', title='Export Settings to File')
-        .importExportContainer#import
-            .importExportIcon
-            input#importButton(type='button', value='Import Settings', alt='Import Settings from File', title='Import Settings from File')
-            #importStatus
-                div.statusIcon
-                div.statusText
+        #importExport
+            .importExportContainer#export
+                .importExportIcon
+                input#exportButton(type='button', value='Export Settings', alt='Export Settings to File', title='Export Settings to File')
+            .importExportContainer#import
+                .importExportIcon
+                input#importButton(type='button', value='Import Settings', alt='Import Settings from File', title='Import Settings from File')
+                #importStatus
+                    div.statusIcon
+                    div.statusText
+
+        strong
+            div Emote Endpoint Statuses
+            .tooltipTrigger(data-tooltip-html='#emoteHostStatusTooltipHTML') ?
+
+        #hostStatusTable
+            #hostNameColumn
+            #hostStatusColumn
 
     input.saveSettingsButton(type='button', value='Save Settings')
 
@@ -31,3 +39,4 @@
         .imageContainer
             img(src='images/tooltipExample.png')
         | Enables Twitch-Style Tooltips on emotes when hovered over.
+    #emoteHostStatusTooltipHTML.tooltipHTML Current status of the various endpoints Global Twitch Emotes calls. Refresh this page to update this table.

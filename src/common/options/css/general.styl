@@ -57,3 +57,31 @@ img.kappa
 
 #importStatus .statusIcon.error
     background-image url('/options/images/cross.png')
+
+#hostStatusTable
+    display flex
+    flex-direction row
+
+    font-size 2.0em
+
+    background $tableGradient
+
+#hostStatusTable .header
+    font-weight bold
+
+#hostNameColumn
+    padding-right 1.0em
+
+#hostNameColumn > *, #hostStatusColumn > *
+    padding 0.1em 0
+
+#hostStatusColumn .error
+    color $errorColor
+    font-weight bold
+
+#hostStatusColumn .success
+    color $navbarButtonActiveColor
+    font-weight bold
+
+#hostStatusColumn .inactive
+    opacity 0.75

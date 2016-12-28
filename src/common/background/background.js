@@ -15,6 +15,7 @@ function init() {
     var settingsPromise = extensionSettings.getSettings();
 
     browserBackend.listenForTabs(newTabEvent);
+    browserBackend.listenForMessages(respondToMessage);
 
     settingsPromise.then(function(settings) {
         var libraryPromise = emoteLibrary.update(settings);
@@ -63,6 +64,18 @@ function flushPendingTabs() {
     }
 
     pendingTabs = [];
+}
+
+function respondToMessage(message, sender, responseCallback) {
+    if (message === 'emotes') {
+        if (ready === true) {
+            responseCallback(emoteLibrary.getEmotes());
+        } else {
+            responseCallback({
+                error: 'Emotes not ready'
+            });
+        }
+    }
 }
 
 

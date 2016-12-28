@@ -36,10 +36,16 @@ function listenForMessages(callback) {
     messageListener = browser.runtime.onMessage.addListener(messageCallback);
 }
 
+function sendMessage(message) {
+    return browser.runtime.sendMessage(message);
+}
+
+
 module.exports = {
     injectScriptToTab: injectScriptToTab,
     listenForTabs: listenForTabs,
     sendMessageToTab: sendMessageToTab,
     listenForMessages: listenForMessages,
+    sendMessage: sendMessage,
     forbiddenDomains: FORBIDDEN_DOMAINS
 };

@@ -1,11 +1,8 @@
 'use strict';
-var httpRequest = require('../httpRequest');
-
-
 var URL = 'https://api.frankerfacez.com/v1/set/global';
 
 
-function extractEmotesFromJSON(json) {
+function parseEmotes(json) {
     var sets = json.sets;
     var result = {};
 
@@ -27,20 +24,12 @@ function extractEmotesFromJSON(json) {
     return result;
 }
 
-function buildEmoteList() {
-    return new Promise(function(resolve, reject) {
-        var getRequestPromise = httpRequest(URL);
-
-        getRequestPromise.then(function(responseText) {
-            resolve(extractEmotesFromJSON(JSON.parse(responseText)));
-        }, function() {
-            console.log('Could not reach frankerfacez.com');
-            resolve({});
-        });
-    });
-}
 
 module.exports = {
-    build: buildEmoteList,
-    requiresChannelList: false
+    name: 'ffzGlobal',
+    parseEmotes: parseEmotes,
+    getURL: function() {
+        return URL;
+    },
+    requiresChannel: false
 };
