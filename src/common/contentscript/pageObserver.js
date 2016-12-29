@@ -94,8 +94,8 @@ function isIllegalNode(n) {
 function getClassName(node) {
     var className = '';
 
-    if (node && node.className) {
-        className = node.className.baseVal || node.className;
+    if (node) {
+        className = node.classList.value;
     }
 
     return className;

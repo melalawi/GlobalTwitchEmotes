@@ -14,26 +14,23 @@ describe('pageObserver.getClassName Tests', function() {
         expect(getClassName()).to.equal('');
     });
 
-    it('Empty node', function() {
-        expect(getClassName({})).to.equal('');
-    });
-
-    it('Single ClassName node', function() {
+    it('No classnames', function() {
         var node = {
-            className: 'foo'
-        };
-
-        expect(getClassName(node)).to.equal('foo');
-    });
-
-    it('SVGAnimatedString node', function() {
-        var node = {
-            className: {
-                animVal: 'foo',
-                baseVal: 'bar'
+            classList: {
+                value: ''
             }
         };
 
-        expect(getClassName(node)).to.equal('bar');
+        expect(getClassName(node)).to.equal('');
+    });
+
+    it('Has classnames', function() {
+        var node = {
+            classList: {
+                value: 'foo bar'
+            }
+        };
+
+        expect(getClassName(node)).to.equal('foo bar');
     });
 });
