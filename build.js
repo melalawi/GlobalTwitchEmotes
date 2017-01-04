@@ -32,10 +32,10 @@ function init() {
         process.exit();
     }
 
-    var browser = process.argv[3];
+    var browser = process.argv.length === 4 ? process.argv[3] : 'all';
     var buildMode = VALID_BUILD_MODES.indexOf(process.argv[2].toLowerCase()) === -1 ? 'test': process.argv[2].toLowerCase();
 
-    if (VALID_BROWSERS.indexOf(browser) === -1) {
+    if (browser === 'all') {
         console.log('No browser was specified (or specified browser is not one of [' + VALID_BROWSERS.join(' | ') + '])');
         console.log('Building for all browsers...');
 
