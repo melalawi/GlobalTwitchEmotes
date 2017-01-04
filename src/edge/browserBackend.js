@@ -7,10 +7,14 @@ var FORBIDDEN_DOMAINS = [
 
 
 function injectScriptToTab(tab, script) {
-    return browser.tabs.executeScript(tab.id, {
-        file: script,
-        runAt: 'document_idle',
-        allFrames: false
+    return new Promise(function(resolve, reject) {
+        browser.tabs.executeScript(tab.id, {
+            file: script,
+            runAt: 'document_idle',
+            allFrames: false
+        }, function() {
+            resolve(tab);
+        });
     });
 }
 
@@ -23,7 +27,11 @@ function listenForTabs(callback) {
 }
 
 function sendMessageToTab(tab, message) {
-    return browser.tabs.sendMessage(tab.id, message);
+    return new Promise(function(resolve, reject) {
+        browser.tabs.sendMessage(tab.id, message, function() {
+            resolve(tab);
+        });
+    });
 }
 
 
@@ -37,7 +45,11 @@ function listenForMessages(callback) {
 }
 
 function sendMessage(message) {
-    return browser.runtime.sendMessage(message);
+    return new Promise(function(resolve, reject) {
+        browser.runtime.sendMessage(message, function(response) {
+            resolve(response);
+        });
+    });
 }
 
 

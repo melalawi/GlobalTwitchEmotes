@@ -18,6 +18,7 @@ function init() {
             if (settings.twitchStyleTooltips === true) {
                 tipsy.init();
             }
+
             emoteParser.run(backgroundMessage, settings);
         });
     });

@@ -11,7 +11,7 @@ function injectScriptToTab(tab, script) {
         chrome.tabs.executeScript(tab.id, {
             file: script,
             runAt: 'document_idle',
-            allFrames: true
+            allFrames: false
         }, function() {
             if (!chrome.runtime.lastError) {
                 resolve(tab);

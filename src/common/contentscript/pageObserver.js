@@ -5,23 +5,45 @@ var PAGE_OBSERVER_PARAMETERS = {
     childList: true,
     subtree: true
 };
+var TREE_WALKER_FILTER = {
+    acceptNode: treeWalkerFilterFunction
+};
 var ILLEGAL_TAGNAMES = [
     'IMG', 'SCRIPT', 'TEXTAREA', 'STYLE'
 ];
 var mutationObserver;
 var nodeCallback;
+var newFrameCallback;
 var mutatedNodes = [];
 var currentlyInvestigating = false;
 
 
-function observePage(callback) {
-    nodeCallback = callback;
+function startMutationObserver(callback) {
     mutationObserver = new MutationObserver(onPageChange);
+    nodeCallback = callback;
 
-    mutationObserver.observe(document.body, PAGE_OBSERVER_PARAMETERS);
-    mutatedNodes.push(document.body);
+    observeWindow(window);
+}
 
-    setTimeout(iterateThroughNodes, 1);
+function onNewFrame(callback) {
+    newFrameCallback = callback;
+}
+
+function observeWindow(windowObject) {
+    try {
+        var body = windowObject.document.body;
+
+        mutationObserver.observe(body, PAGE_OBSERVER_PARAMETERS);
+        mutatedNodes.push(body);
+
+        if (newFrameCallback) {
+            newFrameCallback(body);
+        }
+
+        setTimeout(iterateThroughPendingNodes, 1);
+    } catch (domException) {
+        console.log(domException);
+    }
 }
 
 function onPageChange(changes) {
@@ -37,7 +59,7 @@ function onPageChange(changes) {
         }
     }
 
-    setTimeout(iterateThroughNodes, 1);
+    setTimeout(iterateThroughPendingNodes, 1);
 }
 
 function addMutatedNode(node) {
@@ -46,34 +68,63 @@ function addMutatedNode(node) {
     }
 }
 
-function iterateThroughNodes() {
+function iterateThroughPendingNodes() {
     if (currentlyInvestigating === false) {
         currentlyInvestigating = true;
+
         while (mutatedNodes.length > 0) {
             var nextNode = mutatedNodes.pop();
 
             if (nextNode.nodeType === Node.TEXT_NODE) {
                 nodeCallback(nextNode);
             } else if (nextNode.nodeType === Node.ELEMENT_NODE) {
-                var treeWalker = document.createTreeWalker(nextNode, NodeFilter.SHOW_TEXT, null, false);
-                var treeChild;
-
-                while (treeChild = treeWalker.nextNode()) {
-                    if (isIllegalNode(treeChild) === false) {
-                        mutatedNodes.push(treeChild);
-                    }
+                if (nextNode.tagName === 'IFRAME') {
+                    observeWindow(nextNode.contentWindow);
+                } else {
+                    mutatedNodes = mutatedNodes.concat(runTreeWalker(nextNode));
                 }
             }
         }
+
         currentlyInvestigating = false;
     }
 }
 
+function runTreeWalker(node) {
+    var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT + NodeFilter.SHOW_ELEMENT, TREE_WALKER_FILTER, false);
+    var treeChild;
+    var results = [];
+
+    while (treeChild = treeWalker.nextNode()) {
+        if (isIllegalNode(treeChild) === false) {
+            results.push(treeChild);
+        }
+    }
+
+    return results;
+}
+
+function treeWalkerFilterFunction(node) {
+    var filter = NodeFilter.FILTER_SKIP;
+
+    if (node.nodeType === Node.TEXT_NODE) {
+        filter = NodeFilter.FILTER_ACCEPT;
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.tagName === 'IFRAME') {
+            filter = NodeFilter.FILTER_ACCEPT;
+        }
+    }
+
+    return filter;
+}
+
 function isIllegalNode(n) {
     var isIllegal = false;
-    var node = n.nodeType === Node.TEXT_NODE ? n.parentNode : n;
+    var node = n != null && n.nodeType === Node.TEXT_NODE ? n.parentNode : n;
 
-    if (!node) {
+    if (n == null) {
+        isIllegal = true;
+    } else if (!node) {
         isIllegal = false;
     } else if (ILLEGAL_TAGNAMES.indexOf(node.tagName) !== -1) {
         isIllegal = true;
@@ -84,23 +135,14 @@ function isIllegalNode(n) {
     } else if (n.nodeType === Node.TEXT_NODE && n.nodeValue.replace(/\s/g, '').length < 2) {
         // Textnodes with little to no text can be disregarded
         isIllegal = true;
-    } else if (getClassName(node).indexOf('GTETipsy') !== -1) {
+    } else if (node.classList.contains('GTETipsy') === true) {
         isIllegal = true;
     }
 
     return isIllegal;
 }
 
-function getClassName(node) {
-    var className = '';
-
-    if (node) {
-        className = node.classList.value;
-    }
-
-    return className;
-}
-
 module.exports = {
-    observe: observePage
+    observe: startMutationObserver,
+    onNewFrame: onNewFrame
 };

@@ -1,27 +1,18 @@
 {
     "manifest_version": 2,
 
-    "applications": {
-        "gecko": {
-            "id": "gte@melalawi.com",
-            "strict_min_version": "50.0",
-            "strict_max_version": "50.*"
-        }
-    },
-
     "name": "Global Twitch Emotes",
     "short_name": "GTE",
+    "author": "Mohamed El-Alawi",
     "description": "Twitch culture wherever you go! This extension replaces all Twitch.tv emote phrases with their actual emoticons.",
     "version": "1.2.0",
 
     "background": {
+        "persistent": true,
         "scripts": ["background.js"]
     },
 
-    "options_ui": {
-        "page": "options/index.html",
-        "open_in_tab": true
-    },
+    "options_page": "options/index.html",
 
     "icons": {
         "16": "logo/16.png",
