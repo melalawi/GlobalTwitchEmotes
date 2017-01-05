@@ -2,25 +2,28 @@
 var browserBackend = require('browserBackend');
 var extensionSettings = require('extensionSettings');
 var emoteParser = require('./emoteParser');
+var pageObserver = require('./pageObserver');
 var tipsy = require('./tipsy.js');
 
 
-var backgroundMessage;
-
-
 function init() {
-    browserBackend.listenForMessages(function(message) {
-        var settingsPromise = extensionSettings.getSettings();
+    var promises = [];
+    var settingsPromise = extensionSettings.getSettings();
 
-        backgroundMessage = message;
+    promises.push(browserBackend.sendMessageToBackground('emotes'));
+    promises.push(settingsPromise);
 
-        settingsPromise.then(function(settings) {
-            if (settings.twitchStyleTooltips === true) {
-                tipsy.init();
-            }
+    settingsPromise.then(function(settings) {
+        if (settings.twitchStyleTooltips === true) {
+            tipsy.init();
+        }
+    });
 
-            emoteParser.run(backgroundMessage, settings);
-        });
+    Promise.all(promises).then(function(data) {
+        var emotes = data[0];
+        var settings = data[1];
+
+        emoteParser.run(emotes, settings);
     });
 }
 

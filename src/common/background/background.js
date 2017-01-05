@@ -6,7 +6,7 @@ var domainFilter = require('./domainFilter');
 
 
 var CONTENTSCRIPT = '/contentscript.js';
-var pendingTabs = [];
+var pendingCallbacks = [];
 var userSettings;
 var ready = false;
 
@@ -14,7 +14,7 @@ var ready = false;
 function init() {
     var settingsPromise = extensionSettings.getSettings();
 
-    browserBackend.listenForTabs(newTabEvent);
+    browserBackend.listenForTabs(instantiateGTEToFrame);
     browserBackend.listenForMessages(respondToMessage);
 
     settingsPromise.then(function(settings) {
@@ -42,38 +42,28 @@ function respondToSettingsChanges(changes) {
     });
 }
 
-function newTabEvent(tab) {
-    if (ready) {
-        instantiateGTEToTab(tab);
-    } else {
-        pendingTabs.push(tab);
-    }
-}
-
-function instantiateGTEToTab(tab) {
+function instantiateGTEToFrame(tab) {
     if (domainFilter.isFiltered(tab.url, userSettings) === false) {
-        browserBackend.injectScriptToTab(tab, CONTENTSCRIPT).then(function() {
-            browserBackend.sendMessageToTab(tab, emoteLibrary.getEmotes());
-        });
+        browserBackend.injectScriptToTab(CONTENTSCRIPT, tab);
     }
 }
 
 function flushPendingTabs() {
-    for (var i = 0; i < pendingTabs.length; ++i) {
-        instantiateGTEToTab(pendingTabs[i]);
+    for (var i = 0; i < pendingCallbacks.length; ++i) {
+        pendingCallbacks[i](emoteLibrary.getEmotes());
     }
 
-    pendingTabs = [];
+    pendingCallbacks = [];
 }
 
 function respondToMessage(message, sender, responseCallback) {
+    console.log(sender.tab.id + ' (frame ' + sender.tab.frameId + ') says "' + message + '"');
+
     if (message === 'emotes') {
         if (ready === true) {
             responseCallback(emoteLibrary.getEmotes());
         } else {
-            responseCallback({
-                error: 'Emotes not ready'
-            });
+            pendingCallbacks.push(responseCallback);
         }
     }
 }

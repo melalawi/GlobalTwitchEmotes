@@ -14,7 +14,7 @@ var tipsy = null;
 
 function init() {
     if (tipsy === null) {
-        pageObserver.onNewFrame(attachEventListener);
+        pageObserver.onNewWindow(attachEventListener);
 
         createTipsy();
     }

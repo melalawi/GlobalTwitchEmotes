@@ -6,7 +6,7 @@ var FORBIDDEN_DOMAINS = [
 ];
 
 
-function injectScriptToTab(tab, script) {
+function injectScriptToTab(script, tab) {
     return new Promise(function(resolve, reject) {
         chrome.tabs.executeScript(tab.id, {
             file: script,
@@ -28,7 +28,7 @@ function listenForTabs(callback) {
     });
 }
 
-function sendMessageToTab(tab, message) {
+function sendMessageToTab(message, tab) {
     return new Promise(function(resolve, reject) {
         chrome.tabs.sendMessage(tab.id, message, function() {
             if (!chrome.runtime.lastError) {
@@ -48,7 +48,7 @@ function listenForMessages(callback) {
     messageListener = chrome.runtime.onMessage.addListener(messageCallback);
 }
 
-function sendMessage(message) {
+function sendMessageToBackground(message) {
     return new Promise(function(resolve, reject) {
         chrome.runtime.sendMessage(message, function(response) {
             resolve(response);
@@ -56,11 +56,12 @@ function sendMessage(message) {
     });
 }
 
+
 module.exports = {
     injectScriptToTab: injectScriptToTab,
     listenForTabs: listenForTabs,
     sendMessageToTab: sendMessageToTab,
     listenForMessages: listenForMessages,
-    sendMessage: sendMessage,
+    sendMessageToBackground: sendMessageToBackground,
     forbiddenDomains: FORBIDDEN_DOMAINS
 };

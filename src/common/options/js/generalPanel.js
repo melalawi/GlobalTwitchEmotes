@@ -66,14 +66,8 @@ function updateStatuses() {
 }
 
 function getEmotes(successCallback) {
-    browserBackend.sendMessage('emotes').then(function(response) {
-        if (response.hasOwnProperty('error')) {
-            setTimeout(function() {
-                getEmotes(successCallback);
-            }, 250);
-        } else {
-            successCallback(response);
-        }
+    browserBackend.sendMessageToBackground('emotes').then(function(response) {
+        successCallback(response);
     });
 }
 

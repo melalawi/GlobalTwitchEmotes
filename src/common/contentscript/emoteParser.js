@@ -19,13 +19,14 @@ function runParser(extensionEmotes, extensionSettings) {
 
 function searchAndParseEmoteStrings(node) {
     var nodeText = node.nodeValue;
+    var currentNode = node;
 
     var nextWord;
 
-    wordLoop: while ((nextWord = STRING_SEPARATOR.exec(nodeText)) !== null) {
+    wordsInNodeLoop: while ((nextWord = STRING_SEPARATOR.exec(nodeText)) !== null) {
         var emote = nextWord[0];
 
-        for (var host in emoteLibrary) {
+        emoteLookupLoop: for (var host in emoteLibrary) {
             if (emoteLibrary.hasOwnProperty(host)) {
                 var allEmotes = emoteLibrary[host];
 
@@ -36,13 +37,19 @@ function searchAndParseEmoteStrings(node) {
                         // Reset the regex BEFORE continuing in order to make sure other nodes are checked properly
                         STRING_SEPARATOR.lastIndex = 0;
 
-                        parseEmoteString(node, nextWord.index, emote, emoteData.channel, emoteData.url);
+                        currentNode = parseEmoteString(currentNode, nextWord.index, emote, emoteData.channel, emoteData.url);
 
-                        break wordLoop;
+                        if (currentNode == null || currentNode.nodeValue.length < 2) {
+                            break wordsInNodeLoop;
+                        }
+
+                        break emoteLookupLoop;
                     }
                 }
             }
         }
+
+        nodeText = currentNode.nodeValue;
     }
 }
 
@@ -50,21 +57,23 @@ function parseEmoteString(node, index, emoteKey, emoteChannel, emoteURL) {
     var parent = node.parentNode;
     var nodeText = node.nodeValue;
     var emoteNode = createEmote(emoteKey, emoteChannel, emoteURL);
-    var nextNode;
+    var postEmoteTextNode = null;
 
     if (parent === null) {
         return;
     }
 
-    googleSearchResultsQOLFix(parent);
+    node.isGTENode = true;
 
     parent.insertBefore(emoteNode, node.nextSibling);
 
     // Checks for and arranges text after the new emote
     if (index + emoteKey.length < nodeText.length) {
-        nextNode = document.createTextNode(nodeText.substring(index + emoteKey.length));
+        postEmoteTextNode = document.createTextNode(nodeText.substring(index + emoteKey.length));
 
-        parent.insertBefore(nextNode, emoteNode.nextSibling);
+        postEmoteTextNode.isGTENode = true;
+
+        parent.insertBefore(postEmoteTextNode, emoteNode.nextSibling);
     }
 
     // If there's no text before the new emote, remove it TODO no text after emote remove
@@ -73,6 +82,8 @@ function parseEmoteString(node, index, emoteKey, emoteChannel, emoteURL) {
     } else {
         node.nodeValue = nodeText.substring(0, index);
     }
+
+    return postEmoteTextNode;
 }
 
 function createEmote(emoteKey, emoteChannel, emoteURL) {
@@ -100,12 +111,6 @@ function generateTipsyAlt(emoteKey, emoteChannel) {
     }
 
     return result;
-}
-
-function googleSearchResultsQOLFix(node) {
-    if (node.parentNode.tagName === 'CITE') {
-        node.parentNode.parentNode.style.height = 'auto';
-    }
 }
 
 module.exports = {
