@@ -40,6 +40,39 @@ function sendMessageToBackground(message) {
     return browser.runtime.sendMessage(message);
 }
 
+function getActiveTab() {
+    return new Promise(function(resolve, reject) {
+        browser.tabs.query({
+            active: true,
+            lastFocusedWindow: true
+        }).then(function(tabs) {
+            if (tabs.length === 0) {
+                reject();
+            } else {
+                resolve(tabs[0]);
+            }
+        });
+    });
+}
+
+function openOptionsPage() {
+    browser.runtime.openOptionsPage();
+}
+
+function setBadgeText(associatedTab, str, backgroundColor) {
+    var text = str.toString().length > 4 ? '∞' : str.toString();
+
+    browser.browserAction.setBadgeBackgroundColor({
+        color: backgroundColor,
+        tabId: associatedTab.id
+    });
+
+    browser.browserAction.setBadgeText({
+        text: text,
+        tabId: associatedTab.id
+    });
+}
+
 
 module.exports = {
     injectScriptToTab: injectScriptToTab,
@@ -47,5 +80,8 @@ module.exports = {
     sendMessageToTab: sendMessageToTab,
     listenForMessages: listenForMessages,
     sendMessageToBackground: sendMessageToBackground,
+    getActiveTab: getActiveTab,
+    openOptionsPage: openOptionsPage,
+    setBadgeText: setBadgeText,
     forbiddenDomains: FORBIDDEN_DOMAINS
 };

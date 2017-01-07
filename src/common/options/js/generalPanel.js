@@ -66,7 +66,9 @@ function updateStatuses() {
 }
 
 function getEmotes(successCallback) {
-    browserBackend.sendMessageToBackground('emotes').then(function(response) {
+    browserBackend.sendMessageToBackground({
+        message: 'emotes'
+    }).then(function(response) {
         successCallback(response);
     });
 }

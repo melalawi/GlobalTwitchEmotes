@@ -52,6 +52,42 @@ function sendMessageToBackground(message) {
     });
 }
 
+function getActiveTab() {
+    return new Promise(function(resolve, reject) {
+        browser.tabs.query({
+            active: true,
+            lastFocusedWindow: true
+        }, function(tabs) {
+            if (tabs.length === 0) {
+                reject();
+            } else {
+                resolve(tabs[0]);
+            }
+        });
+    });
+}
+
+function openOptionsPage() {
+    browser.tabs.create({
+        active: true,
+        url:  browser.extension.getURL('options/index.html')
+    }, null);
+}
+
+function setBadgeText(associatedTab, str, backgroundColor) {
+    var text = str.toString().length > 4 ? '∞' : str.toString();
+
+    browser.browserAction.setBadgeBackgroundColor({
+        color: backgroundColor,
+        tabId: associatedTab.id
+    });
+
+    browser.browserAction.setBadgeText({
+        text: text,
+        tabId: associatedTab.id
+    });
+}
+
 
 module.exports = {
     injectScriptToTab: injectScriptToTab,
@@ -59,5 +95,8 @@ module.exports = {
     sendMessageToTab: sendMessageToTab,
     listenForMessages: listenForMessages,
     sendMessageToBackground: sendMessageToBackground,
+    getActiveTab: getActiveTab,
+    openOptionsPage: openOptionsPage,
+    setBadgeText: setBadgeText,
     forbiddenDomains: FORBIDDEN_DOMAINS
 };

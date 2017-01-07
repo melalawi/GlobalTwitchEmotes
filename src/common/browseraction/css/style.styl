@@ -1,0 +1,114 @@
+@import url('http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,700,300,600,800,400')
+
+$backgroundColor = #f5f5f5
+$footerColor = #dedede
+$footerBorderColor = #c0c0c0
+$GTEPurple = #7050a0
+$buttonBorderColor = #bda9c5
+$outlineColor = #433265
+
+*
+    padding 0
+    margin 0
+    box-sizing border-box
+
+    font-family 'Open Sans', sans-serif
+    outline-color $outlineColor
+
+body
+    display flex
+    flex-direction column
+    justify-content center
+    align-items center
+
+    font-size 75%
+
+    background-color $backgroundColor
+
+h1
+    margin 0 0.25em
+
+    font-size 1.75em
+    white-space nowrap
+
+b
+    color $GTEPurple
+    font-size 1.1em
+
+input[type=button]
+    padding 0.25em
+    margin 0.1em 0
+    outline 0
+
+    background-color $backgroundColor
+    background-size contain
+    background-position center center
+    background-repeat no-repeat
+    border 1px solid $buttonBorderColor
+    border-radius 2px
+
+    cursor pointer
+
+input[type=button].refreshButton
+    margin 1.0em
+    padding 0
+
+    width 2.5em
+    height 2.5em
+
+    border 0
+    outline 0
+    background-color rgba(0, 0, 0, 0)
+    background-image url('/assets/images/refresh.png')
+
+#content
+    width 100%
+
+    display flex
+    flex-direction column
+    align-items stretch
+
+#content > *
+    display flex
+    flex-direction column
+    justify-content space-around
+    align-items center
+
+#filterInfo
+    margin 0.5em 0.25em
+
+    white-space nowrap
+    font-size 1.25em
+
+.error
+    padding 2.0em 0
+
+    font-style italic
+    opacity 0.8em
+
+#footer
+    margin-top 0.5em
+    padding 0.25em
+    width 100%
+
+    display flex
+    flex-direction row
+    justify-content flex-end
+    align-items center
+
+    border-top 1px solid $footerBorderColor
+    background-color $footerColor
+
+#openSettingsButton
+    margin 0
+    padding 0
+
+    width 1.8em
+    height 1.8em
+
+    border 0
+    outline 0
+
+    opacity 0.75
+    background-color rgba(0, 0, 0, 0)
+    background-image url('/assets/images/gear.png')

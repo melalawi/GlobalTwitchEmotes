@@ -10,8 +10,10 @@ function init() {
     var promises = [];
     var settingsPromise = extensionSettings.getSettings();
 
-    promises.push(browserBackend.sendMessageToBackground('emotes'));
     promises.push(settingsPromise);
+    promises.push(browserBackend.sendMessageToBackground({
+        message: 'emotes'
+    }));
 
     settingsPromise.then(function(settings) {
         if (settings.twitchStyleTooltips === true) {
@@ -20,10 +22,21 @@ function init() {
     });
 
     Promise.all(promises).then(function(data) {
-        var emotes = data[0];
-        var settings = data[1];
+        var emotes = data[1];
+        var settings = data[0];
 
+        // Display 0 emotes parsed to begin with
+        updateDisplayedEmoteCount();
+
+        emoteParser.onNewEmoteParsed(updateDisplayedEmoteCount);
         emoteParser.run(emotes, settings);
+    });
+}
+
+function updateDisplayedEmoteCount() {
+    browserBackend.sendMessageToBackground({
+        message: 'setBadgeText',
+        value: emoteParser.getEmoteCount()
     });
 }
 

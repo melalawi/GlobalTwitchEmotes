@@ -2,11 +2,15 @@
 var pageObserver = require('./pageObserver');
 
 
+var COUNTER_UPDATE_COOLDOWN = 1000;
 var EMOTE_CSS = 'display:inline !important;height:auto !important;width:auto !important;max-height:100% !important;max-width:auto !important;opacity:1 !important;outline:0 !important;border:0 !important;margin:0 !important;padding:0 !important;z-index:auto !important;visibility:visible !important;';
 var STRING_SEPARATOR = /([\w]|[:;)(\\\/<>73#\|\]])+/g;
 var TIPSY_DATA_ATTRIBUTE = 'gte-tipsy-text';
+var counterUpdateCallback;
 var emoteLibrary;
 var emoteFilterMode;
+var emoteCount = 0;
+var newEmoteParsedCallback;
 
 
 function runParser(extensionEmotes, extensionSettings) {
@@ -83,6 +87,8 @@ function parseEmoteString(node, index, emoteKey, emoteChannel, emoteURL) {
         node.nodeValue = nodeText.substring(0, index);
     }
 
+    onNewEmote();
+
     return postEmoteTextNode;
 }
 
@@ -99,6 +105,16 @@ function createEmote(emoteKey, emoteChannel, emoteURL) {
     return emote;
 }
 
+function onNewEmote() {
+    emoteCount++;
+
+    if (counterUpdateCallback) {
+        clearTimeout(counterUpdateCallback);
+    }
+
+    counterUpdateCallback = setTimeout(newEmoteParsedCallback, COUNTER_UPDATE_COOLDOWN);
+}
+
 function generateTipsyAlt(emoteKey, emoteChannel) {
     var result;
 
@@ -113,6 +129,16 @@ function generateTipsyAlt(emoteKey, emoteChannel) {
     return result;
 }
 
+function onNewEmoteParsed(callback) {
+    newEmoteParsedCallback = callback;
+}
+
+function getEmoteCount() {
+    return emoteCount;
+}
+
 module.exports = {
-    run: runParser
+    run: runParser,
+    onNewEmoteParsed: onNewEmoteParsed,
+    getEmoteCount: getEmoteCount
 };

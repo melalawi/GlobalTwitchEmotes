@@ -1,4 +1,4 @@
-![Global Twitch Emotes banner](/assets/banner.png)
+![Global Twitch Emotes banner](/marquee.png)
 
 A browser extension which replaces all Twitch.tv emote phrases with their actual emoticons.
 

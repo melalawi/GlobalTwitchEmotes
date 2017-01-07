@@ -6,7 +6,7 @@ var path = require('path');
 var rewire = require('rewire');
 
 
-var pageObserver = rewire(path.join(process.cwd(), 'src/common/contentscript/pageObserver'));
+var pageObserver = rewire(path.join(process.cwd(), 'contentscript/pageObserver'));
 var isIllegalNode = pageObserver.__get__('isIllegalNode');
 
 

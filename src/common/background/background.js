@@ -2,9 +2,10 @@
 var browserBackend = require('browserBackend');
 var emoteLibrary = require('./emoteLibrary');
 var extensionSettings = require('extensionSettings');
-var domainFilter = require('./domainFilter');
+var domainFilter = require('domainFilter');
 
 
+var BADGE_BACKGROUND_COLOR = '#7050a0';
 var CONTENTSCRIPT = '/contentscript.js';
 var pendingCallbacks = [];
 var userSettings;
@@ -57,14 +58,14 @@ function flushPendingTabs() {
 }
 
 function respondToMessage(message, sender, responseCallback) {
-    console.log(sender.tab.id + ' (frame ' + sender.tab.frameId + ') says "' + message + '"');
-
-    if (message === 'emotes') {
+    if (message.message === 'emotes') {
         if (ready === true) {
             responseCallback(emoteLibrary.getEmotes());
         } else {
             pendingCallbacks.push(responseCallback);
         }
+    } else if (message.message = 'setBadgeText') {
+        browserBackend.setBadgeText(sender.tab, message.value, BADGE_BACKGROUND_COLOR);
     }
 }
 

@@ -15,7 +15,6 @@ var BIN_DIRECTORY = __dirname + '/bin/{browser}';
 var BROWSER_SOURCE_DIRECTORY = __dirname + '/src/{browser}';
 var COMMON_DIRECTORY = __dirname + '/src/common';
 var DESTINATION_DIRECTORY = __dirname + '/build/{browser}';
-var OPTIONS_DIRECTORY = __dirname + '/build/{browser}/options';
 var RELEASE_DIRECTORY = __dirname + '/release';
 var VALID_BROWSERS = [
     'webkit', 'edge', 'firefox'
@@ -68,7 +67,6 @@ function build(browser, buildMode) {
         var buildPromises = [];
         var binDirectory = BIN_DIRECTORY.replace('{browser}', browser);
         var destDirectory = DESTINATION_DIRECTORY.replace('{browser}', browser);
-        var optionsDirectory = OPTIONS_DIRECTORY.replace('{browser}', browser);
         var browserSourceDirectory = BROWSER_SOURCE_DIRECTORY.replace('{browser}', browser);
         var minifyCode = buildMode === 'release';
         var firefoxDummyVariable = browser === 'firefox';
@@ -77,22 +75,31 @@ function build(browser, buildMode) {
 
         fs.emptyDirSync(binDirectory);
         fs.emptyDirSync(destDirectory);
-        fs.emptyDirSync(optionsDirectory);
 
         fs.copySync(COMMON_DIRECTORY, binDirectory);
         fs.copySync(browserSourceDirectory, binDirectory);
 
-        fs.mkdirsSync(optionsDirectory + '/css');
-        fs.mkdirsSync(optionsDirectory + '/js');
-        fs.copySync(binDirectory + '/options/assets', optionsDirectory);
+        fs.mkdirsSync(destDirectory + '/browseraction');
+        fs.mkdirsSync(destDirectory + '/browseraction/css');
+        fs.mkdirsSync(destDirectory + '/browseraction/js');
+
+        fs.mkdirsSync(destDirectory + '/options');
+        fs.mkdirsSync(destDirectory + '/options/css');
+        fs.mkdirsSync(destDirectory + '/options/js');
+
+        fs.copySync(binDirectory + '/assets', destDirectory + '/assets');
         fs.copySync(binDirectory + '/metadata', destDirectory);
 
         buildPromises.push(buildScript(binDirectory + '/background/background.js', destDirectory + '/background.js', binDirectory, minifyCode, firefoxDummyVariable));
         buildPromises.push(buildScript(binDirectory + '/contentscript/contentscript.js', destDirectory + '/contentscript.js', binDirectory, minifyCode, firefoxDummyVariable));
 
-        buildPromises.push(buildScript(binDirectory + '/options/js/options.js', optionsDirectory + '/js/options.js', binDirectory, minifyCode, firefoxDummyVariable));
-        buildPromises.push(buildCSS(binDirectory + '/options/css/style.styl', optionsDirectory + '/css/style.css', binDirectory + '/options/css/'));
-        buildPromises.push(buildHTML(binDirectory + '/options/options.pug', optionsDirectory + '/index.html'));
+        buildPromises.push(buildScript(binDirectory + '/options/js/options.js', destDirectory + '/options/js/options.js', binDirectory, minifyCode, firefoxDummyVariable));
+        buildPromises.push(buildCSS(binDirectory + '/options/css/style.styl', destDirectory + '/options/css/style.css', binDirectory + '/options/css/'));
+        buildPromises.push(buildHTML(binDirectory + '/options/options.pug', destDirectory + '/options/index.html'));
+
+        buildPromises.push(buildScript(binDirectory + '/browseraction/js/popup.js', destDirectory + '/browseraction/js/popup.js', binDirectory, minifyCode, firefoxDummyVariable));
+        buildPromises.push(buildCSS(binDirectory + '/browseraction/css/style.styl', destDirectory + '/browseraction/css/style.css', binDirectory + '/browseraction/css/'));
+        buildPromises.push(buildHTML(binDirectory + '/browseraction/popup.pug', destDirectory + '/browseraction/popup.html'));
 
         Promise.all(buildPromises).then(function() {
             if (buildMode === 'test') {

@@ -7,28 +7,28 @@ html(lang='en')
 
         title Global Twitch Emotes - Settings
 
-        link(rel='shortcut icon', href='/options/images/favicon.png', type='image/x-icon')
+        link(rel='shortcut icon', href='/options/images/favicon.ico', type='image/x-icon')
         link(rel='stylesheet', type='text/css', href='/options/css/style.css')
         script(src='/options/js/options.js')
     body
         #header.bodySection
-            img#banner(src='images/banner.png', alt='Global Twitch Emotes')
+            img#banner(src='/assets/images/banner.png', alt='Global Twitch Emotes')
         #navbar.bodySection
             input.navButton(type='button', id='generalNavButton', class='button', alt='General', value='General')
             input.navButton(type='button', id='emotesAndChannelsNavButton', class='button', alt='Emotes & Channels', value='Emotes & Channels')
             input.navButton(type='button', id='filterNavButton', class='button', alt='Filters', value='Filters')
             input.navButton(type='button', id='aboutNavButton', class='button', alt='About', value='About')
         #content.bodySection
-            include jade/generalPanel
-            include jade/emotesAndChannelsPanel
-            include jade/filterPanel
-            include jade/aboutPanel
+            include pug/generalPanel
+            include pug/emotesAndChannelsPanel
+            include pug/filterPanel
+            include pug/aboutPanel
         #footer.bodySection
             .copyright Copyright © Mohamed El-Alawi, 2016
             .socialLinks
                 a(href='https://ca.linkedin.com/in/melalawi', target='_blank')
-                    img(src='images/linkedin.png')
+                    img(src='/assets/images/linkedin.png')
                 a(href='https://github.com/melalawi', target='_blank')
-                    img(src='images/github.png')
+                    img(src='/assets/images/github.png')
                 a(href='https://twitter.com/m_elalawi', target='_blank')
-                    img(src='images/twitter.png')
+                    img(src='/assets/images/twitter.png')

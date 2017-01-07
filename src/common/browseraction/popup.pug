@@ -1,0 +1,23 @@
+doctype html
+html(lang='en')
+    head
+        meta(content='text/html; charset=UTF-8', http-equiv='content-type')
+        meta(name='viewport', content='width=device-width', initial-scale='1')
+
+        title Global Twitch Emotes
+
+        link(rel='stylesheet', type='text/css', href='/browseraction/css/style.css')
+        script(src='/browseraction/js/popup.js')
+    body
+        #header
+            h1 Global Twitch Emotes
+        #content
+            #filterInfo
+                #filterMode
+                    | Filter mode:&nbsp;
+                #pageFilterStatus
+                    | This page is currently&nbsp;
+
+            #filterControls
+        #footer
+            input#openSettingsButton(type='button', alt='Open Settings Page', title='Open Settings Page')
