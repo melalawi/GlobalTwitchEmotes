@@ -1,12 +1,8 @@
-'use strict';
 var $ = require('jquery');
 
 
-var table;
-
-
 function init() {
-    table = $('#ffzChannelsList').EditableTable({
+    $('#ffzChannelsList').EditableTable({
         columns: [
             {
                 name: 'name',

@@ -1,4 +1,3 @@
-'use strict';
 var MONKEY_SMILIES = {
     '<3':'https://static-cdn.jtvnw.net/jtv_user_pictures/chansub-global-emoticon-3f5d7d20df6ee956-20x18.png',
     'R)':'https://static-cdn.jtvnw.net/jtv_user_pictures/chansub-global-emoticon-7791c28e2e965fdf-20x22.png',
@@ -105,10 +104,14 @@ function extractEmotesFromSet(emoteSet, overrideWithMonkeys) {
 }
 
 function buildEmoteList(setName, overrideWithMonkeys) {
-    return new Promise(function(resolve, reject) {
-        var emoteSet = setName === 'Turbo' ? TURBO_SMILIES : ROBOT_SMILIES;
+    return new Promise(function(resolve) {
+        try {
+            var emoteSet = setName === 'Turbo' ? TURBO_SMILIES : ROBOT_SMILIES;
 
-        resolve(extractEmotesFromSet(emoteSet, overrideWithMonkeys));
+            resolve(extractEmotesFromSet(emoteSet, overrideWithMonkeys));
+        } catch (e) {
+            resolve({});
+        }
     });
 }
 

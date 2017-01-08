@@ -1,4 +1,3 @@
-'use strict';
 var PAGE_OBSERVER_PARAMETERS = {
     attributes: false,
     characterData: true,
@@ -9,7 +8,7 @@ var TREE_WALKER_FILTER = {
     acceptNode: treeWalkerFilterFunction
 };
 var ILLEGAL_TAGNAMES = [
-    'IMG', 'SCRIPT', 'TEXTAREA', 'STYLE'
+    'IMG', 'NOSCRIPT', 'SCRIPT', 'STYLE', 'TEXTAREA'
 ];
 var currentlyInvestigating = false;
 var mutatedNodes = [];
@@ -73,9 +72,9 @@ function onPageChange(changes) {
 
                 if (nextNode.tagName === 'IFRAME') {
                     observeIFrame(nextNode);
+                } else {
+                    addMutatedNode(nextNode);
                 }
-
-                addMutatedNode(nextNode);
             }
         }
     }
@@ -104,7 +103,9 @@ function iterateThroughPendingNodes() {
                 if (nextNode.tagName === 'IFRAME') {
                     observeIFrame(nextNode);
                 } else {
-                    mutatedNodes = mutatedNodes.concat(runTreeWalker(nextNode));
+                    var children = runTreeWalker(nextNode);
+
+                    mutatedNodes = children.concat(mutatedNodes);
                 }
             }
         }
@@ -118,7 +119,7 @@ function runTreeWalker(node) {
     var treeChild;
     var results = [];
 
-    while (treeChild = treeWalker.nextNode()) {
+    while ((treeChild = treeWalker.nextNode())) {
         if (isIllegalNode(treeChild) === false) {
             results.push(treeChild);
         }
@@ -141,25 +142,27 @@ function treeWalkerFilterFunction(node) {
     return filter;
 }
 
-function isIllegalNode(n) {
-    var isIllegal = false;
-    var node = n != null && n.nodeType === Node.TEXT_NODE ? n.parentNode : n;
+function isIllegalNode(node) {
+    var isIllegal = true;
 
-    if (n == null) {
-        isIllegal = true;
-    } else if (!node) {
+    if (node && (node.nodeType === Node.TEXT_NODE || node.nodeType === Node.ELEMENT_NODE)) {
+        var elementNode = node.nodeType === Node.TEXT_NODE ? node.parentNode : node;
+
         isIllegal = false;
-    } else if (ILLEGAL_TAGNAMES.indexOf(node.tagName) !== -1) {
-        isIllegal = true;
-    } else if (node.isContentEditable) {
-        isIllegal = true;
-    } else if (node.type === 'text') {
-        isIllegal = true;
-    } else if (n.nodeType === Node.TEXT_NODE && n.nodeValue.replace(/\s/g, '').length < 2) {
-        // Textnodes with little to no text can be disregarded
-        isIllegal = true;
-    } else if (node.classList.contains('GTETipsy') === true || n.isGTENode) {
-        isIllegal = true;
+
+        if (node.nodeType === Node.TEXT_NODE && !elementNode) {
+            isIllegal = true;
+        } else if (ILLEGAL_TAGNAMES.indexOf(elementNode.tagName) !== -1) {
+            isIllegal = true;
+        } else if (elementNode.classList.contains('GTETipsy') === true) {
+            isIllegal = true;
+        } else if (elementNode.isContentEditable) {
+            isIllegal = true;
+        } else if (node.textContent.replace(/\s/g, '').length < 2) {
+            isIllegal = true;
+        } else if (node.isGTENode) {
+            isIllegal = true;
+        }
     }
 
     return isIllegal;

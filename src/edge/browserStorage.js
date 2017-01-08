@@ -1,9 +1,8 @@
-'use strict';
 var settingsChangeListener;
 
 
 function load() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         browser.storage.local.get(null, function(data) {
             resolve(data);
         });
@@ -11,7 +10,7 @@ function load() {
 }
 
 function save(data) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         browser.storage.local.set(data, function() {
             resolve();
         });
@@ -19,7 +18,7 @@ function save(data) {
 }
 
 function bindOnStorageChange(callbackFunction) {
-    if (settingsChangeListener != undefined) {
+    if (settingsChangeListener) {
         browser.storage.onChanged.removeListener(settingsChangeListener);
     }
 

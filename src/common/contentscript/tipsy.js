@@ -1,9 +1,8 @@
-'use strict';
 var pageObserver = require('./pageObserver');
 
 
 var OUTER_TIPSY_CSS = 'display:block !important;position:absolute !important;opacity:1 !important;z-index:9999999 !important;visibility:visible !important;word-break:break-all !important;padding:5px !important;box-sizing:border-box !important;';
-var INNER_TIPSY_CSS = 'display:block !important;position:static !important;background:rgba(0,0,0,0.8) !important;visibility:visible !important;font-size:12px !important;line-height:12px !important;font-family:Arial !important;color:#FFFFFF !important;max-width:200px !important;padding:5px 8px 4px !important;text-align:center !important;white-space:pre !important;';
+var INNER_TIPSY_CSS = 'display:block !important;position:static !important;background:rgba(0,0,0,0.8) !important;visibility:visible !important;font-size:12px !important;line-height:16px !important;font-family:Arial !important;color:#FFFFFF !important;max-width:200px !important;padding:5px 8px 4px !important;text-align:center !important;white-space:pre !important;';
 var ARROW_TIPSY_CSS = 'display:block !important;position:absolute !important;width:0 !important;height:0 !important;border:5px solid transparent !important;right:10px !important;opacity: 0.8 !important;background-color:rgba(0,0,0,0) !important;box-sizing:border-box !important;';
 var SOUTH_TIPSY_ARROW_CSS = ARROW_TIPSY_CSS + 'top:0 !important;border-top:none !important;border-bottom-color:#000000 !important;';
 var NORTH_TIPSY_ARROW_CSS = ARROW_TIPSY_CSS + 'bottom:0 !important;border-bottom:none !important;border-top-color:#000000 !important;';
@@ -56,11 +55,10 @@ function showTipsy(emoteNode) {
     tipsyVisible = true;
 
     if (emoteNode.title !== '') {
-        emoteNode.setAttribute(TIPSY_DATA_ATTRIBUTE, emoteNode.getAttribute(TIPSY_DATA_ATTRIBUTE).replace('\n', '<br style="line-height:18px !important;">'));
         emoteNode.removeAttribute('title');
     }
 
-    tipsy.inner.innerHTML = emoteNode.getAttribute(TIPSY_DATA_ATTRIBUTE) || 'null';
+    tipsy.inner.textContent = emoteNode.getAttribute(TIPSY_DATA_ATTRIBUTE) || 'null';
     tipsy.containingDocument = emoteNode.ownerDocument.body;
     tipsy.containingDocument.appendChild(tipsy.outer);
 

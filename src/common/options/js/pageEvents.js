@@ -1,4 +1,3 @@
-'use strict';
 var $ = require('jquery');
 var settingsInterface = require('./settingsInterface');
 var importExport = require('./importExport');

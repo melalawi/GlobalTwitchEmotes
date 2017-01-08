@@ -1,4 +1,3 @@
-'use strict';
 var browserBackend = require('browserBackend');
 var emoteLibrary = require('./emoteLibrary');
 var extensionSettings = require('extensionSettings');
@@ -35,7 +34,7 @@ function init() {
     });
 }
 
-function respondToSettingsChanges(changes) {
+function respondToSettingsChanges() {
     extensionSettings.getSettings().then(function(settings) {
         userSettings = settings;
 
@@ -64,7 +63,7 @@ function respondToMessage(message, sender, responseCallback) {
         } else {
             pendingCallbacks.push(responseCallback);
         }
-    } else if (message.message = 'setBadgeText') {
+    } else if (message.message === 'setBadgeText') {
         browserBackend.setBadgeText(sender.tab, message.value, BADGE_BACKGROUND_COLOR);
     }
 }

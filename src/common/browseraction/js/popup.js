@@ -1,4 +1,3 @@
-'use strict';
 var browserBackend = require('browserBackend');
 var domainFilter = require('domainFilter');
 var extensionSettings = require('extensionSettings');
@@ -77,15 +76,6 @@ function displayPageFilterStatus(filteredRule) {
     }
 
     pageFilterStatus.appendChild(filterInfoDiv);
-}
-
-function displayFilteredRule(filteredRule) {
-    var filterRuleContainer = document.createElement('div');
-
-    filterRuleContainer.id = 'filterRule';
-    filterRuleContainer.textContent = filteredRule;
-
-    pageFilterStatus.appendChild(filterRuleContainer);
 }
 
 function configureFilterButtons(filteredRule) {

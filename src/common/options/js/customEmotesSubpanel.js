@@ -1,9 +1,7 @@
-'use strict';
 var $ = require('jquery');
 
 
 var MAX_EMOTE_SIZE = 1048576;
-var $table;
 var $emoteBrowser;
 
 
@@ -27,7 +25,7 @@ function init() {
         }
     });
 
-    $table = $('#customEmotesList').EditableTable({
+    $('#customEmotesList').EditableTable({
         columns: [
             {
                 name: 'key',

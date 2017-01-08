@@ -1,4 +1,3 @@
-'use strict';
 var URL = 'https://api.frankerfacez.com/v1/';
 
 

@@ -1,4 +1,3 @@
-'use strict';
 var pageObserver = require('./pageObserver');
 
 
@@ -43,7 +42,7 @@ function searchAndParseEmoteStrings(node) {
 
                         currentNode = parseEmoteString(currentNode, nextWord.index, emote, emoteData.channel, emoteData.url);
 
-                        if (currentNode == null || currentNode.nodeValue.length < 2) {
+                        if (!currentNode || currentNode.nodeValue.length < 2) {
                             break wordsInNodeLoop;
                         }
 

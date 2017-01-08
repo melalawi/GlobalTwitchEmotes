@@ -1,4 +1,3 @@
-'use strict';
 var bttv = require('./bttvSubpanel');
 var ffz = require('./ffzSubpanel');
 var customEmotes = require('./customEmotesSubpanel');
@@ -33,10 +32,12 @@ function setHostbarButtonEvents() {
     var hostButtons = document.getElementsByClassName('hostButton');
 
     for (var i = 0; i < hostButtons.length; ++i) {
-        hostButtons[i].onclick = function() {
-            setHostPanel(this.id.replace('HostButton', ''));
-        };
+        hostButtons[i].onclick = assignHostPanel;
     }
+}
+
+function assignHostPanel() {
+    setHostPanel(this.id.replace('HostButton', ''));
 }
 
 function init() {

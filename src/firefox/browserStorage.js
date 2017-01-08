@@ -1,4 +1,3 @@
-'use strict';
 var settingsChangeListener;
 
 
@@ -11,7 +10,7 @@ function save(data) {
 }
 
 function bindOnStorageChange(callbackFunction) {
-    if (settingsChangeListener != undefined) {
+    if (settingsChangeListener) {
         browser.storage.onChanged.removeListener(settingsChangeListener);
     }
 

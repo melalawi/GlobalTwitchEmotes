@@ -1,10 +1,5 @@
-'use strict';
 var $ = require('jquery');
 require('./editableTable')($);
-
-
-var emoteFilterListTable;
-var domainFilterListTable;
 
 
 function init() {
@@ -13,7 +8,7 @@ function init() {
 }
 
 function buildEmoteFilterListTable() {
-    emoteFilterListTable = $('#emoteFilterList').EditableTable({
+    $('#emoteFilterList').EditableTable({
         columns: [
             {
                 name: 'set',
@@ -52,7 +47,7 @@ function buildEmoteFilterListTable() {
 }
 
 function buildDomainFilterListTable() {
-    domainFilterListTable = $('#domainFilterList').EditableTable({
+    $('#domainFilterList').EditableTable({
         columns: [
             {
                 name: 'name',

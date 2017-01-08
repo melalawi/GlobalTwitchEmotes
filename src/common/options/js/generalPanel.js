@@ -1,4 +1,3 @@
-'use strict';
 var $ = require('jquery');
 var extensionSettings = require('extensionSettings');
 var browserBackend = require('browserBackend');
@@ -55,25 +54,19 @@ function buildTable() {
 function updateStatuses() {
     var promises = [];
 
-    promises.push(new Promise(function(resolve, reject) {
-        getEmotes(resolve);
-    }));
     promises.push(extensionSettings.getSettings());
+    promises.push(browserBackend.sendMessageToBackground({
+        message: 'emotes'
+    }));
 
     Promise.all(promises).then(function(results) {
+        console.log(results);
+
         updateTableStatuses(results[0], results[1]);
     });
 }
 
-function getEmotes(successCallback) {
-    browserBackend.sendMessageToBackground({
-        message: 'emotes'
-    }).then(function(response) {
-        successCallback(response);
-    });
-}
-
-function updateTableStatuses(emotes, settings) {
+function updateTableStatuses(settings, emotes) {
     updateTwitchEmotesStatus(emotes, settings);
     updateStatusRow(emotes, settings, 'bttv');
     updateStatusRow(emotes, settings, 'ffz');
@@ -101,10 +94,10 @@ function updateStatusRow(emotes, settings, entryName) {
 function updateTwitchEmotesStatus(emotes, settings) {
     var hostHealth;
 
-    if ((settings['twitchGlobal'] || settings['twitchChannels']) === false) {
+    if ((settings.twitchGlobal || settings.twitchChannels) === false) {
         hostHealth = 0;
     } else {
-        var hostInGoodHealth = (settings['twitchGlobal'] === emotes.hasOwnProperty('twitchGlobal')) && (settings['twitchChannels'] === emotes.hasOwnProperty('twitchChannels'));
+        var hostInGoodHealth = (settings.twitchGlobal === emotes.hasOwnProperty('twitchGlobal')) && (settings.twitchChannels === emotes.hasOwnProperty('twitchChannels'));
 
         if (hostInGoodHealth) {
             hostHealth = 1;
@@ -113,7 +106,7 @@ function updateTwitchEmotesStatus(emotes, settings) {
         }
     }
 
-    setEndpointStatus(hostStatusesEntries['twitch'], hostHealth);
+    setEndpointStatus(hostStatusesEntries.twitch, hostHealth);
 }
 
 function setEndpointStatus(endpoint, status) {

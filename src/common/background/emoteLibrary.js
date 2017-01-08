@@ -1,4 +1,3 @@
-'use strict';
 var extend = require('extend');
 var EmoteLookup = require('./emoteLookup');
 var twitchSmilies = require('./twitchSmilies');
@@ -40,12 +39,12 @@ function updateEmoteLibrary(settings) {
         }
     }
 
-    delete cachedEmotes['twitchSmilies'];
+    delete cachedEmotes.twitchSmilies;
     if (userSettings.twitchSmilies) {
         promises.push(updateTwitchSmilies());
     }
 
-    delete cachedEmotes['customEmotes'];
+    delete cachedEmotes.customEmotes;
     if (userSettings.customEmotes) {
         promises.push(updateCustomEmotes());
     }
@@ -66,7 +65,7 @@ function updateEmoteLibrary(settings) {
 }
 
 function updateTwitchSmilies() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         twitchSmilies.build(userSettings.smiliesType, userSettings.useMonkeySmilies).then(function(emotes) {
             addEmotes({
                 setName: 'twitchSmilies',
@@ -79,7 +78,7 @@ function updateTwitchSmilies() {
 }
 
 function updateCustomEmotes() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         customEmotes.build(userSettings.customEmotesList).then(function(emotes) {
             addEmotes({
                 setName: 'customEmotes',
@@ -93,6 +92,7 @@ function updateCustomEmotes() {
 
 function retrieveEmotes(host) {
     var promises = [];
+    var lookup;
 
     if (HOSTS[host].requiresChannel === true) {
         var channelList = userSettings[host + 'List'];
@@ -100,15 +100,15 @@ function retrieveEmotes(host) {
         for (var i = 0; i < channelList.length; ++i) {
             var nextChannel = channelList[i].toLowerCase();
 
-            if (!cachedEmotes[host + '_' + nextChannel]) {
-                var lookup = new EmoteLookup(HOSTS[host], nextChannel, addEmotes);
+            if (cachedEmotes.hasOwnProperty(host + '_' + nextChannel) === false) {
+                lookup = new EmoteLookup(HOSTS[host], nextChannel, addEmotes);
 
                 promises.push(lookup.retrieveEmotes().then(addEmotes));
             }
         }
     } else {
-        if (cachedEmotes[host] == null) {
-            var lookup = new EmoteLookup(HOSTS[host], '', addEmotes);
+        if (cachedEmotes.hasOwnProperty(host) === false) {
+            lookup = new EmoteLookup(HOSTS[host], '', addEmotes);
 
             promises.push(lookup.retrieveEmotes().then(addEmotes));
         }
@@ -138,7 +138,7 @@ function removeUnwantedEmotes() {
 }
 
 function addEmotes(emoteData) {
-    if (emoteData != null) {
+    if (emoteData) {
         var extendedSet = {};
 
         extendedSet[emoteData.setName] = emoteData.emoteSet;

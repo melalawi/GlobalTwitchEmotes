@@ -1,4 +1,3 @@
-'use strict';
 var messageListener = null;
 var messageCallback = null;
 var FORBIDDEN_DOMAINS = [
@@ -7,7 +6,7 @@ var FORBIDDEN_DOMAINS = [
 
 
 function injectScriptToTab(script, tab) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         browser.tabs.executeScript(tab.id, {
             file: script,
             runAt: 'document_idle',
@@ -27,7 +26,7 @@ function listenForTabs(callback) {
 }
 
 function sendMessageToTab(message, tab) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         browser.tabs.sendMessage(tab.id, message, function() {
             resolve(tab);
         });
@@ -36,7 +35,7 @@ function sendMessageToTab(message, tab) {
 
 
 function listenForMessages(callback) {
-    if (messageListener != null) {
+    if (messageListener) {
         browser.runtime.onMessage.removeListener(messageListener);
     }
 
@@ -47,7 +46,11 @@ function listenForMessages(callback) {
 function sendMessageToBackground(message) {
     return new Promise(function(resolve, reject) {
         browser.runtime.sendMessage(message, function(response) {
-            resolve(response);
+            if (!browser.runtime.lastError) {
+                resolve(response);
+            } else {
+                reject(browser.runtime.lastError);
+            }
         });
     });
 }

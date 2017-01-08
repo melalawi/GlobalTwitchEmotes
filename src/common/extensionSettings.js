@@ -1,6 +1,4 @@
-'use strict';
 var clone = require('clone');
-var extend = require('extend');
 var unique = require('uniq');
 var browserStorage = require('./browserStorage');
 
@@ -33,7 +31,7 @@ var DEFAULT_SETTINGS = {
 
 
 function getSettings() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         browserStorage.load().then(function(data) {
             resolve(sanitizeSettings(data));
         }).catch(function() {
@@ -106,7 +104,7 @@ function filterInvalidListEntries(list) {
 
             if (typeof first === 'object') {
                 for (var key in first) {
-                    if (first.hasOwnProperty(key) && first[key] != second[key]) {
+                    if (first.hasOwnProperty(key) && first[key] !== second[key]) {
                         equal = -1;
                         break;
                     }

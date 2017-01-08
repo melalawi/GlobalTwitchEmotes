@@ -1,4 +1,3 @@
-'use strict';
 var $ = require('jquery');
 
 
@@ -72,16 +71,15 @@ var METHODS = {
                 var $emoteError = $('<div>', {class: 'emoteError'}).text('No Emote');
                 $input = $('<div>', {class: 'emoteContainer'});
 
-                $browseButton.click($emote, function(event) {
-                    var emoteBrowser = $('#emoteBrowser');
+                $browseButton.click($emote, this._onEmoteBrowseButtonClick);
 
-                    emoteBrowser.data('emote', event.data);
-                    emoteBrowser.trigger('click');
-                });
-
-                $emote.on('error', {emoteError: $emoteError, emote: $emote}, function(event) {
+                $emote.on('error', {
+                    emoteError: $emoteError,
+                    emote: $emote
+                }, function(event) {
                     event.data.emote.attr('src', '');
                     event.data.emote.hide();
+
                     if (this.naturalWidth > 80 || this.naturalHeight > 80) {
                         event.data.emoteError.text('Emote too large');
                     } else {
@@ -89,7 +87,10 @@ var METHODS = {
                     }
                 });
 
-                $emote.on('load', {emoteError: $emoteError, emote: $emote}, function(event) {
+                $emote.on('load', {
+                    emoteError: $emoteError,
+                    emote: $emote
+                }, function(event) {
                     if (this.naturalWidth > 80 || this.naturalHeight > 80) {
                         event.data.emote.attr('src', '');
                         event.data.emote.hide();
@@ -119,7 +120,7 @@ var METHODS = {
                 }
             }
 
-            if (nextCol.placeholder != undefined) {
+            if (nextCol.placeholder) {
                 $input.attr('placeholder', nextCol.placeholder);
             }
 
@@ -150,6 +151,12 @@ var METHODS = {
 
             this.$tbody.append($tr);
         }
+    },
+    _onEmoteBrowseButtonClick: function(event) {
+        var emoteBrowser = $('#emoteBrowser');
+
+        emoteBrowser.data('emote', event.data);
+        emoteBrowser.trigger('click');
     },
     importData: function(entries) {
         this.$tbody.find('tr').remove();

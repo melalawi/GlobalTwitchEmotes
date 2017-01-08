@@ -1,4 +1,3 @@
-'use strict';
 var browserBackend = require('./browserBackend');
 
 
@@ -6,20 +5,14 @@ var FORBIDDEN_TWITCH_DOMAIN = 'twitch.tv';
 var IS_VALID_URL_REGEX = /^(http|https|ftp)/i;
 var PROTOCOL_REMOVAL_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\s\/]+(?:\/[^\s\/]+)*)\/*$/i;
 var HOSTNAME_EXTRACTION_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\\\/]*)/i;
-var URL_REPLACEMENT_CHARACTERS = {
-    '/*': '.*',
-    '\\*': '.*',
-    '*': '.*',
-    '\\': '/',
-    ' ': '%20'
-};
 
 
 function isFiltered(address, extensionSettings) {
     var result = isURLIllegal(address);
 
     if (result === false && extensionSettings.domainFilterList.length > 0) {
-        result = !((getFilteredRule(address, extensionSettings.domainFilterList) !== null) === (extensionSettings.domainFilterMode === 'Whitelist'));
+        result = (getFilteredRule(address, extensionSettings.domainFilterList) !== null) === (extensionSettings.domainFilterMode === 'Whitelist');
+        result = !result;
     }
 
     return result;
@@ -66,23 +59,32 @@ function isURLIllegal(address) {
 }
 
 function createRegexFromRule(rule) {
-    var result = removeProtocolFromAddress(rule);
+    var result = removeProtocolFromAddress(rule || '');
 
-    result = result.replace(/\/\*|\\\*|\*|\\|\s/, function(match) {
-        return URL_REPLACEMENT_CHARACTERS[match];
-    });
+    result = new RegExp('^' + replaceCharactersWithRegexNotation(result) + '$', 'i');
 
-    result = new RegExp('^' + result + '$', 'i');
+    return result;
+}
+
+function replaceCharactersWithRegexNotation(input) {
+    var result = input || '';
+
+    result = result.trim();
+    result = result.replace(/\s+/g, '%20');
+    result = result.replace(/\\/g, '/');
+    result = result.replace(/\/\*/g, '*');
+    result = result.replace(/\*+/g, '*');
+    result = result.replace(/\*/g, '.*');
 
     return result;
 }
 
 function removeProtocolFromAddress(address) {
-    return PROTOCOL_REMOVAL_REGEX.exec(address)[1];
+    return PROTOCOL_REMOVAL_REGEX.test(address) ? PROTOCOL_REMOVAL_REGEX.exec(address)[1] : address;
 }
 
 function extractDomainFromAddress(address) {
-    return HOSTNAME_EXTRACTION_REGEX.exec(address)[1];
+    return HOSTNAME_EXTRACTION_REGEX.test(address) ? HOSTNAME_EXTRACTION_REGEX.exec(address)[1] : address;
 }
 
 module.exports = {

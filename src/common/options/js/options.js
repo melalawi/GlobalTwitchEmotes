@@ -1,4 +1,3 @@
-'use strict';
 var $ = require('jquery');
 require('./tooltips')($);
 require('./editableTable')($);

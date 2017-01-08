@@ -1,4 +1,3 @@
-'use strict';
 var messageListener = null;
 var messageCallback = null;
 var FORBIDDEN_DOMAINS = [
@@ -28,7 +27,7 @@ function sendMessageToTab(message, tab) {
 
 
 function listenForMessages(callback) {
-    if (messageListener != null) {
+    if (messageListener) {
         browser.runtime.onMessage.removeListener(messageListener);
     }
 

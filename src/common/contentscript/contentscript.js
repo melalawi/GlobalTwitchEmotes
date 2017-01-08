@@ -1,8 +1,6 @@
-'use strict';
 var browserBackend = require('browserBackend');
 var extensionSettings = require('extensionSettings');
 var emoteParser = require('./emoteParser');
-var pageObserver = require('./pageObserver');
 var tipsy = require('./tipsy.js');
 
 

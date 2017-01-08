@@ -1,12 +1,8 @@
-'use strict';
 var $ = require('jquery');
 
 
-var $table;
-
-
 function init() {
-    $table = $('#bttvChannelsList').EditableTable({
+    $('#bttvChannelsList').EditableTable({
         columns: [
             {
                 name: 'name',

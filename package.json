@@ -5,6 +5,7 @@
     "main": "build.js",
     "scripts": {
         "build": "node build",
+        "eslint": "eslint src",
         "test": "node test"
     },
     "repository": {

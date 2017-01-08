@@ -1,4 +1,3 @@
-'use strict';
 var URL = 'https://api.betterttv.net/2/emotes';
 
 

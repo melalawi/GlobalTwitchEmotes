@@ -1,7 +1,3 @@
-'use strict';
-var httpRequest = require('../httpRequest');
-
-
 var URL = 'https://twitchemotes.com/api_cache/v2/subscriber.json';
 var OLD_CHANNELS = [
     '90stardust',

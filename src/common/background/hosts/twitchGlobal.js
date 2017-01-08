@@ -1,4 +1,3 @@
-'use strict';
 var URL = 'https://twitchemotes.com/api_cache/v2/global.json';
 
 

@@ -1,4 +1,3 @@
-'use strict';
 var $ = require('jquery');
 var FileSaver = require('file-saver');
 var settingsInterface = require('./settingsInterface');
@@ -51,7 +50,7 @@ function applyJSONToPage(text) {
             $saveButtons.eq(0).trigger('click');
             triggerValidImportNotification();
         }
-    } catch(e) {
+    } catch (e) {
         triggerInvalidImportNotification();
     }
 }

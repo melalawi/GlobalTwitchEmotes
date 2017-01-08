@@ -1,5 +1,5 @@
-'use strict';
 var $ = require('jquery');
+
 
 // Source: http://www.stoimen.com/blog/
 $.fn.clickoutside = function(callback) {
@@ -12,12 +12,16 @@ $.fn.clickoutside = function(callback) {
     });
 
     $(document).click(function() {
-        outside && self.cb();
+        if (outside) {
+            self.cb();
+        }
+
         outside = 1;
     });
 
     return $(this);
 };
+
 
 var PLUGIN_NAME = 'Tooltip';
 var METHODS = {
@@ -36,7 +40,7 @@ var METHODS = {
             event.data._show();
         });
 
-        this.$triggerNode.clickoutside(function(event) {
+        this.$triggerNode.clickoutside(function() {
             this._hide();
         }.bind(this));
     },
@@ -49,9 +53,6 @@ var METHODS = {
         this.$tooltip.remove();
     },
     _positionTooltip: function() {
-        var actualWidth = this.$tooltip.outerWidth();
-        var actualHeight = this.$tooltip.outerHeight();
-
         var offset = {
             top: this.$triggerNode[0].getBoundingClientRect().top + document.body.scrollTop,
             left: this.$triggerNode[0].getBoundingClientRect().left + document.body.scrollLeft
@@ -62,8 +63,6 @@ var METHODS = {
             height: this.$triggerNode.outerHeight(),
             width: this.$triggerNode.outerWidth()
         };
-
-        var forceTipsySouth = (offset.top - actualHeight) < document.body.scrollTop;
 
         this.$tooltip.css('top', (triggerPosition.top + triggerPosition.height + 3) + 'px');
         this.$tooltip.css('left', (triggerPosition.left + triggerPosition.width + 3) + 'px');

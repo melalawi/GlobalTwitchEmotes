@@ -1,4 +1,3 @@
-'use strict';
 var TIMEOUT = 3000;
 var TOTAL_RETRIES = 2;
 

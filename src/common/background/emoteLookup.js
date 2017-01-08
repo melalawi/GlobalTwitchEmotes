@@ -1,9 +1,7 @@
-'use strict';
-'use strict';
 var httpRequest = require('./httpRequest');
 
 
-// Five minute lookup time
+// Five minute periodic retrying
 var PERIODIC_LOOKUP_COOLDOWN = 5 * 60 * 1000;
 
 
@@ -16,7 +14,7 @@ function EmoteLookup(host, channelName, callback) {
     this.callback = callback;
 
     this.retrieveEmotes = function() {
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             requestEmotes(
                 function(responseJSON) {
                     onSuccess(responseJSON, resolve);
@@ -48,7 +46,7 @@ function EmoteLookup(host, channelName, callback) {
                 if (errorCode === 404) {
                     clearInterval(periodicLookupID);
                 }
-            })
+            });
         }, PERIODIC_LOOKUP_COOLDOWN);
     }
 

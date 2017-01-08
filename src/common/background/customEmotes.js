@@ -1,6 +1,3 @@
-'use strict';
-
-
 function extractEmotesFromJSON(json) {
     var result = {};
 
@@ -15,8 +12,12 @@ function extractEmotesFromJSON(json) {
 }
 
 function buildEmoteList(customEmotesList) {
-    return new Promise(function(resolve, reject) {
-        resolve(extractEmotesFromJSON(customEmotesList));
+    return new Promise(function(resolve) {
+        try {
+            resolve(extractEmotesFromJSON(customEmotesList));
+        } catch (e) {
+            resolve({});
+        }
     });
 }
 
