@@ -5,7 +5,7 @@
     "short_name": "GTE",
     "author": "Mohamed El-Alawi",
     "description": "Twitch culture wherever you go! This extension replaces all Twitch.tv emote phrases with their actual emoticons.",
-    "version": "1.2.1009",
+    "version": "1.2.1010",
 
     "background": {
         "persistent": true,

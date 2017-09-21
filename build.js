@@ -35,16 +35,20 @@ function init() {
     var buildMode = VALID_BUILD_MODES.indexOf(process.argv[2].toLowerCase()) === -1 ? 'test': process.argv[2].toLowerCase();
 
     if (browser === 'all') {
-        console.log('No browser was specified (or specified browser is not one of [' + VALID_BROWSERS.join(' | ') + '])');
+        console.log('No browser was specified.');
         console.log('Building for all browsers...');
 
         buildAllBrowsers(buildMode).then(function() {
             console.log('Complete.');
         });
     } else {
-        build(browser, buildMode).then(function() {
-            console.log('Complete.');
-        });
+        if (VALID_BROWSERS.indexOf(browser) === -1) {
+            console.log('Specified browser "' + browser + '" is not one of [' + VALID_BROWSERS.join(' | ') + '])');
+        } else {
+            build(browser, buildMode).then(function() {
+                console.log('Complete.');
+            });
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-var TIMEOUT = 3000;
+var TIMEOUT = 10000;
 var TOTAL_RETRIES = 2;
 
 

@@ -1,4 +1,5 @@
-var URL = 'https://twitchemotes.com/api_cache/v2/subscriber.json';
+var URL = 'https://twitchemotes.com/api_cache/v3/subscriber.json';
+var BASE_EMOTE_URL = 'https://static-cdn.jtvnw.net/emoticons/v1/{EMOTE_ID}/1.0';
 var OLD_CHANNELS = [
     '90stardust',
     'agetv1',
@@ -6,11 +7,12 @@ var OLD_CHANNELS = [
     'canadacup',
     'delovely',
     'esg',
-    'fahr3nh3it_ftw',
+    'fahr3nh3it_',
     'fwiz',
     'gomexp_2014_season_two',
     'gsl',
     'ilastpack',
+    'jeromewnl',
     'jewelxo',
     'lcs_pros_in_koreansoloq',
     'nadeshot',
@@ -28,20 +30,19 @@ var OLD_CHANNELS = [
 
 
 function parseEmotes(json) {
-    var channels = json.channels;
-    var templateURL = json.template.small;
     var result = {};
 
-    for (var emoteChannel in channels) {
-        if (channels.hasOwnProperty(emoteChannel)) {
-            var emotes = channels[emoteChannel].emotes;
+    for (var entry in json) {
+        if (json.hasOwnProperty(entry)) {
+            var emoteChannel = json[entry].channel_name;
+            var emotes = json[entry].emotes;
             var isOldChannel = OLD_CHANNELS.indexOf(emoteChannel.toLowerCase()) !== -1;
 
             for (var i = 0; i < emotes.length; ++i) {
-                var emoteKey = isOldChannel ? emoteChannel + emotes[i].code : emotes[i].code;
+                var code = isOldChannel ? emoteChannel + emotes[i].code : emotes[i].code;
 
-                result[emoteKey] = {
-                    url: templateURL.replace('{image_id}', emotes[i].image_id),
+                result[code] = {
+                    url: BASE_EMOTE_URL.replace('{EMOTE_ID}', emotes[i].id),
                     channel: emoteChannel
                 };
             }

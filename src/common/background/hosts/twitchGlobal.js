@@ -1,15 +1,14 @@
-var URL = 'https://twitchemotes.com/api_cache/v2/global.json';
+var URL = 'https://twitchemotes.com/api_cache/v3/global.json';
+var BASE_EMOTE_URL = 'https://static-cdn.jtvnw.net/emoticons/v1/{EMOTE_ID}/1.0';
 
 
 function parseEmotes(json) {
-    var emotes = json.emotes;
-    var templateURL = json.template.small;
     var result = {};
 
-    for (var emoteKey in emotes) {
-        if (emotes.hasOwnProperty(emoteKey)) {
+    for (var emoteKey in json) {
+        if (json.hasOwnProperty(emoteKey)) {
             result[emoteKey] = {
-                url: templateURL.replace('{image_id}', emotes[emoteKey].image_id),
+                url: BASE_EMOTE_URL.replace('{EMOTE_ID}', json[emoteKey].id),
                 channel: ''
             };
         }
