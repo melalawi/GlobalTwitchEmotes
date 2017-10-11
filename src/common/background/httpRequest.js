@@ -1,75 +1,30 @@
-var TIMEOUT = 10000;
-var TOTAL_RETRIES = 2;
+const RETRY_DELAY = 1000;
+const MAX_RETRY_COUNT = 3;
+const GET_REQUEST_OPTIONS = {
+    method: 'get'
+};
 
 
-function sendXMLHttpRequest(url, successCallback, failureCallback) {
-    var xmlRequest;
-
-    xmlRequest = new XMLHttpRequest();
-    xmlRequest.open('GET', url);
-    xmlRequest.timeout = TIMEOUT;
-
-    xmlRequest.onreadystatechange = function() {
-        var code = xmlRequest.status;
-
-        if (xmlRequest.readyState === 4) {
-            if (code === 200) {
-                if (!xmlRequest.responseText) {
-                    xmlRequest.abort();
-
-                    failureCallback(503);
+function sendGetRequest(url) {
+    return new Promise(function(resolve, reject) {
+        var fetchCall = function(currentRetryCount) {
+            fetch(url, GET_REQUEST_OPTIONS).then(function(response) {
+                resolve(response.json());
+            }).catch(function(error) {
+                if (currentRetryCount === MAX_RETRY_COUNT) {
+                    reject(error);
                 } else {
-                    successCallback(xmlRequest.responseText);
+                    setTimeout(function() {
+                        fetchCall(++currentRetryCount);
+                    }, RETRY_DELAY);
                 }
-            } else if (code === 404) {
-                xmlRequest.abort();
+            });
+        };
 
-                failureCallback(code);
-            }
-        }
-    };
-
-    xmlRequest.ontimeout = function() {
-        var code = xmlRequest.status;
-
-        xmlRequest.abort();
-
-        failureCallback(code);
-    };
-
-    xmlRequest.onerror = function() {
-        var code = xmlRequest.status;
-
-        xmlRequest.abort();
-
-        failureCallback(code);
-    };
-
-    xmlRequest.send();
+        fetchCall(0);
+    });
 }
 
-
-function attemptRequest(url, successCallback, failureCallback, retryCount, previousError) {
-    retryCount = retryCount || 0;
-
-    if (retryCount === TOTAL_RETRIES) {
-        failureCallback(previousError);
-    } else {
-        sendXMLHttpRequest(url, function(responseText) {
-            successCallback(responseText);
-        }, function(error) {
-            if (error === 404) {
-                failureCallback(error);
-            } else {
-                setTimeout(function() {
-                    attemptRequest(url, successCallback, failureCallback, retryCount + 1, error);
-                }, TIMEOUT);
-            }
-        });
-    }
-}
-
-
-module.exports = function(url, successCallback, failureCallback) {
-    attemptRequest(url, successCallback, failureCallback);
+module.exports = {
+    get: sendGetRequest
 };

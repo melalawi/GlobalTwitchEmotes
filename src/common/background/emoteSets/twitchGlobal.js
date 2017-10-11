@@ -1,5 +1,5 @@
-var URL = 'https://twitchemotes.com/api_cache/v3/global.json';
-var BASE_EMOTE_URL = 'https://static-cdn.jtvnw.net/emoticons/v1/{EMOTE_ID}/1.0';
+const URL = 'https://twitchemotes.com/api_cache/v3/global.json';
+const BASE_EMOTE_URL = 'https://static-cdn.jtvnw.net/emoticons/v1/{EMOTE_ID}/1.0';
 
 
 function parseEmotes(json) {
@@ -19,10 +19,8 @@ function parseEmotes(json) {
 
 
 module.exports = {
-    name: 'twitchGlobal',
     parseEmotes: parseEmotes,
     getURL: function() {
         return URL;
-    },
-    requiresChannel: false
+    }
 };

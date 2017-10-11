@@ -95,6 +95,7 @@ function build(browser, buildMode) {
         fs.copySync(binDirectory + '/metadata', destDirectory);
 
         buildPromises.push(buildScript(binDirectory + '/background/background.js', destDirectory + '/background.js', binDirectory, minifyCode, firefoxDummyVariable));
+        buildPromises.push(buildScript(binDirectory + '/background/searchWorker.js', destDirectory + '/searchWorker.js', binDirectory, minifyCode, firefoxDummyVariable));
         buildPromises.push(buildScript(binDirectory + '/contentscript/contentscript.js', destDirectory + '/contentscript.js', binDirectory, minifyCode, firefoxDummyVariable));
 
         buildPromises.push(buildScript(binDirectory + '/options/js/options.js', destDirectory + '/options/js/options.js', binDirectory, minifyCode, firefoxDummyVariable));

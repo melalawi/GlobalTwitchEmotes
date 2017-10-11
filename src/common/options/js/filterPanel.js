@@ -21,26 +21,10 @@ function buildEmoteFilterListTable() {
                 ]
             },
             {
-                name: 'type',
-                displayName: 'Rule Type',
-                type: 'select',
-                options: [
-                    'Channel',
-                    'Emote'
-                ],
-                onchange: function(row, value) {
-                    if (value === 'Channel') {
-                        row.find('td.value input').attr('placeholder', 'Channel Name');
-                    } else {
-                        row.find('td.value input').attr('placeholder', 'Emote Name');
-                    }
-                }
-            },
-            {
                 name: 'value',
                 displayName: '',
                 type: 'text',
-                placeholder: 'Channel Name'
+                placeholder: 'Emote Name'
             }
         ]
     });

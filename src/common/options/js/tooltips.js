@@ -54,8 +54,8 @@ var METHODS = {
     },
     _positionTooltip: function() {
         var offset = {
-            top: this.$triggerNode[0].getBoundingClientRect().top + document.body.scrollTop,
-            left: this.$triggerNode[0].getBoundingClientRect().left + document.body.scrollLeft
+            top: this.$triggerNode[0].getBoundingClientRect().top + $(window).scrollTop(),
+            left: this.$triggerNode[0].getBoundingClientRect().left + $(window).scrollLeft()
         };
         var triggerPosition = {
             top: offset.top,

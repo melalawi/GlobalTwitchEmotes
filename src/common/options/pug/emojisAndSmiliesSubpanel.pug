@@ -1,0 +1,23 @@
+.subpanel#emojisAndSmiliesSubpanel
+    h2 Emojis and Smilies
+
+    label.line
+        input(type='checkbox' id='unicodeEmojisCheckbox')
+        | Enable Unicode Emojis &#x1F914;
+    label.line
+        input(type='checkbox' id='twitchSmiliesCheckbox')
+        | Enable Twitch.tv Smilies
+    p.line
+        | Smilies Type:
+    label.line.floatLeft
+        input(type='radio', value='Robot', name='smiliesType')
+        | Robot
+        img.kappa(src='/assets/images/robot.png')
+    label.line
+        input(type='radio', value='Turbo', name='smiliesType')
+        | Turbo
+        img.kappa(src='/assets/images/turbo.png')
+    label.line
+        input(type='checkbox' id='useMonkeySmiliesCheckbox')
+        | Include Monkey Smilies
+        img.kappa(src='/assets/images/monkey.png')

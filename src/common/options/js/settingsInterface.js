@@ -1,10 +1,13 @@
 var $ = require('jquery');
-var extensionSettings = require('extensionSettings');
+var storageHelper = require('storageHelper');
 
 
 var SETTINGS_SELECTORS = {
     twitchStyleTooltips: '#twitchStyleTooltipsCheckbox',
+    replaceYouTubeKappa: '#replaceYouTubeKappaCheckbox',
+    iframeInjection: '#iframeInjectionCheckbox',
 
+    unicodeEmojis: '#unicodeEmojisCheckbox',
     twitchSmilies: '#twitchSmiliesCheckbox',
     smiliesType: '[name="smiliesType"]',
     useMonkeySmilies: '#useMonkeySmiliesCheckbox',
@@ -17,6 +20,7 @@ var SETTINGS_SELECTORS = {
     ffzChannels: '#ffzChannelsCheckbox',
     customEmotes: '#customEmotesCheckbox',
 
+    twitchChannelsList: '#twitchChannelsList',
     bttvChannelsList: '#bttvChannelsList',
     ffzChannelsList: '#ffzChannelsList',
     customEmotesList: '#customEmotesList',
@@ -45,7 +49,7 @@ function getPageSettings(sanitize) {
         }
     }
 
-    return sanitize === true ? extensionSettings.sanitizeSettings(pageSettings) : pageSettings;
+    return sanitize === true ? storageHelper.sanitizeSettings(pageSettings) : pageSettings;
 }
 
 function setPageSettings(settings) {
@@ -66,11 +70,11 @@ function setPageSettings(settings) {
 }
 
 function loadStoredSettingsToPage() {
-    return extensionSettings.getSettings().then(setPageSettings);
+    return storageHelper.getSettings().then(setPageSettings);
 }
 
 function savePageSettingsToStorage() {
-    return extensionSettings.setSettings(getPageSettings());
+    return storageHelper.setSettings(getPageSettings());
 }
 
 function setTableEntries($table, entries) {

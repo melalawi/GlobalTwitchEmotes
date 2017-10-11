@@ -58,7 +58,7 @@ img.kappa
 #importStatus .statusIcon.error
     background-image url('/assets/images/cross.png')
 
-#hostStatusTable
+#loadedEmotesTable
     display flex
     flex-direction row
 
@@ -66,22 +66,12 @@ img.kappa
 
     background $tableGradient
 
-#hostStatusTable .header
+#loadedEmotesTable .header
     font-weight bold
 
-#hostNameColumn
+#setNameColumn
     padding-right 1.0em
 
-#hostNameColumn > *, #hostStatusColumn > *
+#setNameColumn > *, #setAgeColumn > *
     padding 0.1em 0
-
-#hostStatusColumn .error
-    color $errorColor
-    font-weight bold
-
-#hostStatusColumn .success
-    color $navbarButtonActiveColor
-    font-weight bold
-
-#hostStatusColumn .inactive
-    opacity 0.75
+    font-size 0.75em

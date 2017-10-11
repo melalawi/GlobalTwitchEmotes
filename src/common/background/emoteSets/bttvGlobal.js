@@ -1,4 +1,4 @@
-var URL = 'https://api.betterttv.net/2/channels';
+const URL = 'https://api.betterttv.net/2/emotes';
 
 
 function parseEmotes(json) {
@@ -11,7 +11,7 @@ function parseEmotes(json) {
 
         result[emote.code] = {
             url: templateURL.replace('{{id}}/{{image}}', emote.id + '/1x'),
-            channel: emote.channel
+            channel: 'BetterTTV Emote'
         };
     }
 
@@ -20,10 +20,8 @@ function parseEmotes(json) {
 
 
 module.exports = {
-    name: 'bttvChannels',
     parseEmotes: parseEmotes,
-    getURL: function(channelName) {
-        return URL + '/' + channelName;
-    },
-    requiresChannel: true
+    getURL: function() {
+        return URL;
+    }
 };

@@ -1,24 +1,30 @@
 var clone = require('clone');
+var Dexie = require('dexie');
 var unique = require('uniq');
-var browserStorage = require('./browserStorage');
+
+var browser = require('./browser');
 
 
-var URL_EXTRACTION_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\s\/]+(?:\/[^\s\/]+)*)\/*$/i;
-var DEFAULT_SETTINGS = {
+const URL_EXTRACTION_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\s\/]+(?:\/[^\s\/]+)*)\/*$/i;
+const DEFAULT_SETTINGS = {
     twitchStyleTooltips: true,
+    replaceYouTubeKappa: false,
+    iframeInjection: false,
 
+    unicodeEmojis: false,
     twitchSmilies: false,
     smiliesType: 'Robot',
     useMonkeySmilies: false,
 
     twitchGlobal: true,
     twitchChannels: true,
-    bttvGlobal: false,
+    bttvGlobal: true,
     bttvChannels: false,
-    ffzGlobal: false,
+    ffzGlobal: true,
     ffzChannels: false,
     customEmotes: false,
 
+    twitchChannelsList: [],
     bttvChannelsList: [],
     ffzChannelsList: [],
     customEmotesList: [],
@@ -29,24 +35,56 @@ var DEFAULT_SETTINGS = {
     emoteFilterList: []
 };
 
+var userSettings = null;
+var onSettingsChangeCallbacks = [];
+var db;
 
-function getSettings() {
-    return new Promise(function(resolve) {
-        browserStorage.load().then(function(data) {
-            resolve(sanitizeSettings(data));
-        }).catch(function() {
-            resolve(sanitizeSettings({}));
-        });
+
+function initialize() {
+    db = new Dexie('GTE');
+
+    db.version(1).stores({
+        cache: '&set, emotes, date'
+    });
+
+    db.open();
+
+    // Force get settings in the beginning
+    getSettings(true);
+    browser.bindCallbackToStorageChange(onStorageChange);
+}
+
+function getCacheEntry(key) {
+    return db.cache.get(key);
+}
+
+function setCacheEntry(key, emotes, date) {
+    return db.cache.put({
+        set: key,
+        emotes: emotes,
+        date: date
+    });
+}
+
+function getSettings(forceRefresh) {
+    return new Promise(function(resolve, reject) {
+        if (userSettings !== null && !forceRefresh) {
+            resolve(userSettings);
+        } else {
+            browser.loadStorage('sync').then(function(data) {
+                userSettings = sanitizeSettings(data);
+
+                resolve(userSettings);
+            }).catch(reject);
+        }
     });
 }
 
 function setSettings(data) {
+    userSettings = sanitizeSettings(data);
+
     return new Promise(function(resolve, reject) {
-        browserStorage.save(sanitizeSettings(data)).then(function() {
-            resolve();
-        }).catch(function() {
-            reject();
-        });
+        browser.saveStorage(userSettings, 'sync').then(resolve).catch(reject);
     });
 }
 
@@ -136,18 +174,35 @@ function replaceInvalidFilteredURLs(urlList) {
     return result;
 }
 
+
+function onStorageChange(changes, storageType) {
+    console.log('Storage change detected: ' + JSON.stringify(changes));
+
+    if (storageType === 'sync') {
+        getSettings(true).then(function() {
+            for (var i = 0; i < onSettingsChangeCallbacks.length; ++i) {
+                onSettingsChangeCallbacks[i](userSettings);
+            }
+        });
+    }
+}
+
 function bindEventToSettingsChange(callback) {
-    browserStorage.bindOnStorageChange(function(changes) {
-        callback(changes);
-    });
+    if (onSettingsChangeCallbacks.indexOf(callback) === -1) {
+        onSettingsChangeCallbacks.push(callback);
+    }
 }
 
 function doesSettingExist(settingName) {
     return DEFAULT_SETTINGS.hasOwnProperty(settingName);
 }
 
+initialize();
+
 
 module.exports = {
+    getCacheEntry: getCacheEntry,
+    setCacheEntry: setCacheEntry,
     getSettings: getSettings,
     setSettings: setSettings,
     onSettingsChange: bindEventToSettingsChange,

@@ -1,122 +1,118 @@
 var $ = require('jquery');
-var extensionSettings = require('extensionSettings');
-var browserBackend = require('browserBackend');
+var storageHelper = require('storageHelper');
+var browser = require('browser');
 
 
-var $hostStatusTable;
-var HOSTS = [
-    {
-        name: 'twitch',
-        displayName: 'Twitchemotes.com'
-    },
-    {
-        name: 'bttv',
-        displayName: 'BetterTTV'
-    },
-    {
-        name: 'ffz',
-        displayName: 'FrankerFaceZ'
-    }
-];
-var hostStatusesEntries = {};
+const INTERNAL_TO_READABLE_SET_NAMES = {
+    twitchGlobal: 'Twitchemotes.com - Global Emotes',
+    bttvGlobal: 'BetterTTV - Global Emotes',
+    ffzGlobal: 'FrankerFaceZ - Global Emotes',
+    twitchChannels: 'Twitchemotes.com',
+    bttvChannels: 'BetterTTV',
+    ffzChannels: 'FrankerFaceZ'
+};
+
+const INTERNAL_SET_TO_SET_URL = {
+    twitchGlobal: 'https://twitchemotes.com/',
+    bttvGlobal: 'https://api.betterttv.net/2/emotes',
+    ffzGlobal: 'https://www.frankerfacez.com/channel/__ffz_global',
+    twitchChannels: 'https://twitchemotes.com/channel/%s',
+    bttvChannels: 'https://api.betterttv.net/2/channels/%s',
+    ffzChannels: 'https://www.frankerfacez.com/channel/%s'
+};
+
+
+var client = new browser.MessageClient(false);
+var $loadedEmotesTable;
+var $nameColumn;
+var $ageColumn;
 
 
 function init() {
-    $hostStatusTable = $('#hostStatusTable');
+    $loadedEmotesTable = $('#loadedEmotesTable');
 
     buildTable();
 }
 
 function buildTable() {
-    var $nameColumn = $hostStatusTable.find('#hostNameColumn');
-    var $statusColumn = $hostStatusTable.find('#hostStatusColumn');
+    $nameColumn = $loadedEmotesTable.find('#setNameColumn');
+    $ageColumn = $loadedEmotesTable.find('#setAgeColumn');
 
     $nameColumn.append($('<div>', {
         class: 'header'
-    }).text('Endpoint'));
+    }).text('Name'));
 
-    $statusColumn.append($('<div>', {
+    $ageColumn.append($('<div>', {
         class: 'header'
-    }).text('Status'));
-
-    for (var i = 0; i < HOSTS.length; ++i) {
-        var $statusEntry = $('<div>', {
-            class: HOSTS[i].name + 'Status'
-        });
-
-        hostStatusesEntries[HOSTS[i].name] = $statusEntry;
-
-        $nameColumn.append($('<div>').text(HOSTS[i].displayName));
-        $statusColumn.append($statusEntry);
-    }
+    }).text('Cache Age'));
 }
 
 function updateStatuses() {
-    var promises = [];
+    client.listen(function(message) {
+        loadEmoteSetsIntoTable(message.payload);
+    });
 
-    promises.push(extensionSettings.getSettings());
-    promises.push(browserBackend.sendMessageToBackground({
-        message: 'emotes'
-    }));
-
-    Promise.all(promises).then(function(results) {
-        console.log(results);
-
-        updateTableStatuses(results[0], results[1]);
+    client.messageBackground({
+        header: 'getAllEmotes'
     });
 }
 
-function updateTableStatuses(settings, emotes) {
-    updateTwitchEmotesStatus(emotes, settings);
-    updateStatusRow(emotes, settings, 'bttv');
-    updateStatusRow(emotes, settings, 'ffz');
-}
+function loadEmoteSetsIntoTable(emotes) {
+    for (var key in emotes) {
+        if (emotes.hasOwnProperty(key)) {
+            var set = emotes[key];
 
-function updateStatusRow(emotes, settings, entryName) {
-    var global = entryName + 'Global';
-    var channel = entryName + 'Channels';
-    var row = hostStatusesEntries[entryName];
-    var hostHealth;
+            if (set.hasOwnProperty('date') === false) {
+                continue;
+            }
 
-    if (settings[global] === false && settings[channel] === false) {
-        hostHealth = 0;
-    } else if (settings[global] === true) {
-        hostHealth = emotes.hasOwnProperty(global) ? 1 : -1;
-    } else if (settings[channel] === true && settings[channel + 'List'].length > 0) {
-        var aChannelName = settings[channel + 'List'][0].toLowerCase();
+            var readableSetName = generateReadableSetName(key);
+            var ageInfo = getSetAge(set.date);
 
-        hostHealth = emotes.hasOwnProperty(channel + '_' + aChannelName) ? 1 : -1;
-    }
+            var $entryName = $('<div>').append($('<a>', {target: '_blank', href: generateSetURL(key), title: readableSetName, alt: readableSetName}).text(readableSetName));
+            var $entryAge = $('<div>', {title: ageInfo.altTextValue, alt: ageInfo.altTextValue}).text(ageInfo.displayValue);
 
-    setEndpointStatus(row, hostHealth);
-}
-
-function updateTwitchEmotesStatus(emotes, settings) {
-    var hostHealth;
-
-    if ((settings.twitchGlobal || settings.twitchChannels) === false) {
-        hostHealth = 0;
-    } else {
-        var hostInGoodHealth = (settings.twitchGlobal === emotes.hasOwnProperty('twitchGlobal')) && (settings.twitchChannels === emotes.hasOwnProperty('twitchChannels'));
-
-        if (hostInGoodHealth) {
-            hostHealth = 1;
-        } else {
-            hostHealth = -1;
+            $nameColumn.append($entryName);
+            $ageColumn.append($entryAge);
         }
     }
-
-    setEndpointStatus(hostStatusesEntries.twitch, hostHealth);
 }
 
-function setEndpointStatus(endpoint, status) {
-    if (status === -1) {
-        endpoint.addClass('error').text('Could not reach endpoint.');
-    } else if (status === 0) {
-        endpoint.addClass('inactive').text('Endpoint currently not in use.');
+function generateReadableSetName(set) {
+    if (INTERNAL_TO_READABLE_SET_NAMES.hasOwnProperty(set)) {
+        return INTERNAL_TO_READABLE_SET_NAMES[set];
     } else {
-        endpoint.addClass('success').text('Endpoint successfully reached.');
+        set = set.split(':');
+
+        return INTERNAL_TO_READABLE_SET_NAMES[set[0]] + ' - ' + set[1] + ' Channel Emotes';
     }
+}
+
+function generateSetURL(set) {
+    if (INTERNAL_SET_TO_SET_URL.hasOwnProperty(set)) {
+        return INTERNAL_SET_TO_SET_URL[set];
+    } else {
+        set = set.split(':');
+
+        return INTERNAL_SET_TO_SET_URL[set[0]].replace('%s', set[1]);
+    }
+}
+
+function getSetAge(date) {
+    var delta = Math.abs(Date.now() - date) / 1000;
+
+    var minutes = Math.floor(delta / 60);
+    var hours = Math.floor(minutes / 60);
+
+    minutes -= hours * 60;
+
+    var hoursString = hours < 10 ? '0' + hours : '' + hours;
+    var minutesString = minutes < 10 ? '0' + minutes : '' + minutes;
+
+    return {
+        displayValue: hoursString + ':' + minutesString,
+        altTextValue: 'Cached ' + hours + ' hours, ' + minutes + (minutes === 1 ? ' minute ago' : ' minutes ago')
+    };
 }
 
 module.exports = {

@@ -5,23 +5,11 @@
         input(type='checkbox' id='twitchGlobalCheckbox')
         | Enable Global Twitch.tv Emotes
         img.kappa(src='/assets/images/Kappa.png')
-    label.line
+    label.inline
         input(type='checkbox' id='twitchChannelsCheckbox')
         | Enable Subscriber Channels Emotes
-    label.line
-        input(type='checkbox' id='twitchSmiliesCheckbox')
-        | Enable Twitch.tv Smilies
-    p.line
-        | Smilies Type:
-    label.line.floatLeft
-        input(type='radio', value='Robot', name='smiliesType')
-        | Robot
-        img.kappa(src='/assets/images/robot.png')
-    label.line
-        input(type='radio', value='Turbo', name='smiliesType')
-        | Turbo
-        img.kappa(src='/assets/images/turbo.png')
-    label.line
-        input(type='checkbox' id='useMonkeySmiliesCheckbox')
-        | Include Monkey Smilies
-        img.kappa(src='/assets/images/monkey.png')
+    .tooltipTrigger(data-tooltip-html='#twitchChannelsCheckboxTooltipHTML') ?
+
+    table#twitchChannelsList
+
+    #twitchChannelsCheckboxTooltipHTML.tooltipHTML Since version 1.3.0, you must specify which Twitch sub emotes you want to see rendered on pages you visit. Enter the channel names below.

@@ -1,9 +1,10 @@
-var browserBackend = require('browserBackend');
+var browser = require('browser');
 var domainFilter = require('domainFilter');
-var extensionSettings = require('extensionSettings');
+var storageHelper = require('storageHelper');
 
 
-var ILLEGAL_PAGE_ERROR = 'GTE cannot run on this page.';
+const ILLEGAL_PAGE_ERROR = 'GTE cannot run on this page.';
+
 var activeTab;
 var contentDiv;
 var activeDomain;
@@ -16,15 +17,17 @@ function init() {
     contentDiv = document.getElementById('content');
     configureOpenSettingsButton();
 
-    browserBackend.getActiveTab().then(function(tab) {
+    browser.getActiveTab().then(function(tab) {
         activeTab = tab;
         activeDomain = domainFilter.extractDomainFromAddress(tab.url);
 
-        if (domainFilter.isURLIllegal(tab.url) === true) {
+        if (domainFilter.isURLLegal(tab.url) === false) {
             displayIllegalMessage();
         } else {
-            extensionSettings.getSettings().then(function(settings) {
+            storageHelper.getSettings().then(function(settings) {
                 userSettings = settings;
+
+                domainFilter.initialize(userSettings.domainFilterMode, userSettings.domainFilterList);
 
                 updatePopup();
             });
@@ -47,7 +50,7 @@ function displayIllegalMessage() {
 }
 
 function updatePopup() {
-    var filteredRule = domainFilter.getFilteredRule(activeTab.url, userSettings.domainFilterList);
+    var filteredRule = domainFilter.getMatchingFilterRule(activeTab.url);
 
     pageFilterStatus = document.getElementById('pageFilterStatus');
 
@@ -86,7 +89,7 @@ function configureFilterButtons(filteredRule) {
 
         removeRuleButton.addEventListener('click', function() {
             userSettings.domainFilterList.splice(userSettings.domainFilterList.indexOf(filteredRule), 1);
-            extensionSettings.setSettings(userSettings);
+            storageHelper.setSettings(userSettings);
 
             disableButtons();
             transformRefreshButton(this);
@@ -99,7 +102,7 @@ function configureFilterButtons(filteredRule) {
 
         filterEntireDomainButton.addEventListener('click', function() {
             userSettings.domainFilterList.push(activeDomain + '/*');
-            extensionSettings.setSettings(userSettings);
+            storageHelper.setSettings(userSettings);
 
             disableButtons();
             transformRefreshButton(this);
@@ -107,7 +110,7 @@ function configureFilterButtons(filteredRule) {
 
         filterSpecificPageButton.addEventListener('click', function() {
             userSettings.domainFilterList.push(domainFilter.removeProtocolFromAddress(activeTab.url));
-            extensionSettings.setSettings(userSettings);
+            storageHelper.setSettings(userSettings);
 
             disableButtons();
             transformRefreshButton(this);
@@ -120,7 +123,9 @@ function configureFilterButtons(filteredRule) {
 
 function configureOpenSettingsButton() {
     document.getElementById('openSettingsButton').addEventListener('click', function() {
-        browserBackend.openOptionsPage();
+        console.log('Opening Options Page...');
+
+        browser.openOptionsPage();
     });
 }
 
@@ -136,6 +141,15 @@ function createInputButton(value) {
 function transformRefreshButton(button) {
     button.value = '';
     button.className = 'refreshButton';
+    button.disabled = false;
+
+    button.addEventListener('click', function() {
+        console.log('Reloading tab...');
+
+        browser.reloadTab(activeTab);
+
+        this.disabled = true;
+    });
 }
 
 function disableButtons() {

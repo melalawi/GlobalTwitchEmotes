@@ -3,12 +3,14 @@
 
     .optionsBody
         #hostsbar
+            input.hostButton(type='button', id='emojisAndSmiliesHostButton', class='button', alt='Emojis and Smilies', value='Emojis and Smilies')
             input.hostButton(type='button', id='twitchHostButton', class='button', alt='Twitch.tv', value='Twitch.tv')
             input.hostButton(type='button', id='bttvHostButton', class='button', alt='BetterTTV', value='BetterTTV')
             input.hostButton(type='button', id='ffzHostButton', class='button', alt='FrankerFaceZ', value='FrankerFaceZ')
             input.hostButton(type='button', id='customEmotesHostButton', class='button', alt='Custom Emotes', value='Custom Emotes')
 
         include twitchSubpanel
+        include emojisAndSmiliesSubpanel
         include bttvSubpanel
         include ffzSubpanel
         include customEmotesSubpanel

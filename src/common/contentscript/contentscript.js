@@ -1,41 +1,48 @@
-var browserBackend = require('browserBackend');
-var extensionSettings = require('extensionSettings');
+var browser = require('browser');
 var emoteParser = require('./emoteParser');
-var tipsy = require('./tipsy.js');
+var tipsy = require('./tipsy');
 
 
-function init() {
-    var promises = [];
-    var settingsPromise = extensionSettings.getSettings();
+var client;
 
-    promises.push(settingsPromise);
-    promises.push(browserBackend.sendMessageToBackground({
-        message: 'emotes'
-    }));
 
-    settingsPromise.then(function(settings) {
-        if (settings.twitchStyleTooltips === true) {
+function initialize() {
+    if (!window.contentScriptInjected) {
+        window.contentScriptInjected = true;
+
+        client = new browser.MessageClient(false);
+
+        client.listen(onMessageFromBackground);
+
+        emoteParser.run(client);
+    } else {
+        console.log('Reinjection detected and averted');
+    }
+}
+
+function onMessageFromBackground(message, responseCallback) {
+    if (!message) {
+        return;
+    }
+
+    console.log('Received message with header "' + message.header + '"');
+
+    if (message.header === 'settings') {
+        if (message.payload.twitchStyleTooltips === true) {
             tipsy.init();
         }
-    });
 
-    Promise.all(promises).then(function(data) {
-        var emotes = data[1];
-        var settings = data[0];
+        if (message.payload.replaceYouTubeKappa === true) {
+            emoteParser.replaceKappers();
+        }
+    } else {
+        emoteParser.onBackgroundMessage(message);
+    }
 
-        // Display 0 emotes parsed to begin with
-        updateDisplayedEmoteCount();
-
-        emoteParser.onNewEmoteParsed(updateDisplayedEmoteCount);
-        emoteParser.run(emotes, settings);
-    });
+    if (responseCallback) {
+        responseCallback();
+    }
 }
 
-function updateDisplayedEmoteCount() {
-    browserBackend.sendMessageToBackground({
-        message: 'setBadgeText',
-        value: emoteParser.getEmoteCount()
-    });
-}
 
-init();
+initialize();

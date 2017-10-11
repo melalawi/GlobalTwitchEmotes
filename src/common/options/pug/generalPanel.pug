@@ -6,6 +6,16 @@
             input(type='checkbox' id='twitchStyleTooltipsCheckbox')
             | Twitch-style Emote Tooltips
         .tooltipTrigger(data-tooltip-html='#twitchStyleTooltipsCheckboxTooltipHTML') ?
+        br
+        label.inline
+            input(type='checkbox' id='replaceYouTubeKappaCheckbox')
+            | Replace YouTube Live Kappa Emoji
+        .tooltipTrigger(data-tooltip-html='#replaceYouTubeKappaCheckboxTooltipHTML') ?
+        br
+        label.inline
+            input(type='checkbox' id='iframeInjectionCheckbox')
+            | Enable Experimental Iframe Support (e.g. YouTube Live Chat)
+        .tooltipTrigger(data-tooltip-html='#iframeInjectionCheckboxTooltipHTML') ?
 
         strong
             div Import/Export Settings
@@ -25,12 +35,12 @@
                     div.statusText
 
         strong
-            div Emote Endpoint Statuses
+            div Cached Emote Sets
             .tooltipTrigger(data-tooltip-html='#emoteHostStatusTooltipHTML') ?
 
-        #hostStatusTable
-            #hostNameColumn
-            #hostStatusColumn
+        #loadedEmotesTable
+            #setNameColumn
+            #setAgeColumn
 
     input.saveSettingsButton(type='button', value='Save Settings')
 
@@ -39,4 +49,11 @@
         .imageContainer
             img(src='/assets/images/tooltipExample.png')
         | Enables Twitch-style tooltips on emotes when hovered over.
-    #emoteHostStatusTooltipHTML.tooltipHTML Current status of the various endpoints Global Twitch Emotes calls. Refresh this page to update this table.
+    #replaceYouTubeKappaCheckboxTooltipHTML.tooltipHTML Replaces&nbsp;
+        img.kappa(src='/assets/images/Kapper.png')
+        | &nbsp;with&nbsp;
+        img.kappa(src='/assets/images/Kappa.png')
+        | &nbsp;in YouTube's Live Chat.
+
+    #iframeInjectionCheckboxTooltipHTML.tooltipHTML Enables experimental script injection into any and all iframes found in pages. Be warned that this is a performance-heavy feature.
+    #emoteHostStatusTooltipHTML.tooltipHTML These are the emotes that are currently stored on your computer. Caches will auto-refresh every 72 hours.

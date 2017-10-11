@@ -14,7 +14,7 @@ function init() {
     generalPanel.init();
 
     emotesPanel.init();
-    emotesPanel.setHostPanel('twitch');
+    emotesPanel.setHostPanel('emojisAndSmilies');
 
     filterPanel.init();
 

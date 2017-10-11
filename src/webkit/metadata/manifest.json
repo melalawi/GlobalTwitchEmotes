@@ -46,5 +46,9 @@
         "storage",
         "tabs",
         "unlimitedStorage"
+    ],
+
+    "web_accessible_resources": [
+        "searchWorker.js"
     ]
 }

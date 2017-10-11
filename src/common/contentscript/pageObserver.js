@@ -1,63 +1,36 @@
-var PAGE_OBSERVER_PARAMETERS = {
+const PAGE_OBSERVER_PARAMETERS = {
     attributes: false,
     characterData: true,
     childList: true,
     subtree: true
 };
-var TREE_WALKER_FILTER = {
+const TREE_WALKER_FILTER = {
     acceptNode: treeWalkerFilterFunction
 };
-var ILLEGAL_TAGNAMES = [
+const ILLEGAL_TAGNAMES = [
     'IMG', 'NOSCRIPT', 'SCRIPT', 'STYLE', 'TEXTAREA'
 ];
-var currentlyInvestigating = false;
+const MAX_NODES_PER_ITERATION = 100;
+
 var mutatedNodes = [];
 var mutationObserver;
 var nodeCallback;
-var onNewWindow;
+var iframeFoundCallback;
+var imageFoundCallback;
+
+var pendingImages = [];
+var iframeFound = false;
+var currentlyIteratingThroughNodes = false;
+var iterateNodesCallback;
 
 
 function startMutationObserver(callback) {
     mutationObserver = new MutationObserver(onPageChange);
     nodeCallback = callback;
 
-    observeWindow(window);
-}
+    mutationObserver.observe(document.body, PAGE_OBSERVER_PARAMETERS);
 
-function setNewWindowCallback(callback) {
-    onNewWindow = callback;
-}
-
-function observeIFrame(iframe) {
-    // Need a short delay for dynamically inserted iframes to be observed properly
-    setTimeout(function() {
-        observeWindow(this.contentWindow);
-    }.bind(iframe), 1000);
-}
-
-function observeWindow(w) {
-    try {
-        var doc = w.document;
-
-        if (doc.readyState === 'complete') {
-            attachMutationObserver.call(doc);
-        } else {
-            doc.addEventListener('load', attachMutationObserver);
-        }
-    } catch (domException) {
-        console.log(domException);
-    }
-}
-
-function attachMutationObserver() {
-    mutationObserver.observe(this.body, PAGE_OBSERVER_PARAMETERS);
-    mutatedNodes.push(this.body);
-
-    if (onNewWindow) {
-        onNewWindow(this.body);
-    }
-
-    iterateThroughPendingNodes();
+    addMutatedNode(document.body);
 }
 
 function onPageChange(changes) {
@@ -70,47 +43,57 @@ function onPageChange(changes) {
             for (var index = 0; index < pageChange.addedNodes.length; ++index) {
                 var nextNode = pageChange.addedNodes.item(index);
 
-                if (nextNode.tagName === 'IFRAME') {
-                    observeIFrame(nextNode);
-                } else {
-                    addMutatedNode(nextNode);
+                addMutatedNode(nextNode);
+
+                if (nextNode.tagName === 'IMG') {
+                    imageDetected(nextNode);
                 }
             }
         }
     }
-
-    iterateThroughPendingNodes();
 }
 
 function addMutatedNode(node) {
     if (isIllegalNode(node) === false) {
         mutatedNodes.push(node);
     }
+
+    clearTimeout(iterateNodesCallback);
+    iterateNodesCallback = setTimeout(iterateThroughPendingNodes, 1);
 }
 
 function iterateThroughPendingNodes() {
-    if (currentlyInvestigating === false) {
-        currentlyInvestigating = true;
+    if (currentlyIteratingThroughNodes === false) {
+        currentlyIteratingThroughNodes = true;
+
+        var nodesThisIteration = 0;
+
+        console.log('Checking...');
 
         while (mutatedNodes.length > 0) {
-            var nextNode = mutatedNodes.pop();
+            if (nodesThisIteration === MAX_NODES_PER_ITERATION) {
+                break;
+            }
 
-            console.log(nextNode);
+            var nextNode = mutatedNodes.pop();
 
             if (nextNode.nodeType === Node.TEXT_NODE) {
                 nodeCallback(nextNode);
             } else if (nextNode.nodeType === Node.ELEMENT_NODE) {
-                if (nextNode.tagName === 'IFRAME') {
-                    observeIFrame(nextNode);
-                } else {
-                    var children = runTreeWalker(nextNode);
+                var children = runTreeWalker(nextNode);
 
-                    mutatedNodes = children.concat(mutatedNodes);
-                }
+                mutatedNodes = children.concat(mutatedNodes);
             }
+
+            nodesThisIteration++;
         }
 
-        currentlyInvestigating = false;
+        if (mutatedNodes.length > 0) {
+            clearTimeout(iterateNodesCallback);
+            iterateNodesCallback = setTimeout(iterateThroughPendingNodes, 10);
+        }
+
+        currentlyIteratingThroughNodes = false;
     }
 }
 
@@ -135,11 +118,47 @@ function treeWalkerFilterFunction(node) {
         filter = NodeFilter.FILTER_ACCEPT;
     } else if (node.nodeType === Node.ELEMENT_NODE) {
         if (node.tagName === 'IFRAME') {
-            filter = NodeFilter.FILTER_ACCEPT;
+            iframeDetected();
         }
     }
 
     return filter;
+}
+
+function iframeDetected() {
+    if (iframeFoundCallback) {
+        iframeFoundCallback();
+
+        iframeFoundCallback = null;
+    }
+
+    iframeFound = true;
+}
+
+function onIframeFound(callback) {
+    if (iframeFound === true) {
+        callback();
+    } else {
+        iframeFoundCallback = callback;
+    }
+}
+
+function imageDetected(imageNode) {
+    if (imageFoundCallback) {
+        imageFoundCallback(imageNode);
+    } else {
+        pendingImages.push(imageNode);
+    }
+}
+
+function onImageFound(callback) {
+    imageFoundCallback = callback;
+
+    for (var i = 0; i < pendingImages.length; ++i) {
+        imageFoundCallback(callback);
+    }
+
+    pendingImages = [];
 }
 
 function isIllegalNode(node) {
@@ -154,7 +173,7 @@ function isIllegalNode(node) {
             isIllegal = true;
         } else if (ILLEGAL_TAGNAMES.indexOf(elementNode.tagName) !== -1) {
             isIllegal = true;
-        } else if (elementNode.classList.contains('GTETipsy') === true) {
+        } else if (elementNode.classList.contains('GTETipsy') || elementNode.classList.contains('GTETipsyInner')) {
             isIllegal = true;
         } else if (elementNode.isContentEditable) {
             isIllegal = true;
@@ -170,5 +189,6 @@ function isIllegalNode(node) {
 
 module.exports = {
     observe: startMutationObserver,
-    onNewWindow: setNewWindowCallback
+    onIframeFound: onIframeFound,
+    onImageFound: onImageFound
 };

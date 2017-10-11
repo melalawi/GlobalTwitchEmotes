@@ -1,34 +1,47 @@
-var browserBackend = require('./browserBackend');
+var browser = require('./browser');
 
 
-var FORBIDDEN_TWITCH_DOMAIN = 'twitch.tv';
-var IS_VALID_URL_REGEX = /^(http|https|ftp)/i;
-var PROTOCOL_REMOVAL_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\s\/]+(?:\/[^\s\/]+)*)\/*$/i;
-var HOSTNAME_EXTRACTION_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\\\/]*)/i;
+const FORBIDDEN_TWITCH_DOMAIN = 'twitch.tv';
+const IS_VALID_URL_REGEX = /^(http|https|ftp)/i;
+const PROTOCOL_REMOVAL_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\s\/]+(?:\/[^\s\/]+)*)\/*$/i;
+const HOSTNAME_EXTRACTION_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\\\/]*)/i;
+
+var filterMode;
+var filterList;
 
 
-function isFiltered(address, extensionSettings) {
-    var result = isURLIllegal(address);
+function initialize(mode, list) {
+    filterMode = mode;
+    filterList = list;
+}
 
-    if (result === false && extensionSettings.domainFilterList.length > 0) {
-        result = (getFilteredRule(address, extensionSettings.domainFilterList) !== null) === (extensionSettings.domainFilterMode === 'Whitelist');
-        result = !result;
+function isAddressAllowed(address) {
+    var result = isURLLegal(address);
+
+    if (filterList.length > 0) {
+        var matchingRule = getMatchingFilterRule(address);
+
+        result = matchingRule === null;
+
+        if (filterMode === 'Whitelist') {
+            result = !result;
+        }
     }
 
     return result;
 }
 
-function getFilteredRule(address, filteredURLs) {
+function getMatchingFilterRule(address) {
     var result = null;
 
     if (address) {
         var url = removeProtocolFromAddress(address);
 
-        for (var i = 0; i < filteredURLs.length; ++i) {
-            var domainRegex = createRegexFromRule(filteredURLs[i]);
+        for (var i = 0; i < filterList.length; ++i) {
+            var domainRegex = createRegexFromRule(filterList[i]);
 
             if (domainRegex !== null && domainRegex.test(url) === true) {
-                result = filteredURLs[i];
+                result = filterList[i];
                 break;
             }
         }
@@ -37,18 +50,18 @@ function getFilteredRule(address, filteredURLs) {
     return result;
 }
 
-function isURLIllegal(address) {
-    var result = true;
+function isURLLegal(address) {
+    var result = false;
 
     if (address && IS_VALID_URL_REGEX.test(address)) {
         var url = removeProtocolFromAddress(address);
 
-        result = url.indexOf(FORBIDDEN_TWITCH_DOMAIN) === 0;
+        result = url.indexOf(FORBIDDEN_TWITCH_DOMAIN) !== 0;
 
-        if (result === false) {
-            for (var i = 0; i < browserBackend.forbiddenDomains.length; ++i) {
-                if (url.indexOf(browserBackend.forbiddenDomains[i]) === 0) {
-                    result = true;
+        if (result === true) {
+            for (var i = 0; i < browser.forbiddenDomains.length; ++i) {
+                if (url.indexOf(browser.forbiddenDomains[i]) === 0) {
+                    result = false;
                     break;
                 }
             }
@@ -88,9 +101,10 @@ function extractDomainFromAddress(address) {
 }
 
 module.exports = {
-    isFiltered: isFiltered,
-    getFilteredRule: getFilteredRule,
-    isURLIllegal: isURLIllegal,
+    initialize: initialize,
+    isAddressAllowed: isAddressAllowed,
+    getMatchingFilterRule: getMatchingFilterRule,
+    isURLLegal: isURLLegal,
     removeProtocolFromAddress: removeProtocolFromAddress,
     extractDomainFromAddress: extractDomainFromAddress
 };

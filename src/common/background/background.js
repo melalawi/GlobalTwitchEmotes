@@ -1,72 +1,112 @@
-var browserBackend = require('browserBackend');
-var emoteLibrary = require('./emoteLibrary');
-var extensionSettings = require('extensionSettings');
+var browser = require('browser');
 var domainFilter = require('domainFilter');
+var emoteManager = require('./emoteManager');
+var searchWorkerManager = require('./searchWorkerManager');
+var storageHelper = require('storageHelper');
 
 
-var BADGE_BACKGROUND_COLOR = '#7050a0';
-var CONTENTSCRIPT = '/contentscript.js';
-var pendingCallbacks = [];
-var userSettings;
-var ready = false;
+const BADGE_BACKGROUND_COLOR = '#7050a0';
+// Generous delay ensures that cross-origin, dynamically loaded iframes are fully loaded before we try to inject GTE into them
+const ALL_FRAMES_INJECTION_DELAY = 1000 * 5;
+const CONTENT_SCRIPT_FILE = '/contentscript.js';
 
 
-function init() {
-    var settingsPromise = extensionSettings.getSettings();
+var pendingTabs = [];
+var settings;
+var client;
 
-    browserBackend.listenForTabs(instantiateGTEToFrame);
-    browserBackend.listenForMessages(respondToMessage);
 
-    settingsPromise.then(function(settings) {
-        var libraryPromise = emoteLibrary.update(settings);
+function initialize() {
+    client = new browser.MessageClient(false);
+    client.listen(onMessage);
 
-        userSettings = settings;
+    searchWorkerManager.initialize(4);
 
-        libraryPromise.then(function() {
-            ready = true;
-
-            extensionSettings.onSettingsChange(respondToSettingsChanges);
-
-            flushPendingTabs();
-        }, function(error) {
-            console.error('Error', error);
-        });
-    });
+    storageHelper.getSettings().then(initializeComponents);
 }
 
-function respondToSettingsChanges() {
-    extensionSettings.getSettings().then(function(settings) {
-        userSettings = settings;
+function initializeComponents(loadedSettings) {
+    settings = loadedSettings;
 
-        emoteLibrary.update(settings);
-    });
+    browser.listenForTabs(injectGTEContentScript);
+
+    searchWorkerManager.setSettings(loadedSettings);
+    domainFilter.initialize(loadedSettings.domainFilterMode, loadedSettings.domainFilterList);
+    emoteManager.initialize(loadedSettings).then(emotesReady);
+
+    storageHelper.onSettingsChange(initializeComponents);
 }
 
-function instantiateGTEToFrame(tab) {
-    if (domainFilter.isFiltered(tab.url, userSettings) === false) {
-        browserBackend.injectScriptToTab(CONTENTSCRIPT, tab);
-    }
+function emotesReady() {
+    searchWorkerManager.setEmotes(emoteManager.getAllEmotes());
+
+    flushPendingTabs();
 }
 
 function flushPendingTabs() {
-    for (var i = 0; i < pendingCallbacks.length; ++i) {
-        pendingCallbacks[i](emoteLibrary.getEmotes());
+    for (var i = 0; i < pendingTabs.length; ++i) {
+        browser.injectScriptToTab(CONTENT_SCRIPT_FILE, pendingTabs[i], false).then(sendSettings);
     }
 
-    pendingCallbacks = [];
+    pendingTabs = [];
 }
 
-function respondToMessage(message, sender, responseCallback) {
-    if (message.message === 'emotes') {
-        if (ready === true) {
-            responseCallback(emoteLibrary.getEmotes());
+function injectGTEContentScript(tab) {
+    if (domainFilter.isAddressAllowed(tab.url) === true) {
+        if (emoteManager.isReady() === true) {
+            browser.injectScriptToTab(CONTENT_SCRIPT_FILE, tab, false).then(sendSettings);
         } else {
-            pendingCallbacks.push(responseCallback);
+            pendingTabs.push(tab);
         }
-    } else if (message.message === 'setBadgeText') {
-        browserBackend.setBadgeText(sender.tab, message.value, BADGE_BACKGROUND_COLOR);
+    }
+}
+
+function injectGTEContentScriptIntoAllFrames(tab) {
+    browser.injectScriptToTab(CONTENT_SCRIPT_FILE, tab, true).then(sendSettings);
+}
+
+function sendSettings(tab) {
+    browser.setBadgeText(tab, '0', BADGE_BACKGROUND_COLOR);
+
+    client.messageTab(tab, {
+        header: 'settings',
+        payload: settings
+    });
+}
+
+function onMessage(message, responseCallback, tab) {
+    if (!responseCallback) {
+        return;
+    }
+
+    console.log('Message received with header "' + message.header + '"');
+
+    if (message.header === 'getEmoteSets') {
+        emoteManager.onAllEmotesReady(function() {
+            responseCallback({
+                header: 'emoteSets',
+                payload: emoteManager.getEmoteSets()
+            });
+        });
+    } else if (message.header === 'getAllEmotes') {
+        emoteManager.onAllEmotesReady(function() {
+            responseCallback({
+                header: 'allEmotes',
+                payload: emoteManager.getAllEmotes()
+            });
+        });
+    } else if (message.header === 'setBadgeText') {
+        browser.setBadgeText(tab, message.payload.toString(), BADGE_BACKGROUND_COLOR);
+    } else if (message.header === 'searchTextForEmotes') {
+        searchWorkerManager.search(message.payload.id, message.payload.text, responseCallback);
+    } else if (message.header === 'iframeFound') {
+        if (settings.iframeInjection === true) {
+            setTimeout(injectGTEContentScriptIntoAllFrames, ALL_FRAMES_INJECTION_DELAY, tab);
+        }
+
+        responseCallback();
     }
 }
 
 
-init();
+initialize();

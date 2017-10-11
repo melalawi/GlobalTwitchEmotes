@@ -1,4 +1,4 @@
-var URL = 'https://api.frankerfacez.com/v1/set/global';
+const URL = 'https://api.frankerfacez.com/v1/';
 
 
 function parseEmotes(json) {
@@ -14,7 +14,7 @@ function parseEmotes(json) {
 
                 result[emote.name] = {
                     url: 'https:' + emote.urls['1'],
-                    channel: 'FrankerFaceZ Emote'
+                    channel: json.room.display_name
                 };
             }
         }
@@ -25,10 +25,8 @@ function parseEmotes(json) {
 
 
 module.exports = {
-    name: 'ffzGlobal',
     parseEmotes: parseEmotes,
-    getURL: function() {
-        return URL;
-    },
-    requiresChannel: false
+    getURL: function(channelName) {
+        return URL + 'room/' + channelName.toLowerCase();
+    }
 };

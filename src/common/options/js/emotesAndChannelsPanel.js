@@ -1,5 +1,6 @@
 var bttv = require('./bttvSubpanel');
 var ffz = require('./ffzSubpanel');
+var twitchChannels = require('./twitchSubpanel');
 var customEmotes = require('./customEmotesSubpanel');
 
 
@@ -45,6 +46,7 @@ function init() {
 
     bttv.init();
     ffz.init();
+    twitchChannels.init();
     customEmotes.init();
 }
 

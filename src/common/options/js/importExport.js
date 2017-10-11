@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var FileSaver = require('file-saver');
 var settingsInterface = require('./settingsInterface');
-var extensionSettings = require('extensionSettings');
+var storageHelper = require('storageHelper');
 
 
 var IMPORT_SUCCESS_DURATION = 3000;
@@ -37,7 +37,7 @@ function applyJSONToPage(text) {
 
         for (var key in jsonifiedSettings) {
             if (jsonifiedSettings.hasOwnProperty(key)) {
-                if (extensionSettings.doesSettingExist(key) === false) {
+                if (storageHelper.doesSettingExist(key) === false) {
                     triggerInvalidImportNotification();
                     valid = false;
                     break;
