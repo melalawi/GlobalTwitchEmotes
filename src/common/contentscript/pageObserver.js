@@ -75,7 +75,7 @@ function iterateThroughPendingNodes() {
                 break;
             }
 
-            var nextNode = mutatedNodes.pop();
+            var nextNode = mutatedNodes.shift();
 
             if (nextNode.nodeType === Node.TEXT_NODE) {
                 nodeCallback(nextNode);
@@ -90,7 +90,7 @@ function iterateThroughPendingNodes() {
 
         if (mutatedNodes.length > 0) {
             clearTimeout(iterateNodesCallback);
-            iterateNodesCallback = setTimeout(iterateThroughPendingNodes, 10);
+            iterateNodesCallback = setTimeout(iterateThroughPendingNodes, 1);
         }
 
         currentlyIteratingThroughNodes = false;

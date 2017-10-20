@@ -5,6 +5,7 @@ var searchWorkerManager = require('./searchWorkerManager');
 var storageHelper = require('storageHelper');
 
 
+const SEARCH_WORKER_COUNT = 4;
 const BADGE_BACKGROUND_COLOR = '#7050a0';
 // Generous delay ensures that cross-origin, dynamically loaded iframes are fully loaded before we try to inject GTE into them
 const ALL_FRAMES_INJECTION_DELAY = 1000 * 5;
@@ -15,12 +16,14 @@ var pendingTabs = [];
 var settings;
 var client;
 
+browser.onExtensionInstall(browser.openOptionsPage);
+
 
 function initialize() {
     client = new browser.MessageClient(false);
     client.listen(onMessage);
 
-    searchWorkerManager.initialize(4);
+    searchWorkerManager.initialize(SEARCH_WORKER_COUNT);
 
     storageHelper.getSettings().then(initializeComponents);
 }
@@ -33,8 +36,6 @@ function initializeComponents(loadedSettings) {
     searchWorkerManager.setSettings(loadedSettings);
     domainFilter.initialize(loadedSettings.domainFilterMode, loadedSettings.domainFilterList);
     emoteManager.initialize(loadedSettings).then(emotesReady);
-
-    storageHelper.onSettingsChange(initializeComponents);
 }
 
 function emotesReady() {
@@ -66,8 +67,6 @@ function injectGTEContentScriptIntoAllFrames(tab) {
 }
 
 function sendSettings(tab) {
-    browser.setBadgeText(tab, '0', BADGE_BACKGROUND_COLOR);
-
     client.messageTab(tab, {
         header: 'settings',
         payload: settings
@@ -79,7 +78,7 @@ function onMessage(message, responseCallback, tab) {
         return;
     }
 
-    console.log('Message received with header "' + message.header + '"');
+    //console.log('Message received with header "' + message.header + '"');
 
     if (message.header === 'getEmoteSets') {
         emoteManager.onAllEmotesReady(function() {
@@ -103,6 +102,10 @@ function onMessage(message, responseCallback, tab) {
         if (settings.iframeInjection === true) {
             setTimeout(injectGTEContentScriptIntoAllFrames, ALL_FRAMES_INJECTION_DELAY, tab);
         }
+
+        responseCallback();
+    } else if (message.header === 'triggerSettingsChange') {
+        storageHelper.getSettings().then(initializeComponents);
 
         responseCallback();
     }

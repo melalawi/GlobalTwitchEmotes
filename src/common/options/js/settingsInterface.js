@@ -1,8 +1,9 @@
 var $ = require('jquery');
+var browser = require('browser');
 var storageHelper = require('storageHelper');
 
 
-var SETTINGS_SELECTORS = {
+const SETTINGS_SELECTORS = {
     twitchStyleTooltips: '#twitchStyleTooltipsCheckbox',
     replaceYouTubeKappa: '#replaceYouTubeKappaCheckbox',
     iframeInjection: '#iframeInjectionCheckbox',
@@ -31,6 +32,7 @@ var SETTINGS_SELECTORS = {
     emoteFilterList: '#emoteFilterList'
 };
 
+var client = new browser.MessageClient(false);
 
 function getPageSettings(sanitize) {
     var pageSettings = {};
@@ -74,7 +76,13 @@ function loadStoredSettingsToPage() {
 }
 
 function savePageSettingsToStorage() {
-    return storageHelper.setSettings(getPageSettings());
+    return storageHelper.setSettings(getPageSettings()).then(notifyBackgroundOnSettingsChange);
+}
+
+function notifyBackgroundOnSettingsChange() {
+    client.messageBackground({
+        header: 'triggerSettingsChange'
+    });
 }
 
 function setTableEntries($table, entries) {

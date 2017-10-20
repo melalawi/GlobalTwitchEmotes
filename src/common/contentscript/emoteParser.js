@@ -1,7 +1,7 @@
 var pageObserver = require('./pageObserver');
 
 
-const MAX_EMOTE_PARSES_PER_ITERATION = 100;
+const MAX_EMOTE_PARSES_PER_ITERATION = 20;
 const COUNTER_UPDATE_COOLDOWN = 2000;
 const EMOTE_CSS = 'display:inline !important;height:auto !important;width:auto !important;max-height:100% !important;max-width:auto !important;opacity:1 !important;outline:0 !important;border:0 !important;margin:0 !important;padding:0 !important;z-index:auto !important;visibility:visible !important;';
 const TIPSY_DATA_ATTRIBUTE = 'gte-tipsy-text';
@@ -51,6 +51,8 @@ function replaceKappers() {
 function replaceKapperWithKappa(imageNode) {
     if (/youtube.com/i.test(window.location.href) && imageNode.getAttribute('shared-tooltip-text') === KAPPER_SHARED_TOOLTIP_TEXT) {
         var emoteKey = 'Kapper';
+
+        console.log('Kapper detected!');
 
         imageNode.setAttribute('class', 'GTEEmote');
         imageNode.setAttribute('src', KAPPA_IMAGE_URL);

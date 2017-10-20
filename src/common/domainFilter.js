@@ -1,7 +1,10 @@
 var browser = require('./browser');
 
 
-const FORBIDDEN_TWITCH_DOMAIN = 'twitch.tv';
+const FORBIDDEN_TWITCH_DOMAINS = [
+    'go.twitch.tv',
+    'twitch.tv'
+];
 const IS_VALID_URL_REGEX = /^(http|https|ftp)/i;
 const PROTOCOL_REMOVAL_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\s\/]+(?:\/[^\s\/]+)*)\/*$/i;
 const HOSTNAME_EXTRACTION_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\\\/]*)/i;
@@ -56,7 +59,13 @@ function isURLLegal(address) {
     if (address && IS_VALID_URL_REGEX.test(address)) {
         var url = removeProtocolFromAddress(address);
 
-        result = url.indexOf(FORBIDDEN_TWITCH_DOMAIN) !== 0;
+        for (var j = 0; j < FORBIDDEN_TWITCH_DOMAINS.length; ++j) {
+            result = url.indexOf(FORBIDDEN_TWITCH_DOMAINS[j]) !== 0;
+
+            if (result === false) {
+                break;
+            }
+        }
 
         if (result === true) {
             for (var i = 0; i < browser.forbiddenDomains.length; ++i) {

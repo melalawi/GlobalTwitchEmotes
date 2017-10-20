@@ -6,6 +6,7 @@ var storageHelper = require('storageHelper');
 const ILLEGAL_PAGE_ERROR = 'GTE cannot run on this page.';
 
 var activeTab;
+var client = new browser.MessageClient(false);
 var contentDiv;
 var activeDomain;
 var filterControlsDiv;
@@ -89,7 +90,7 @@ function configureFilterButtons(filteredRule) {
 
         removeRuleButton.addEventListener('click', function() {
             userSettings.domainFilterList.splice(userSettings.domainFilterList.indexOf(filteredRule), 1);
-            storageHelper.setSettings(userSettings);
+            storageHelper.setSettings(userSettings).then(notifyBackgroundOnSettingsChange);
 
             disableButtons();
             transformRefreshButton(this);
@@ -102,7 +103,7 @@ function configureFilterButtons(filteredRule) {
 
         filterEntireDomainButton.addEventListener('click', function() {
             userSettings.domainFilterList.push(activeDomain + '/*');
-            storageHelper.setSettings(userSettings);
+            storageHelper.setSettings(userSettings).then(notifyBackgroundOnSettingsChange);
 
             disableButtons();
             transformRefreshButton(this);
@@ -110,7 +111,7 @@ function configureFilterButtons(filteredRule) {
 
         filterSpecificPageButton.addEventListener('click', function() {
             userSettings.domainFilterList.push(domainFilter.removeProtocolFromAddress(activeTab.url));
-            storageHelper.setSettings(userSettings);
+            storageHelper.setSettings(userSettings).then(notifyBackgroundOnSettingsChange);
 
             disableButtons();
             transformRefreshButton(this);
@@ -119,6 +120,12 @@ function configureFilterButtons(filteredRule) {
         filterControlsDiv.appendChild(filterEntireDomainButton);
         filterControlsDiv.appendChild(filterSpecificPageButton);
     }
+}
+
+function notifyBackgroundOnSettingsChange() {
+    client.messageBackground({
+        header: 'triggerSettingsChange'
+    });
 }
 
 function configureOpenSettingsButton() {

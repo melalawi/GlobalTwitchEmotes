@@ -7,6 +7,8 @@ var browser = require('./browser');
 
 const URL_EXTRACTION_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\s\/]+(?:\/[^\s\/]+)*)\/*$/i;
 const DEFAULT_SETTINGS = {
+    version: '1.3.0',
+
     twitchStyleTooltips: true,
     replaceYouTubeKappa: false,
     iframeInjection: false,
@@ -18,9 +20,9 @@ const DEFAULT_SETTINGS = {
 
     twitchGlobal: true,
     twitchChannels: true,
-    bttvGlobal: true,
+    bttvGlobal: false,
     bttvChannels: false,
-    ffzGlobal: true,
+    ffzGlobal: false,
     ffzChannels: false,
     customEmotes: false,
 
@@ -35,8 +37,6 @@ const DEFAULT_SETTINGS = {
     emoteFilterList: []
 };
 
-var userSettings = null;
-var onSettingsChangeCallbacks = [];
 var db;
 
 
@@ -44,14 +44,11 @@ function initialize() {
     db = new Dexie('GTE');
 
     db.version(1).stores({
-        cache: '&set, emotes, date'
+        cache: '&set, emotes, date',
+        customEmotes: '&key, url'
     });
 
     db.open();
-
-    // Force get settings in the beginning
-    getSettings(true);
-    browser.bindCallbackToStorageChange(onStorageChange);
 }
 
 function getCacheEntry(key) {
@@ -66,26 +63,61 @@ function setCacheEntry(key, emotes, date) {
     });
 }
 
-function getSettings(forceRefresh) {
+function getSettings() {
     return new Promise(function(resolve, reject) {
-        if (userSettings !== null && !forceRefresh) {
-            resolve(userSettings);
-        } else {
-            browser.loadStorage('sync').then(function(data) {
-                userSettings = sanitizeSettings(data);
-
-                resolve(userSettings);
+        Promise.all([db.customEmotes.toArray(), browser.loadStorage('sync')]).then(function(data) {
+            migrateSettings(data[0], data[1]).then(function(settings) {
+                resolve(sanitizeSettings(settings));
             }).catch(reject);
-        }
+        }).catch(reject);
     });
 }
 
 function setSettings(data) {
-    userSettings = sanitizeSettings(data);
-
     return new Promise(function(resolve, reject) {
-        browser.saveStorage(userSettings, 'sync').then(resolve).catch(reject);
+        var sync = sanitizeSettings(data);
+        var local = sync.customEmotesList;
+
+        delete sync.customEmotesList;
+
+        db.customEmotes.clear().then(function(){
+            Promise.all([db.customEmotes.bulkPut(local), browser.saveStorage(sync, 'sync')]).then(resolve).catch(reject);
+        });
     });
+}
+
+function migrateSettings(customEmotesList, sync) {
+    return new Promise(function(resolve, reject) {
+        var settings;
+
+        if (sync.hasOwnProperty('version') === false) {
+            // Version 1.2.0 and below
+            console.log('Old settings detected.');
+
+            browser.loadStorage('local').then(function(local) {
+                // Channel filtering has been deprecated
+                for (var i = local.emoteFilterList.length - 1; i >= 0; --i) {
+                    var currentRule = local.emoteFilterList[i];
+
+                    if (currentRule.type === 'Channel') {
+                        local.emoteFilterList.splice(i, 1);
+                    } else {
+                        delete local.emoteFilterList[i].type;
+                    }
+                }
+
+                setSettings(local).then(resolve).catch(reject);
+            }).catch(reject);
+        } else if (sync.version === '1.3.0') {
+            settings = sync;
+            settings.customEmotesList = customEmotesList;
+
+            resolve(settings);
+        } else {
+            reject('Unrecognized settings version.');
+        }
+    });
+
 }
 
 function sanitizeSettings(settings) {
@@ -174,25 +206,6 @@ function replaceInvalidFilteredURLs(urlList) {
     return result;
 }
 
-
-function onStorageChange(changes, storageType) {
-    console.log('Storage change detected: ' + JSON.stringify(changes));
-
-    if (storageType === 'sync') {
-        getSettings(true).then(function() {
-            for (var i = 0; i < onSettingsChangeCallbacks.length; ++i) {
-                onSettingsChangeCallbacks[i](userSettings);
-            }
-        });
-    }
-}
-
-function bindEventToSettingsChange(callback) {
-    if (onSettingsChangeCallbacks.indexOf(callback) === -1) {
-        onSettingsChangeCallbacks.push(callback);
-    }
-}
-
 function doesSettingExist(settingName) {
     return DEFAULT_SETTINGS.hasOwnProperty(settingName);
 }
@@ -205,7 +218,6 @@ module.exports = {
     setCacheEntry: setCacheEntry,
     getSettings: getSettings,
     setSettings: setSettings,
-    onSettingsChange: bindEventToSettingsChange,
     doesSettingExist: doesSettingExist,
     sanitizeSettings: sanitizeSettings
 };

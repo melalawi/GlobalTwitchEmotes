@@ -10,7 +10,6 @@ onmessage = function(event) {
     handleMessage(event.data);
 };
 
-
 function handleMessage(message) {
     if (message.header === 'settings') {
         emoteFilter.initialize(message.payload.emoteFilterMode, message.payload.emoteFilterList);
@@ -36,6 +35,10 @@ function searchForEmotes(text) {
 
     while ((nextWord = STRING_SEPARATOR.exec(text)) !== null) {
         var emote = nextWord[0];
+
+        if (emote.length <= 2) {
+            continue;
+        }
 
         for (var set in emoteLibrary) {
             if (emoteLibrary.hasOwnProperty(set)) {

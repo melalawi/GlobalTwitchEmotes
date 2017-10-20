@@ -50,6 +50,8 @@ function setSettings(settings) {
 function search(requestID, text, callback) {
     var searchID = currentID++;
 
+    console.log(text);
+
     pendingSearches[searchID] = {
         requestID: requestID,
         callback: callback
