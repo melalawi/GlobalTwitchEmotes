@@ -95,14 +95,16 @@ function migrateSettings(customEmotesList, sync) {
             console.log('Old settings detected.');
 
             browser.loadStorage('local').then(function(local) {
-                // Channel filtering has been deprecated
-                for (var i = local.emoteFilterList.length - 1; i >= 0; --i) {
-                    var currentRule = local.emoteFilterList[i];
+                if (local.hasOwnProperty('emoteFilterList')) {
+                    // Channel filtering has been deprecated
+                    for (var i = local.emoteFilterList.length - 1; i >= 0; --i) {
+                        var currentRule = local.emoteFilterList[i];
 
-                    if (currentRule.type === 'Channel') {
-                        local.emoteFilterList.splice(i, 1);
-                    } else {
-                        delete local.emoteFilterList[i].type;
+                        if (currentRule.type === 'Channel') {
+                            local.emoteFilterList.splice(i, 1);
+                        } else {
+                            delete local.emoteFilterList[i].type;
+                        }
                     }
                 }
 
