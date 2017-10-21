@@ -20,13 +20,18 @@ function onMessage(event) {
 
     delete pendingSearches[message.payload.searchID];
 
-    searchEntry.callback({
-        header: 'emoteSearchResults',
-        payload: {
-            id: searchEntry.requestID,
-            foundEmotes: message.payload.results
-        }
-    });
+    try {
+        searchEntry.callback({
+            header: 'emoteSearchResults',
+            payload: {
+                id: searchEntry.requestID,
+                foundEmotes: message.payload.results
+            }
+        });
+    } catch (e) {
+        // Port disconnected (tab was closed)
+        console.error(e);
+    }
 }
 
 function setEmotes(emotes) {

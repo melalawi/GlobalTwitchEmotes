@@ -9,6 +9,9 @@ function sendGetRequest(url) {
     return new Promise(function(resolve, reject) {
         var fetchCall = function(currentRetryCount) {
             fetch(url, GET_REQUEST_OPTIONS).then(function(response) {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
                 resolve(response.json());
             }).catch(function(error) {
                 if (currentRetryCount === MAX_RETRY_COUNT) {

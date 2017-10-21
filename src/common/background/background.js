@@ -14,14 +14,11 @@ const CONTENT_SCRIPT_FILE = '/contentscript.js';
 
 var pendingTabs = [];
 var settings;
-var client;
-
-browser.onExtensionInstall(browser.openOptionsPage);
+var client = new browser.MessageClient(false);
 
 
 function initialize() {
     client = new browser.MessageClient(false);
-    client.listen(onMessage);
 
     searchWorkerManager.initialize(SEARCH_WORKER_COUNT);
 
@@ -41,12 +38,16 @@ function initializeComponents(loadedSettings) {
 function emotesReady() {
     searchWorkerManager.setEmotes(emoteManager.getAllEmotes());
 
+    client.listen(onMessage);
+
     flushPendingTabs();
 }
 
 function flushPendingTabs() {
     for (var i = 0; i < pendingTabs.length; ++i) {
-        browser.injectScriptToTab(CONTENT_SCRIPT_FILE, pendingTabs[i], false).then(sendSettings);
+        browser.injectScriptToTab(CONTENT_SCRIPT_FILE, pendingTabs[i], false).then(function() {
+            sendSettings(pendingTabs[i]);
+        });
     }
 
     pendingTabs = [];
@@ -55,7 +56,9 @@ function flushPendingTabs() {
 function injectGTEContentScript(tab) {
     if (domainFilter.isAddressAllowed(tab.url) === true) {
         if (emoteManager.isReady() === true) {
-            browser.injectScriptToTab(CONTENT_SCRIPT_FILE, tab, false).then(sendSettings);
+            browser.injectScriptToTab(CONTENT_SCRIPT_FILE, tab, false).then(function() {
+                sendSettings(tab);
+            });
         } else {
             pendingTabs.push(tab);
         }
@@ -63,7 +66,9 @@ function injectGTEContentScript(tab) {
 }
 
 function injectGTEContentScriptIntoAllFrames(tab) {
-    browser.injectScriptToTab(CONTENT_SCRIPT_FILE, tab, true).then(sendSettings);
+    browser.injectScriptToTab(CONTENT_SCRIPT_FILE, tab, true).then(function() {
+        sendSettings(tab);
+    });
 }
 
 function sendSettings(tab) {
@@ -77,8 +82,6 @@ function onMessage(message, responseCallback, tab) {
     if (!responseCallback) {
         return;
     }
-
-    //console.log('Message received with header "' + message.header + '"');
 
     if (message.header === 'getEmoteSets') {
         emoteManager.onAllEmotesReady(function() {

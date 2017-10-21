@@ -131,12 +131,8 @@ function loadAllEmotes() {
             console.log('Loaded custom emotes.');
         }
 
-        // Just resolve on any errors and run GTE with the emotes that managed to succeed
-        Promise.all(promises).then(function() {
-            onReady();
-
-            resolve();
-        }).catch(function() {
+        // Run GTE with the emotes that managed to succeed
+        Promise.all(promises.map(reflect)).then(function() {
             onReady();
 
             resolve();
@@ -144,12 +140,26 @@ function loadAllEmotes() {
     });
 }
 
+function reflect(promise){
+    return promise.then(function(v) {
+        return {
+            v: v,
+            status: 'resolved'
+        }
+    },
+    function(e) {
+        return {
+            e: e,
+            status: 'rejected'
+        }
+    });
+}
+
+
 function generateEmoteSet(set, url) {
     return new Promise(function(resolve, reject) {
         retrieveCachedEmotes(set).then(resolve).catch(function() {
-            fetchAndCacheEmotesFromServer(set, url).then(resolve).catch(function(error) {
-                console.error('Unable to retrieve set "' + set + '" from cache or server: ' + error);
-            });
+            fetchAndCacheEmotesFromServer(set, url).then(resolve).catch(reject);
         });
     });
 }

@@ -133,7 +133,8 @@ function buildScript(source, destination, pathDirectory, minifyCode, appendDummy
             }, 'stripify');
 
             bundler.transform({
-                global: true
+                global: true,
+                mangle: true
             }, 'uglifyify');
         }
 

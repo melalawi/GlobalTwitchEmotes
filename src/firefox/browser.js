@@ -1,5 +1,5 @@
 const FORBIDDEN_DOMAINS = [
-    'chrome.google.com'
+    'addons.mozilla.org'
 ];
 
 var settingsChangeListener = null;
@@ -8,54 +8,24 @@ var installListener = null;
 
 
 function loadStorage(storageType) {
-    return new Promise(function(resolve, reject) {
-        chrome.storage[storageType].get(null, function(data) {
-            if (chrome.runtime.lastError) {
-                console.error('Chrome Storage Error', chrome.runtime.lastError.message);
-
-                reject(chrome.runtime.lastError.message);
-            }
-
-            resolve(data);
-        });
-    });
+    return browser.storage[storageType].get(null);
 }
 
 function saveStorage(data, storageType) {
-    return new Promise(function(resolve, reject) {
-        chrome.storage[storageType].set(data, function() {
-            if (!chrome.runtime.lastError) {
-                resolve();
-            } else {
-                console.error('Chrome Storage Error', chrome.runtime.lastError.message);
-
-                reject(chrome.runtime.lastError.message);
-            }
-        });
-    });
+    return browser.storage[storageType].set(data);
 }
 
 function injectScriptToTab(script, tab, allFrames) {
-    return new Promise(function(resolve, reject) {
-        chrome.tabs.executeScript(tab.id, {
-            file: script,
-            runAt: allFrames === true ? 'document_idle' : 'document_start',
-            allFrames: allFrames
-        }, function() {
-            if (!chrome.runtime.lastError) {
-                resolve();
-            } else {
-                console.error(chrome.runtime.lastError);
-
-                reject(chrome.runtime.lastError);
-            }
-        });
+    return browser.tabs.executeScript(tab.id, {
+        file: script,
+        runAt: allFrames === true ? 'document_idle' : 'document_start',
+        allFrames: allFrames
     });
 }
 
 function listenForTabs(callback) {
     if (tabListener !== null) {
-        chrome.tabs.onUpdated.removeListener(tabListener);
+        browser.tabs.onUpdated.removeListener(tabListener);
     }
 
     tabListener = function(tabID, changeInfo, tab) {
@@ -64,15 +34,15 @@ function listenForTabs(callback) {
         }
     };
 
-    chrome.tabs.onUpdated.addListener(tabListener);
+    browser.tabs.onUpdated.addListener(tabListener);
 }
 
 function getActiveTab() {
     return new Promise(function(resolve, reject) {
-        chrome.tabs.query({
+        browser.tabs.query({
             active: true,
             lastFocusedWindow: true
-        }, function(tabs) {
+        }).then(function(tabs) {
             if (tabs.length === 0) {
                 reject();
             } else {
@@ -83,24 +53,22 @@ function getActiveTab() {
 }
 
 function reloadTab(tab) {
-    return new Promise(function(resolve) {
-        chrome.tabs.reload(tab.id, resolve);
-    });
+    return browser.tabs.reload(tab.id);
 }
 
 function openOptionsPage() {
-    chrome.runtime.openOptionsPage();
+    browser.runtime.openOptionsPage();
 }
 
 function setBadgeText(tab, string, backgroundColor) {
     var text = string.length > 4 ? '∞' : string;
 
-    chrome.browserAction.setBadgeBackgroundColor({
+    browser.browserAction.setBadgeBackgroundColor({
         color: backgroundColor,
         tabId: tab.id
     });
 
-    chrome.browserAction.setBadgeText({
+    browser.browserAction.setBadgeText({
         text: text,
         tabId: tab.id
     });
@@ -108,14 +76,14 @@ function setBadgeText(tab, string, backgroundColor) {
 
 function onExtensionInstall(callback) {
     if (installListener) {
-        chrome.runtime.onInstalled.removeListener(installListener);
+        browser.runtime.onInstalled.removeListener(installListener);
     }
 
-    installListener = chrome.runtime.onInstalled.addListener(callback);
+    installListener = browser.runtime.onInstalled.addListener(callback);
 }
 
 function getURL(url) {
-    return chrome.extension.getURL(url);
+    return browser.extension.getURL(url);
 }
 
 function MessageClient(autoSendResponse) {
@@ -126,20 +94,20 @@ function MessageClient(autoSendResponse) {
     this.listen = function(callback) {
         messageReceivedCallback = callback;
 
-        chrome.runtime.onMessage.removeListener(onMessage);
-        chrome.runtime.onMessage.addListener(onMessage);
+        browser.runtime.onMessage.removeListener(onMessage);
+        browser.runtime.onMessage.addListener(onMessage);
     };
 
     this.stopListening = function() {
-        chrome.runtime.onMessage.removeListener(onMessage);
+        browser.runtime.onMessage.removeListener(onMessage);
     };
 
     this.messageTab = function(tab, message) {
-        chrome.tabs.sendMessage(tab.id, message, onResponse);
+        browser.tabs.sendMessage(tab.id, message).then(onResponse);
     };
 
     this.messageBackground = function(message) {
-        chrome.runtime.sendMessage(message, onResponse);
+        browser.runtime.sendMessage(message).then(onResponse);
     };
 
     function onResponse(response) {
