@@ -1,8 +1,12 @@
 ![Global Twitch Emotes banner](/marquee.png)
 
-A browser extension which replaces all Twitch.tv emote phrases with their actual emoticons.
+A browser extension which replaces Twitch.tv emote phrases found on any website with their actual emoticons.
 
 Currently supports Chrome, Firefox, and Opera. Edge support is planned, Safari support is not.
+
+[Extension Website](https://ostrichtools.com/p/GlobalTwitchEmotes)
+
+[FAQ Section](https://ostrichtools.com/p/GlobalTwitchEmotes#FAQ)
 
 ##  Building
 

@@ -48,7 +48,9 @@ function loadAllEmotes() {
             promises.push(generateEmoteSet('twitchChannels', EMOTE_SETS.twitchChannels.getURL()).then(function() {
                 // Filter only the channels the user wants
                 for (var i = 0; i < settings.twitchChannelsList.length; ++i) {
-                    var channel = settings.twitchChannelsList[i];
+                    var channel = settings.twitchChannelsList[i].toLowerCase();
+
+                    console.log('Copying "twitchChannels:' + channel + '" emotes to generated set.');
 
                     generatedEmotes['twitchChannels:' + channel] = {};
 
