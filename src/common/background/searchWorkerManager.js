@@ -21,13 +21,15 @@ function onMessage(event) {
     delete pendingSearches[message.payload.searchID];
 
     try {
-        searchEntry.callback({
-            header: 'emoteSearchResults',
-            payload: {
-                id: searchEntry.requestID,
-                foundEmotes: message.payload.results
-            }
-        });
+        if (message.payload.results.length > 0) {
+            searchEntry.callback({
+                header: 'emoteSearchResults',
+                payload: {
+                    id: searchEntry.requestID,
+                    foundEmotes: message.payload.results
+                }
+            });
+        }
     } catch (e) {
         // Port disconnected (tab was closed)
         console.error(e);
@@ -52,7 +54,7 @@ function setSettings(settings) {
     }
 }
 
-function search(requestID, text, callback) {
+function search(requestID, hostname, text, callback) {
     var searchID = currentID++;
 
     console.log(text);
@@ -66,6 +68,8 @@ function search(requestID, text, callback) {
         header: 'search',
         payload: {
             searchID: searchID,
+            hostname: hostname,
+
             text: text
         }
     });

@@ -49,7 +49,7 @@ function replaceKappers() {
 }
 
 function replaceKapperWithKappa(imageNode) {
-    if (/youtube.com/i.test(window.location.href) && imageNode.getAttribute('shared-tooltip-text') === KAPPER_SHARED_TOOLTIP_TEXT) {
+    if (/youtube.com/i.test(window.location.hostname) && imageNode.getAttribute('shared-tooltip-text') === KAPPER_SHARED_TOOLTIP_TEXT) {
         var emoteKey = 'Kapper';
 
         console.log('Kapper detected!');
@@ -82,6 +82,7 @@ function extractAndSendText(node) {
         header: 'searchTextForEmotes',
         payload: {
             id: currentID,
+            hostname: window.location.hostname.toLowerCase(),
             text: nodeText
         }
     });

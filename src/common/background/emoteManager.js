@@ -50,13 +50,15 @@ function loadAllEmotes() {
                 for (var i = 0; i < settings.twitchChannelsList.length; ++i) {
                     var channel = settings.twitchChannelsList[i].toLowerCase();
 
-                    console.log('Copying "twitchChannels:' + channel + '" emotes to generated set.');
+                    if (cachedEmotes.twitchChannels.emotes.hasOwnProperty(channel) === true) {
+                        console.log('Copying "twitchChannels:' + channel + '" emotes to generated set.');
 
-                    generatedEmotes['twitchChannels:' + channel] = {};
+                        generatedEmotes['twitchChannels:' + channel] = {};
 
-                    generatedEmotes['twitchChannels:' + channel].set = 'twitchChannels:' + channel;
-                    generatedEmotes['twitchChannels:' + channel].emotes = cachedEmotes.twitchChannels.emotes[channel];
-                    generatedEmotes['twitchChannels:' + channel].date = cachedEmotes.twitchChannels.date;
+                        generatedEmotes['twitchChannels:' + channel].set = 'twitchChannels:' + channel;
+                        generatedEmotes['twitchChannels:' + channel].emotes = cachedEmotes.twitchChannels.emotes[channel];
+                        generatedEmotes['twitchChannels:' + channel].date = cachedEmotes.twitchChannels.date;
+                    }
                 }
             }));
         }
@@ -69,9 +71,9 @@ function loadAllEmotes() {
 
         if (settings.bttvChannels) {
             for (var i = 0; i < settings.bttvChannelsList.length; ++i) {
-                var channel = settings.bttvChannelsList[i];
+                var channel = settings.bttvChannelsList[i].toLowerCase();
 
-                promises.push(generateEmoteSet('bttvChannels:' +  channel, EMOTE_SETS.bttvChannels.getURL(channel)).then(function(setName) {
+                promises.push(generateEmoteSet('bttvChannels:' + channel, EMOTE_SETS.bttvChannels.getURL(channel)).then(function(setName) {
                     generatedEmotes[setName] = cachedEmotes[setName];
                 }));
             }
@@ -85,9 +87,9 @@ function loadAllEmotes() {
 
         if (settings.ffzChannels) {
             for (var i = 0; i < settings.ffzChannelsList.length; ++i) {
-                var channel = settings.ffzChannelsList[i];
+                var channel = settings.ffzChannelsList[i].toLowerCase();
 
-                promises.push(generateEmoteSet('ffzChannels:' +  channel, EMOTE_SETS.ffzChannels.getURL(channel)).then(function(setName) {
+                promises.push(generateEmoteSet('ffzChannels:' + channel, EMOTE_SETS.ffzChannels.getURL(channel)).then(function(setName) {
                     generatedEmotes[setName] = cachedEmotes[setName];
                 }));
             }

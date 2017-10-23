@@ -144,22 +144,34 @@ function sanitizeSettings(settings) {
 
 function filterInvalidListEntries(list) {
     var result = list || [];
+    var len = result.length;
+    var i = -1;
 
-    for (var i = result.length - 1; i >= 0; --i) {
-        var entry = result[i];
+    while (i++ < len) {
+        var j = i + 1;
+
+        for (; j < result.length; ++j) {
+            if (listEntryComparison(result[i], result[j])) {
+                result.splice(j--, 1);
+            }
+        }
+    }
+
+    for (var k = result.length - 1; k >= 0; --k) {
+        var entry = result[k];
 
         if (!entry) {
-            result.splice(i, 1);
+            result.splice(k, 1);
         } else if (typeof entry === 'string' && !entry.trim()) {
-            result.splice(i, 1);
+            result.splice(k, 1);
         } else if (typeof entry === 'object') {
             if (Object.keys(entry).length === 0) {
-                result.splice(i, 1);
+                result.splice(k, 1);
             } else {
                 for (var key in entry) {
                     if (entry.hasOwnProperty(key)) {
                         if (!entry[key]) {
-                            result.splice(i, 1);
+                            result.splice(k, 1);
                             break;
                         }
                     }
@@ -168,30 +180,30 @@ function filterInvalidListEntries(list) {
         }
     }
 
-    unique(list, function(first, second) {
-        var equal = -1;
-
-        if (typeof first === typeof second) {
-            equal = 0;
-
-            if (typeof first === 'object') {
-                for (var key in first) {
-                    if (first.hasOwnProperty(key) && first[key] !== second[key]) {
-                        equal = -1;
-                        break;
-                    }
-                }
-            } else if (typeof first === 'string') {
-                equal = first.toLowerCase() === second.toLowerCase() ? 0 : -1;
-            } else {
-                equal = first === second ? 0 : -1;
-            }
-        }
-
-        return equal;
-    });
-
     return result;
+}
+
+function listEntryComparison(first, second) {
+    var equal = false;
+
+    if (typeof first === typeof second) {
+        equal = true;
+
+        if (typeof first === 'object') {
+            for (var key in first) {
+                if (first.hasOwnProperty(key) && first[key] !== second[key]) {
+                    equal = false;
+                    break;
+                }
+            }
+        } else if (typeof first === 'string') {
+            equal = first.toLowerCase() === second.toLowerCase();
+        } else {
+            equal = first === second;
+        }
+    }
+
+    return equal;
 }
 
 function replaceInvalidFilteredURLs(urlList) {

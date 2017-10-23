@@ -10,6 +10,7 @@ const TREE_WALKER_FILTER = {
 const ILLEGAL_TAGNAMES = [
     'IMG', 'NOSCRIPT', 'SCRIPT', 'STYLE', 'TEXTAREA'
 ];
+const CURRENT_HOSTNAME = window.location.hostname.toLowerCase();
 const MAX_NODES_PER_ITERATION = 100;
 
 var mutatedNodes = [];
@@ -173,11 +174,11 @@ function isIllegalNode(node) {
             isIllegal = true;
         } else if (ILLEGAL_TAGNAMES.indexOf(elementNode.tagName) !== -1) {
             isIllegal = true;
-        } else if (elementNode.classList.contains('GTETipsy') || elementNode.classList.contains('GTETipsyInner')) {
+        } else if (elementNode.classList.value.indexOf('GTETipsy') !== -1 || CURRENT_HOSTNAME.indexOf('twitch.tv') !== -1 && elementNode.classList.value.indexOf('tooltip') !== -1) {
             isIllegal = true;
         } else if (elementNode.isContentEditable) {
             isIllegal = true;
-        } else if (node.textContent.replace(/\s/g, '').length < 2) {
+        } else if (node.textContent.replace(/\s/g, '').length <= 2) {
             isIllegal = true;
         } else if (node.isGTENode) {
             isIllegal = true;

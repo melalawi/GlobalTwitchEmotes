@@ -2,6 +2,7 @@ var emoteFilter = require('./emoteFilter');
 
 
 const STRING_SEPARATOR = /([\w]|[:;)(\\\/<>73#\|\]])+/g;
+const TWITCH_TV_MATCHING_REGEX = /\btwitch\.tv/i;
 
 var emoteLibrary = {};
 
@@ -20,13 +21,13 @@ function handleMessage(message) {
             header: 'searchResults',
             payload: {
                 searchID: message.payload.searchID,
-                results: searchForEmotes(message.payload.text)
+                results: searchForEmotes(message.payload.text, TWITCH_TV_MATCHING_REGEX.test(message.payload.hostname) === false)
             }
         });
     }
 }
 
-function searchForEmotes(text) {
+function searchForEmotes(text, allowSubscriberEmotes) {
     var nextWord;
     var foundEmotes = [];
 
@@ -42,6 +43,11 @@ function searchForEmotes(text) {
 
         for (var set in emoteLibrary) {
             if (emoteLibrary.hasOwnProperty(set)) {
+                // Do not render subscriber emoticons on Twitch.tv
+                if (set.indexOf('twitchChannels') !== -1 && allowSubscriberEmotes === false) {
+                    continue;
+                }
+
                 var emotes = emoteLibrary[set].emotes;
 
                 if (emotes.hasOwnProperty(emote)) {

@@ -1,7 +1,6 @@
 var browser = require('./browser');
 
 
-const TWITCH_TV_MATCHING_REGEX = /\btwitch\.tv/i;
 const IS_VALID_URL_REGEX = /^(http|https|ftp)/i;
 const PROTOCOL_REMOVAL_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\s\/]+(?:\/[^\s\/]+)*)\/*$/i;
 const HOSTNAME_EXTRACTION_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\\\/]*)/i;
@@ -18,7 +17,7 @@ function initialize(mode, list) {
 function isAddressAllowed(address) {
     var result = isURLLegal(address);
 
-    if (filterList.length > 0) {
+    if (result === true && filterList.length > 0) {
         var matchingRule = getMatchingFilterRule(address);
 
         result = matchingRule === null;
@@ -56,14 +55,12 @@ function isURLLegal(address) {
     if (address && IS_VALID_URL_REGEX.test(address)) {
         var url = removeProtocolFromAddress(address);
 
-        result = TWITCH_TV_MATCHING_REGEX.test(address) === false;
+        result = true;
 
-        if (result === true) {
-            for (var i = 0; i < browser.forbiddenDomains.length; ++i) {
-                if (url.indexOf(browser.forbiddenDomains[i]) === 0) {
-                    result = false;
-                    break;
-                }
+        for (var i = 0; i < browser.forbiddenDomains.length; ++i) {
+            if (url.indexOf(browser.forbiddenDomains[i]) === 0) {
+                result = false;
+                break;
             }
         }
     }

@@ -46,8 +46,8 @@ function emotesReady() {
 function flushPendingTabs() {
     for (var i = 0; i < pendingTabs.length; ++i) {
         browser.injectScriptToTab(CONTENT_SCRIPT_FILE, pendingTabs[i], false).then(function() {
-            sendSettings(pendingTabs[i]);
-        });
+            sendSettings(this);
+        }.bind(pendingTabs[i]));
     }
 
     pendingTabs = [];
@@ -100,7 +100,7 @@ function onMessage(message, responseCallback, tab) {
     } else if (message.header === 'setBadgeText') {
         browser.setBadgeText(tab, message.payload.toString(), BADGE_BACKGROUND_COLOR);
     } else if (message.header === 'searchTextForEmotes') {
-        searchWorkerManager.search(message.payload.id, message.payload.text, responseCallback);
+        searchWorkerManager.search(message.payload.id, message.payload.hostname, message.payload.text, responseCallback);
     } else if (message.header === 'iframeFound') {
         if (settings.iframeInjection === true) {
             setTimeout(injectGTEContentScriptIntoAllFrames, ALL_FRAMES_INJECTION_DELAY, tab);

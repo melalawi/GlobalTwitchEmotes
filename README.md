@@ -4,6 +4,8 @@ A browser extension which replaces Twitch.tv emote phrases found on any website 
 
 Currently supports Chrome, Firefox, and Opera. Edge support is planned, Safari support is not.
 
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
+
 [Extension Website](https://ostrichtools.com/p/GlobalTwitchEmotes)
 
 [FAQ Section](https://ostrichtools.com/p/GlobalTwitchEmotes#FAQ)
