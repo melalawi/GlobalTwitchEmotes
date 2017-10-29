@@ -1,4 +1,4 @@
-var browser = require('browser');
+var MessageClient = require('messageClient');
 var emoteParser = require('./emoteParser');
 var tipsy = require('./tipsy');
 
@@ -10,7 +10,7 @@ function initialize() {
     if (!window.contentScriptInjected) {
         window.contentScriptInjected = true;
 
-        client = new browser.MessageClient(false);
+        client = new MessageClient();
 
         client.listen(onMessageFromBackground);
 

@@ -20,12 +20,10 @@ function init() {
 
     $('.tooltipTrigger').Tooltip();
 
-    settingsInterface.loadStoredSettingsToPage().then(function() {
-        generalPanel.updateStatuses();
-
-        pageEvents.init();
-        pageEvents.setOptionsPanel('general');
-    });
+    pageEvents.init();
+    pageEvents.setOptionsPanel('general');
+    generalPanel.updateStatuses();
+    settingsInterface.loadStoredSettingsToPage();
 }
 
 

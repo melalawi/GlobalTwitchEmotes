@@ -1,6 +1,5 @@
 var clone = require('clone');
 var Dexie = require('dexie');
-var unique = require('uniq');
 
 var browser = require('./browser');
 
@@ -63,7 +62,7 @@ function setCacheEntry(key, emotes, date) {
     });
 }
 
-function getSettings() {
+function getAllSettings() {
     return new Promise(function(resolve, reject) {
         Promise.all([db.customEmotes.toArray(), browser.loadStorage('sync')]).then(function(data) {
             migrateSettings(data[0], data[1]).then(function(settings) {
@@ -73,16 +72,34 @@ function getSettings() {
     });
 }
 
-function setSettings(data) {
+function setAllSettings(data) {
     return new Promise(function(resolve, reject) {
         var sync = sanitizeSettings(data);
         var local = sync.customEmotesList;
 
+        // Custom emotes are stored in indexeddb
         delete sync.customEmotesList;
 
         db.customEmotes.clear().then(function(){
             Promise.all([db.customEmotes.bulkPut(local), browser.saveStorage(sync, 'sync')]).then(resolve).catch(reject);
         });
+    });
+}
+
+function setSettingsEntry(key, value) {
+    return new Promise(function(resolve, reject) {
+        var sanitized = {};
+
+        sanitized[key] = sanitizeSettingsEntry(key, value);
+
+        // Custom emotes are stored in indexeddb
+        if (key === 'customEmotesList') {
+            db.customEmotes.clear().then(function(){
+                db.customEmotes.bulkPut(sanitized.customEmotesList).then(resolve).catch(reject);
+            });
+        } else {
+            browser.saveStorage(sanitized, 'sync').then(resolve).catch(reject);
+        }
     });
 }
 
@@ -127,19 +144,33 @@ function sanitizeSettings(settings) {
 
     for (var key in finalSettings) {
         if (finalSettings.hasOwnProperty(key) && settings[key] !== undefined) {
-            if (typeof finalSettings[key] === 'boolean') {
-                finalSettings[key] = settings[key] === true;
-            } else if (Array.isArray(finalSettings[key])) {
-                finalSettings[key] = filterInvalidListEntries(settings[key]);
-            } else {
-                finalSettings[key] = settings[key];
-            }
+            finalSettings[key] = sanitizeSettingsEntry(key, settings[key]);
         }
     }
 
-    finalSettings.domainFilterList = replaceInvalidFilteredURLs(finalSettings.domainFilterList);
-
     return finalSettings;
+}
+
+function sanitizeSettingsEntry(key, value) {
+    if (DEFAULT_SETTINGS.hasOwnProperty(key) === false) {
+        return null;
+    }
+
+    var sanitizedEntry = DEFAULT_SETTINGS[key];
+
+    if (typeof sanitizedEntry === 'boolean') {
+        sanitizedEntry = value === true;
+    } else if (Array.isArray(sanitizedEntry)) {
+        sanitizedEntry = filterInvalidListEntries(value);
+
+        if (key === 'domainFilterList') {
+            sanitizedEntry = replaceInvalidFilteredURLs(sanitizedEntry);
+        }
+    } else {
+        sanitizedEntry = value;
+    }
+
+    return sanitizedEntry;
 }
 
 function filterInvalidListEntries(list) {
@@ -230,8 +261,9 @@ initialize();
 module.exports = {
     getCacheEntry: getCacheEntry,
     setCacheEntry: setCacheEntry,
-    getSettings: getSettings,
-    setSettings: setSettings,
+    getAllSettings: getAllSettings,
+    setAllSettings: setAllSettings,
+    setSettingsEntry: setSettingsEntry,
     doesSettingExist: doesSettingExist,
     sanitizeSettings: sanitizeSettings
 };

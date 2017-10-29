@@ -1,6 +1,5 @@
 var $ = require('jquery');
-var storageHelper = require('storageHelper');
-var browser = require('browser');
+var MessageClient = require('messageClient');
 
 
 const INTERNAL_TO_READABLE_SET_NAMES = {
@@ -22,7 +21,7 @@ const INTERNAL_SET_TO_SET_URL = {
 };
 
 
-var client = new browser.MessageClient(false);
+var client = new MessageClient();
 var $loadedEmotesTable;
 var $nameColumn;
 var $ageColumn;
@@ -48,13 +47,19 @@ function buildTable() {
 }
 
 function updateStatuses() {
-    client.listen(function(message) {
-        loadEmoteSetsIntoTable(message.payload);
-    });
+    client.listen(onMessage);
 
     client.messageBackground({
         header: 'getAllEmotes'
     });
+}
+
+function onMessage(message) {
+    if (message.header === 'allEmotes') {
+        client.stopListening();
+
+        loadEmoteSetsIntoTable(message.payload);
+    }
 }
 
 function loadEmoteSetsIntoTable(emotes) {

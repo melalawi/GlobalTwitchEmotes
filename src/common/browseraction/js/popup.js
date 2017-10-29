@@ -1,12 +1,12 @@
 var browser = require('browser');
 var domainFilter = require('domainFilter');
-var storageHelper = require('storageHelper');
+var MessageClient = require('messageClient');
 
 
 const ILLEGAL_PAGE_ERROR = 'GTE cannot run on this page.';
 
 var activeTab;
-var client = new browser.MessageClient(false);
+var client = new MessageClient();
 var contentDiv;
 var activeDomain;
 var filterControlsDiv;
@@ -14,7 +14,7 @@ var pageFilterStatus;
 var userSettings;
 
 
-function init() {
+function initialize() {
     contentDiv = document.getElementById('content');
     configureOpenSettingsButton();
 
@@ -25,15 +25,27 @@ function init() {
         if (domainFilter.isURLLegal(tab.url) === false) {
             displayIllegalMessage();
         } else {
-            storageHelper.getSettings().then(function(settings) {
-                userSettings = settings;
+            client.listen(onMessage);
 
-                domainFilter.initialize(userSettings.domainFilterMode, userSettings.domainFilterList);
-
-                updatePopup();
+            client.messageBackground({
+                header: 'getAllSettings'
             });
         }
     });
+}
+
+function onMessage(message) {
+    console.log('Message received with header "' + message.header + '"');
+
+    if (message.header === 'settings') {
+        client.stopListening();
+
+        userSettings = message.payload;
+
+        domainFilter.initialize(userSettings.domainFilterMode, userSettings.domainFilterList);
+
+        updatePopup();
+    }
 }
 
 function displayIllegalMessage() {
@@ -88,44 +100,66 @@ function configureFilterButtons(filteredRule) {
     if (filteredRule !== null) {
         var removeRuleButton = createInputButton('Remove Associated Rule');
 
-        removeRuleButton.addEventListener('click', function() {
-            userSettings.domainFilterList.splice(userSettings.domainFilterList.indexOf(filteredRule), 1);
-            storageHelper.setSettings(userSettings).then(notifyBackgroundOnSettingsChange);
+        removeRuleButton.filteredRule = filteredRule;
 
-            disableButtons();
-            transformRefreshButton(this);
-        });
+        removeRuleButton.addEventListener('click', removeAssociatedRule);
 
         filterControlsDiv.appendChild(removeRuleButton);
     } else {
         var filterEntireDomainButton = createInputButton(userSettings.domainFilterMode + ' ' + activeDomain + '/*');
         var filterSpecificPageButton = createInputButton(userSettings.domainFilterMode + ' This Exact Page');
 
-        filterEntireDomainButton.addEventListener('click', function() {
-            userSettings.domainFilterList.push(activeDomain + '/*');
-            storageHelper.setSettings(userSettings).then(notifyBackgroundOnSettingsChange);
-
-            disableButtons();
-            transformRefreshButton(this);
-        });
-
-        filterSpecificPageButton.addEventListener('click', function() {
-            userSettings.domainFilterList.push(domainFilter.removeProtocolFromAddress(activeTab.url));
-            storageHelper.setSettings(userSettings).then(notifyBackgroundOnSettingsChange);
-
-            disableButtons();
-            transformRefreshButton(this);
-        });
+        filterEntireDomainButton.addEventListener('click', addDomainToList);
+        filterSpecificPageButton.addEventListener('click', addURLToList);
 
         filterControlsDiv.appendChild(filterEntireDomainButton);
         filterControlsDiv.appendChild(filterSpecificPageButton);
     }
 }
 
-function notifyBackgroundOnSettingsChange() {
+function removeAssociatedRule() {
+    userSettings.domainFilterList.splice(userSettings.domainFilterList.indexOf(this.filteredRule), 1);
+
     client.messageBackground({
-        header: 'triggerSettingsChange'
+        header: 'setSettingsEntry',
+        payload: {
+            key: 'domainFilterList',
+            value: userSettings.domainFilterList
+        }
     });
+
+    disableButtons();
+    transformRefreshButton(this);
+}
+
+function addDomainToList() {
+    userSettings.domainFilterList.push(activeDomain + '/*');
+
+    client.messageBackground({
+        header: 'setSettingsEntry',
+        payload: {
+            key: 'domainFilterList',
+            value: userSettings.domainFilterList
+        }
+    });
+
+    disableButtons();
+    transformRefreshButton(this);
+}
+
+function addURLToList() {
+    userSettings.domainFilterList.push(domainFilter.removeProtocolFromAddress(activeTab.url));
+
+    client.messageBackground({
+        header: 'setSettingsEntry',
+        payload: {
+            key: 'domainFilterList',
+            value: userSettings.domainFilterList
+        }
+    });
+
+    disableButtons();
+    transformRefreshButton(this);
 }
 
 function configureOpenSettingsButton() {
@@ -150,12 +184,18 @@ function transformRefreshButton(button) {
     button.className = 'refreshButton';
     button.disabled = false;
 
+    button.removeEventListener('click', removeAssociatedRule);
+    button.removeEventListener('click', addDomainToList);
+    button.removeEventListener('click', addURLToList);
+
     button.addEventListener('click', function() {
         console.log('Reloading tab...');
 
         browser.reloadTab(activeTab);
 
         this.disabled = true;
+
+        window.close();
     });
 }
 
@@ -167,4 +207,6 @@ function disableButtons() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', init, false);
+document.addEventListener('DOMContentLoaded', function() {
+    browser.isBackgroundScript().catch(initialize);
+}, false);

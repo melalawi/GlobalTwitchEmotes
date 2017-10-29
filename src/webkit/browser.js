@@ -2,10 +2,35 @@ const FORBIDDEN_DOMAINS = [
     'chrome.google.com'
 ];
 
-var settingsChangeListener = null;
 var tabListener = null;
-var installListener = null;
 
+
+function isBackgroundScript() {
+    return new Promise(function(resolve, reject) {
+        if (chrome.extension.getBackgroundPage() === window) {
+            resolve();
+        } else {
+            reject();
+        }
+    });
+}
+
+function addOnMessageCallback(callback) {
+    chrome.runtime.onMessage.removeListener(callback);
+    chrome.runtime.onMessage.addListener(callback);
+}
+
+function removeOnMessageCallback(callback) {
+    chrome.runtime.onMessage.removeListener(callback);
+}
+
+function sendMessageToTab(tab, message, onResponseCallback) {
+    chrome.tabs.sendMessage(tab.id, message, onResponseCallback);
+}
+
+function sendMessageToBackground(message, onResponseCallback) {
+    chrome.runtime.sendMessage(message, onResponseCallback);
+}
 
 function loadStorage(storageType) {
     return new Promise(function(resolve, reject) {
@@ -106,70 +131,16 @@ function setBadgeText(tab, string, backgroundColor) {
     });
 }
 
-function onExtensionInstall(callback) {
-    if (installListener) {
-        chrome.runtime.onInstalled.removeListener(installListener);
-    }
-
-    installListener = chrome.runtime.onInstalled.addListener(callback);
-}
-
 function getURL(url) {
     return chrome.extension.getURL(url);
 }
 
-function MessageClient(autoSendResponse) {
-    var messageReceivedCallback = null;
-    var automaticallyRespond = autoSendResponse === true;
-
-    // Set callbacks before listening
-    this.listen = function(callback) {
-        messageReceivedCallback = callback;
-
-        chrome.runtime.onMessage.removeListener(onMessage);
-        chrome.runtime.onMessage.addListener(onMessage);
-    };
-
-    this.stopListening = function() {
-        chrome.runtime.onMessage.removeListener(onMessage);
-    };
-
-    this.messageTab = function(tab, message) {
-        chrome.tabs.sendMessage(tab.id, message, onResponse);
-    };
-
-    this.messageBackground = function(message) {
-        chrome.runtime.sendMessage(message, onResponse);
-    };
-
-    function onResponse(response) {
-        if (automaticallyRespond === false && messageReceivedCallback) {
-            messageReceivedCallback(response);
-        }
-
-        console.log('Ack');
-    }
-
-    function onMessage(message, sender, responseCallback) {
-        if (automaticallyRespond === true) {
-            // Run callback to prevent port exception
-            responseCallback();
-
-            if (messageReceivedCallback) {
-                messageReceivedCallback(message);
-            }
-        } else {
-            if (messageReceivedCallback) {
-                messageReceivedCallback(message, responseCallback, sender.tab);
-            }
-        }
-
-        return true;
-    }
-}
-
 module.exports = {
-    MessageClient: MessageClient,
+    isBackgroundScript: isBackgroundScript,
+    addOnMessageCallback: addOnMessageCallback,
+    removeOnMessageCallback: removeOnMessageCallback,
+    sendMessageToTab: sendMessageToTab,
+    sendMessageToBackground: sendMessageToBackground,
     getURL: getURL,
     loadStorage: loadStorage,
     saveStorage: saveStorage,
@@ -179,6 +150,5 @@ module.exports = {
     reloadTab: reloadTab,
     openOptionsPage: openOptionsPage,
     setBadgeText: setBadgeText,
-    onExtensionInstall: onExtensionInstall,
     forbiddenDomains: FORBIDDEN_DOMAINS
 };

@@ -1,6 +1,7 @@
 var browser = require('browser');
 var domainFilter = require('domainFilter');
 var emoteManager = require('./emoteManager');
+var MessageClient = require('messageClient');
 var searchWorkerManager = require('./searchWorkerManager');
 var storageHelper = require('storageHelper');
 
@@ -14,25 +15,25 @@ const CONTENT_SCRIPT_FILE = '/contentscript.js';
 
 var pendingTabs = [];
 var settings;
-var client = new browser.MessageClient(false);
+var client = new MessageClient();
 
 
 function initialize() {
-    client = new browser.MessageClient(false);
-
     searchWorkerManager.initialize(SEARCH_WORKER_COUNT);
 
-    storageHelper.getSettings().then(initializeComponents);
+    initializeComponents();
 }
 
-function initializeComponents(loadedSettings) {
-    settings = loadedSettings;
+function initializeComponents() {
+    storageHelper.getAllSettings().then(function(loadedSettings) {
+        settings = loadedSettings;
 
-    browser.listenForTabs(injectGTEContentScript);
+        browser.listenForTabs(injectGTEContentScript);
 
-    searchWorkerManager.setSettings(loadedSettings);
-    domainFilter.initialize(loadedSettings.domainFilterMode, loadedSettings.domainFilterList);
-    emoteManager.initialize(loadedSettings).then(emotesReady);
+        searchWorkerManager.setSettings(loadedSettings);
+        domainFilter.initialize(loadedSettings.domainFilterMode, loadedSettings.domainFilterList);
+        emoteManager.initialize(loadedSettings).then(emotesReady);
+    });
 }
 
 function emotesReady() {
@@ -107,12 +108,22 @@ function onMessage(message, responseCallback, tab) {
         }
 
         responseCallback();
-    } else if (message.header === 'triggerSettingsChange') {
-        storageHelper.getSettings().then(initializeComponents);
 
+    } else if (message.header === 'getAllSettings') {
+        responseCallback({
+            header: 'settings',
+            payload: settings
+        });
+    } else if (message.header === 'setAllSettings') {
         responseCallback();
+
+        storageHelper.setAllSettings(message.payload).then(initializeComponents);
+    } else if (message.header === 'setSettingsEntry') {
+        responseCallback();
+
+        storageHelper.setSettingsEntry(message.payload.key, message.payload.value).then(initializeComponents);
     }
 }
 
 
-initialize();
+browser.isBackgroundScript().then(initialize);

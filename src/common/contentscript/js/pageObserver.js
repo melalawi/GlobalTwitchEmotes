@@ -11,8 +11,10 @@ const ILLEGAL_TAGNAMES = [
     'IMG', 'NOSCRIPT', 'SCRIPT', 'STYLE', 'TEXTAREA'
 ];
 const CURRENT_HOSTNAME = window.location.hostname.toLowerCase();
-const MAX_NODES_PER_ITERATION = 100;
+const MAX_TREE_WALKER_RUNS_PER_ITERATION = 5;
+const MAX_NODES_PER_ITERATION = 1;
 
+var treeWalkers = [];
 var mutatedNodes = [];
 var mutationObserver;
 var nodeCallback;
@@ -21,7 +23,9 @@ var imageFoundCallback;
 
 var pendingImages = [];
 var iframeFound = false;
+var currentlyIteratingThroughTreeWalkers = false;
 var currentlyIteratingThroughNodes = false;
+var iterateTreeWalkersCallback;
 var iterateNodesCallback;
 
 
@@ -60,7 +64,7 @@ function addMutatedNode(node) {
     }
 
     clearTimeout(iterateNodesCallback);
-    iterateNodesCallback = setTimeout(iterateThroughPendingNodes, 1);
+    iterateNodesCallback = setTimeout(iterateThroughPendingNodes, 0);
 }
 
 function iterateThroughPendingNodes() {
@@ -68,8 +72,6 @@ function iterateThroughPendingNodes() {
         currentlyIteratingThroughNodes = true;
 
         var nodesThisIteration = 0;
-
-        console.log('Checking...');
 
         while (mutatedNodes.length > 0) {
             if (nodesThisIteration === MAX_NODES_PER_ITERATION) {
@@ -81,35 +83,57 @@ function iterateThroughPendingNodes() {
             if (nextNode.nodeType === Node.TEXT_NODE) {
                 nodeCallback(nextNode);
             } else if (nextNode.nodeType === Node.ELEMENT_NODE) {
-                var children = runTreeWalker(nextNode);
-
-                mutatedNodes = children.concat(mutatedNodes);
+                addTreeWalker(nextNode);
             }
 
             nodesThisIteration++;
         }
 
+        currentlyIteratingThroughNodes = false;
+
         if (mutatedNodes.length > 0) {
             clearTimeout(iterateNodesCallback);
-            iterateNodesCallback = setTimeout(iterateThroughPendingNodes, 1);
+            iterateNodesCallback = setTimeout(iterateThroughPendingNodes, 0);
         }
-
-        currentlyIteratingThroughNodes = false;
     }
 }
 
-function runTreeWalker(node) {
-    var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT + NodeFilter.SHOW_ELEMENT, TREE_WALKER_FILTER, false);
-    var treeChild;
-    var results = [];
+function addTreeWalker(node) {
+    treeWalkers.push(document.createTreeWalker(node, NodeFilter.SHOW_TEXT + NodeFilter.SHOW_ELEMENT, TREE_WALKER_FILTER, false));
 
-    while ((treeChild = treeWalker.nextNode())) {
-        if (isIllegalNode(treeChild) === false) {
-            results.push(treeChild);
+    clearTimeout(iterateTreeWalkersCallback);
+    iterateTreeWalkersCallback = setTimeout(runTreeWalker, 0);
+}
+
+function runTreeWalker() {
+    if (currentlyIteratingThroughTreeWalkers === false) {
+        currentlyIteratingThroughTreeWalkers = true;
+
+        var treeWalkerRuns = 0;
+
+        treeWalkerLoop: while (treeWalkers.length > 0) {
+            var treeWalker = treeWalkers[0];
+            var treeChild;
+
+            while ((treeChild = treeWalker.nextNode())) {
+                addMutatedNode(treeChild);
+                treeWalkerRuns++;
+
+                if (treeWalkerRuns === MAX_TREE_WALKER_RUNS_PER_ITERATION) {
+                    break treeWalkerLoop;
+                }
+            }
+
+            treeWalkers.shift();
+        }
+
+        currentlyIteratingThroughTreeWalkers = false;
+
+        if (treeWalkers.length > 0) {
+            clearTimeout(iterateTreeWalkersCallback);
+            iterateTreeWalkersCallback = setTimeout(runTreeWalker, 0);
         }
     }
-
-    return results;
 }
 
 function treeWalkerFilterFunction(node) {
@@ -178,7 +202,7 @@ function isIllegalNode(node) {
             isIllegal = true;
         } else if (elementNode.isContentEditable) {
             isIllegal = true;
-        } else if (node.textContent.replace(/\s/g, '').length <= 2) {
+        } else if (node.textContent.replace(/\s/g, '').length === 0) {
             isIllegal = true;
         } else if (node.isGTENode) {
             isIllegal = true;

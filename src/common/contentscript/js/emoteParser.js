@@ -22,7 +22,7 @@ var messageClient;
 function runParser(client) {
     messageClient = client;
 
-    setInterval(applyEmoteSearchResults, 1);
+    setInterval(applyEmoteSearchResults, 0);
 
     pageObserver.onIframeFound(notifyBackgroundOnNewIframe);
     pageObserver.observe(extractAndSendText);
@@ -72,6 +72,8 @@ function onBackgroundMessage(message) {
 function extractAndSendText(node) {
     var nodeText = node.nodeValue;
     var currentID = startNodeID++;
+
+    console.log(nodeText);
 
     // Need to map both ways to properly detect if a single node changed within the course of the search
     // Necessary because you cannot message nodes to background script

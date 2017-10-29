@@ -1,6 +1,5 @@
 var $ = require('jquery');
-var browser = require('browser');
-var storageHelper = require('storageHelper');
+var MessageClient = require('messageClient');
 
 
 const SETTINGS_SELECTORS = {
@@ -32,7 +31,8 @@ const SETTINGS_SELECTORS = {
     emoteFilterList: '#emoteFilterList'
 };
 
-var client = new browser.MessageClient(false);
+var client = new MessageClient();
+
 
 function getPageSettings(sanitize) {
     var pageSettings = {};
@@ -71,17 +71,32 @@ function setPageSettings(settings) {
     }
 }
 
+function onMessage(message) {
+    console.log('Message received with header "' + message.header + '"');
+
+    if (message.header === 'settings') {
+        client.stopListening();
+
+        setPageSettings(message.payload);
+    }
+}
+
 function loadStoredSettingsToPage() {
-    return storageHelper.getSettings().then(setPageSettings);
+    client.listen(onMessage);
+
+    client.messageBackground({
+        header: 'getAllSettings'
+    });
 }
 
 function savePageSettingsToStorage() {
-    return storageHelper.setSettings(getPageSettings()).then(notifyBackgroundOnSettingsChange);
-}
+    return new Promise(function(resolve, reject) {
+        client.messageBackground({
+            header: 'setAllSettings',
+            payload: getPageSettings()
+        });
 
-function notifyBackgroundOnSettingsChange() {
-    client.messageBackground({
-        header: 'triggerSettingsChange'
+        resolve();
     });
 }
 

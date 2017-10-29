@@ -37,10 +37,6 @@ function searchForEmotes(text, allowSubscriberEmotes) {
     while ((nextWord = STRING_SEPARATOR.exec(text)) !== null) {
         var emote = nextWord[0];
 
-        if (emote.length <= 2) {
-            continue;
-        }
-
         for (var set in emoteLibrary) {
             if (emoteLibrary.hasOwnProperty(set)) {
                 // Do not render subscriber emoticons on Twitch.tv
