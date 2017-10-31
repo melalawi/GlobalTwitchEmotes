@@ -125,7 +125,7 @@ function migrateSettings(customEmotesList, sync) {
                     }
                 }
 
-                setSettings(local).then(resolve).catch(reject);
+                setAllSettings(local).then(resolve).catch(reject);
             }).catch(reject);
         } else if (sync.version === '1.3.0') {
             settings = sync;
