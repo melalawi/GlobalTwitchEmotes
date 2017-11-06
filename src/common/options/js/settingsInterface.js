@@ -34,7 +34,7 @@ const SETTINGS_SELECTORS = {
 var client = new MessageClient();
 
 
-function getPageSettings(sanitize) {
+function getPageSettings() {
     var pageSettings = {};
 
     for (var key in SETTINGS_SELECTORS) {
@@ -51,7 +51,7 @@ function getPageSettings(sanitize) {
         }
     }
 
-    return sanitize === true ? storageHelper.sanitizeSettings(pageSettings) : pageSettings;
+    return pageSettings;
 }
 
 function setPageSettings(settings) {

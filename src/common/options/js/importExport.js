@@ -74,7 +74,7 @@ function hideImportNotification() {
 }
 
 function exportSettingsToFile() {
-    var pageSettings = JSON.stringify(settingsInterface.getPageSettings(true), null, 4);
+    var pageSettings = JSON.stringify(storageHelper.sanitizeSettings(settingsInterface.getPageSettings()), null, 4);
     var fileBlob = new Blob([pageSettings], {
         type: 'text/plain; charset=utf-8'
     });

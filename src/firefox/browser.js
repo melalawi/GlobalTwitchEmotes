@@ -2,9 +2,34 @@ const FORBIDDEN_DOMAINS = [
     'addons.mozilla.org'
 ];
 
-var settingsChangeListener = null;
 var tabListener = null;
-var installListener = null;
+
+function isBackgroundScript() {
+    return new Promise(function(resolve, reject) {
+        if (browser.extension.getBackgroundPage() === window) {
+            resolve();
+        } else {
+            reject();
+        }
+    });
+}
+
+function addOnMessageCallback(callback) {
+    browser.runtime.onMessage.removeListener(callback);
+    browser.runtime.onMessage.addListener(callback);
+}
+
+function removeOnMessageCallback(callback) {
+    browser.runtime.onMessage.removeListener(callback);
+}
+
+function sendMessageToTab(tab, message, onResponseCallback) {
+    browser.tabs.sendMessage(tab.id, message, onResponseCallback);
+}
+
+function sendMessageToBackground(message, onResponseCallback) {
+    browser.runtime.sendMessage(message, onResponseCallback);
+}
 
 
 function loadStorage(storageType) {
@@ -74,70 +99,16 @@ function setBadgeText(tab, string, backgroundColor) {
     });
 }
 
-function onExtensionInstall(callback) {
-    if (installListener) {
-        browser.runtime.onInstalled.removeListener(installListener);
-    }
-
-    installListener = browser.runtime.onInstalled.addListener(callback);
-}
-
 function getURL(url) {
     return browser.extension.getURL(url);
 }
 
-function MessageClient(autoSendResponse) {
-    var messageReceivedCallback = null;
-    var automaticallyRespond = autoSendResponse === true;
-
-    // Set callbacks before listening
-    this.listen = function(callback) {
-        messageReceivedCallback = callback;
-
-        browser.runtime.onMessage.removeListener(onMessage);
-        browser.runtime.onMessage.addListener(onMessage);
-    };
-
-    this.stopListening = function() {
-        browser.runtime.onMessage.removeListener(onMessage);
-    };
-
-    this.messageTab = function(tab, message) {
-        browser.tabs.sendMessage(tab.id, message).then(onResponse);
-    };
-
-    this.messageBackground = function(message) {
-        browser.runtime.sendMessage(message).then(onResponse);
-    };
-
-    function onResponse(response) {
-        if (automaticallyRespond === false && messageReceivedCallback) {
-            messageReceivedCallback(response);
-        }
-
-        console.log('Ack');
-    }
-
-    function onMessage(message, sender, responseCallback) {
-        if (automaticallyRespond === true) {
-            // Run callback to prevent port exception
-            responseCallback();
-
-            if (messageReceivedCallback) {
-                messageReceivedCallback(message);
-            }
-        } else {
-            if (messageReceivedCallback) {
-                messageReceivedCallback(message, responseCallback, sender.tab);
-            }
-        }
-
-        return true;
-    }
-}
-
 module.exports = {
-    MessageClient: MessageClient,
+    isBackgroundScript: isBackgroundScript,
+    addOnMessageCallback: addOnMessageCallback,
+    removeOnMessageCallback: removeOnMessageCallback,
+    sendMessageToTab: sendMessageToTab,
+    sendMessageToBackground: sendMessageToBackground,
     getURL: getURL,
     loadStorage: loadStorage,
     saveStorage: saveStorage,
@@ -147,6 +118,5 @@ module.exports = {
     reloadTab: reloadTab,
     openOptionsPage: openOptionsPage,
     setBadgeText: setBadgeText,
-    onExtensionInstall: onExtensionInstall,
     forbiddenDomains: FORBIDDEN_DOMAINS
 };
