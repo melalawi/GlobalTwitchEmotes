@@ -59,6 +59,7 @@ function replaceKapperWithKappa(imageNode) {
         imageNode.setAttribute('title', emoteKey);
         imageNode.setAttribute(TIPSY_DATA_ATTRIBUTE, generateTipsyAlt(emoteKey, ''));
         imageNode.setAttribute('alt', emoteKey);
+        imageNode.removeAttribute('shared-tooltip-text');
         imageNode.style.cssText = EMOTE_CSS;
     }
 }
@@ -162,6 +163,12 @@ function parseEmoteString(node, index, emoteKey, emoteChannel, emoteURL, unicode
 
     node.isGTENode = true;
 
+    if (isNodePartiallyInView(parent) === true) {
+        emoteNode.onload = emoteImageLoaded;
+    }
+
+    emoteNode.GTEScrollParent = getScrollParent(parent);
+
     parent.insertBefore(emoteNode, node.nextSibling);
 
     // Checks for and arranges text after the new emote
@@ -223,6 +230,47 @@ function createUnicodeEmoji(emoteKey, emoteChannel, unicodeEmoji) {
     emote.innerText = unicodeEmoji;
 
     return emote;
+}
+
+
+// TODO limit
+// TODO what if result is null? generally need to figure out what this returns in most cases
+function getScrollParent(node) {
+    var currentNode = node;
+
+    while (currentNode) {
+        if (currentNode.clientHeight !== currentNode.scrollHeight) {
+            break;
+        }
+
+        currentNode = currentNode.parentNode;
+    }
+
+    return currentNode;
+}
+
+function emoteImageLoaded() {
+    this.onload = null;
+
+    // Scroll out while loading!
+    if (isNodeCompletelyInView(this, this.GTEScrollParent) === false) {
+        this.scrollIntoView();
+    }
+}
+
+function isNodePartiallyInView(node) {
+    var rect = node.getBoundingClientRect();
+
+    return !(0 > rect.right || (window.innerWidth || document.documentElement.clientWidth) < rect.left || 0 > rect.bottom || (window.innerHeight || document.documentElement.clientHeight) < rect.top);
+
+    //return !!(node.offsetWidth || node.offsetHeight || node.getClientRects().length);
+}
+
+function isNodeCompletelyInView(node, parent) {
+    var rect = node.getBoundingClientRect();
+    var container = parent.getBoundingClientRect();
+
+    return rect.top >= container.top && rect.left >= container.left && rect.bottom <= container.bottom && rect.right <= container.right;
 }
 
 function onNewEmote() {

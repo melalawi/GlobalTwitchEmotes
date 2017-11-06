@@ -151,6 +151,8 @@ function treeWalkerFilterFunction(node) {
 }
 
 function iframeDetected() {
+    console.log('Iframe detected.');
+
     if (iframeFoundCallback) {
         iframeFoundCallback();
 
@@ -201,8 +203,6 @@ function isIllegalNode(node) {
         } else if (elementNode.classList.value.indexOf('GTETipsy') !== -1 || CURRENT_HOSTNAME.indexOf('twitch.tv') !== -1 && elementNode.classList.value.indexOf('tooltip') !== -1) {
             isIllegal = true;
         } else if (elementNode.isContentEditable) {
-            isIllegal = true;
-        } else if (node.textContent.replace(/\s/g, '').length === 0) {
             isIllegal = true;
         } else if (node.isGTENode) {
             isIllegal = true;
