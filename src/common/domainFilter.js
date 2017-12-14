@@ -52,7 +52,7 @@ function getMatchingFilterRule(address) {
 function isURLLegal(address) {
     var result = false;
 
-    if (address && IS_VALID_URL_REGEX.test(address)) {
+    if (address) {
         var url = removeProtocolFromAddress(address);
 
         result = true;

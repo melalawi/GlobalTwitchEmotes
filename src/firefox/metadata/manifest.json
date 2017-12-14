@@ -48,6 +48,8 @@
         "activeTab",
         "http://*/",
         "https://*/",
+        "<all_urls>",
+        "*://*/*",
         "storage",
         "tabs",
         "unlimitedStorage"
