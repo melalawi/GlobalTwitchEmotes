@@ -204,7 +204,7 @@ function isIllegalNode(node) {
             isIllegal = true;
         } else if (node.textContent.replace(/\s/g, '').length === 0) {
             isIllegal = true;
-        } else if (node.isGTENode) {
+        } else if (node.hasOwnProperty('isGTENode') === true) {
             isIllegal = true;
         }
     }
