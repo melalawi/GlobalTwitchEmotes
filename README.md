@@ -46,4 +46,4 @@ In the parent directory, run `npm run-script test` to run all test files found i
     
 ##  Support
 
-For inquiries, please either [contact me](mailto:mohamed.y.elalawi@gmail.com) or [open an issue](https://github.com/melalawi/GlobalTwitchEmotes/issues/new).
+For inquiries, please either [contact me](mailto:itsmoalawi@gmail.com) or [open an issue](https://github.com/melalawi/GlobalTwitchEmotes/issues/new).

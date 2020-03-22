@@ -5,19 +5,21 @@ const GET_REQUEST_OPTIONS = {
 };
 
 
-function sendGetRequest(url) {
-    return new Promise(function(resolve, reject) {
-        var fetchCall = function(currentRetryCount) {
-            fetch(url, GET_REQUEST_OPTIONS).then(function(response) {
+function sendGetRequest(url, options) {
+    return new Promise(function (resolve, reject) {
+        options = options || GET_REQUEST_OPTIONS;
+
+        var fetchCall = function (currentRetryCount) {
+            fetch(url, options).then(function (response) {
                 if (!response.ok) {
                     throw Error(response.statusText);
                 }
                 resolve(response.json());
-            }).catch(function(error) {
+            }).catch(function (error) {
                 if (currentRetryCount === MAX_RETRY_COUNT) {
                     reject(error);
                 } else {
-                    setTimeout(function() {
+                    setTimeout(function () {
                         fetchCall(++currentRetryCount);
                     }, RETRY_DELAY);
                 }

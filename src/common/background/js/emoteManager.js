@@ -2,6 +2,7 @@ var httpRequest = require('./httpRequest');
 var storageHelper = require('storageHelper');
 
 
+const CACHE_REFRESH_INTERVAL = 1000 * 60 * 60 * 24 * 14;
 const EMOTE_REFRESH_INTERVAL = 1000 * 60 * 30;
 const EMOTE_SETS = {
     bttvChannels: require('./emoteSets/bttvChannels'),
@@ -35,7 +36,7 @@ function initialize(importedSettings) {
 }
 
 function loadAllEmotes() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         var promises = [];
 
         if (settings.twitchGlobal) {
@@ -45,21 +46,23 @@ function loadAllEmotes() {
         }
 
         if (settings.twitchChannels && settings.twitchChannelsList.length > 0) {
-            promises.push(generateEmoteSet('twitchChannels', EMOTE_SETS.twitchChannels.getURL()).then(function() {
-                // Filter only the channels the user wants
+            promises.push(new Promise(function(resolve, reject) {
                 for (var i = 0; i < settings.twitchChannelsList.length; ++i) {
                     var channel = settings.twitchChannelsList[i].toLowerCase();
 
-                    if (cachedEmotes.twitchChannels.emotes.hasOwnProperty(channel) === true) {
-                        console.log('Copying "twitchChannels:' + channel + '" emotes to generated set.');
-
-                        generatedEmotes['twitchChannels:' + channel] = {};
-
-                        generatedEmotes['twitchChannels:' + channel].set = 'twitchChannels:' + channel;
-                        generatedEmotes['twitchChannels:' + channel].emotes = cachedEmotes.twitchChannels.emotes[channel];
-                        generatedEmotes['twitchChannels:' + channel].date = cachedEmotes.twitchChannels.date;
-                    }
+                    // TODO get out of promise hell
+                    promises.push(retrieveCachedEmotes('twitchChannels:' + channel).then(function(setName) {
+                        generatedEmotes[setName] = cachedEmotes[setName];
+                    }).catch(function() {
+                        promises.push(EMOTE_SETS.twitchChannels.getChannelIdFromName(channel).then(function(channel_id) {
+                            promises.push(generateEmoteSet('twitchChannels:' + channel, EMOTE_SETS.twitchChannels.getURL(channel_id)).then(function(setName) {
+                                generatedEmotes[setName] = cachedEmotes[setName];
+                            }).catch(reject));
+                        }));
+                    }));
                 }
+
+                resolve();
             }));
         }
 
@@ -70,13 +73,18 @@ function loadAllEmotes() {
         }
 
         if (settings.bttvChannels) {
-            for (var i = 0; i < settings.bttvChannelsList.length; ++i) {
-                var channel = settings.bttvChannelsList[i].toLowerCase();
+            promises.push(new Promise(function(resolve, reject) {
+                for (var i = 0; i < settings.bttvChannelsList.length; ++i) {
+                    var channel = settings.bttvChannelsList[i].toLowerCase();
 
-                promises.push(generateEmoteSet('bttvChannels:' + channel, EMOTE_SETS.bttvChannels.getURL(channel)).then(function(setName) {
-                    generatedEmotes[setName] = cachedEmotes[setName];
-                }));
-            }
+                    promises.push(generateEmoteSet('bttvChannels:' + channel, EMOTE_SETS.bttvChannels.getURL(channel)).then(function(setName) {
+                        generatedEmotes[setName] = cachedEmotes[setName];
+                    }).catch(reject));
+                }
+
+            
+                resolve();
+            }));
         }
 
         if (settings.ffzGlobal) {
@@ -86,13 +94,17 @@ function loadAllEmotes() {
         }
 
         if (settings.ffzChannels) {
-            for (var i = 0; i < settings.ffzChannelsList.length; ++i) {
-                var channel = settings.ffzChannelsList[i].toLowerCase();
+            promises.push(new Promise(function(resolve, reject) {
+                for (var i = 0; i < settings.ffzChannelsList.length; ++i) {
+                    var channel = settings.ffzChannelsList[i].toLowerCase();
 
-                promises.push(generateEmoteSet('ffzChannels:' + channel, EMOTE_SETS.ffzChannels.getURL(channel)).then(function(setName) {
-                    generatedEmotes[setName] = cachedEmotes[setName];
-                }));
-            }
+                    promises.push(generateEmoteSet('ffzChannels:' + channel, EMOTE_SETS.ffzChannels.getURL(channel)).then(function(setName) {
+                        generatedEmotes[setName] = cachedEmotes[setName];
+                    }).catch(reject));
+                }
+
+                resolve();
+            }));
         }
 
         if (settings.unicodeEmojis) {
@@ -136,10 +148,13 @@ function loadAllEmotes() {
         }
 
         // Run GTE with the emotes that managed to succeed
-        Promise.all(promises.map(reflect)).then(function() {
+        Promise.all(promises.map(reflect))
+        .then(function() {
             onReady();
 
             resolve();
+        }).catch(function(error) {
+            console.error(error);
         });
     });
 }
@@ -159,7 +174,6 @@ function reflect(promise){
     });
 }
 
-
 function generateEmoteSet(set, url) {
     return new Promise(function(resolve, reject) {
         retrieveCachedEmotes(set).then(resolve).catch(function() {
@@ -178,14 +192,14 @@ function retrieveCachedEmotes(set) {
             } else {
                 cachedEmotes[set] = cachedEntry;
 
-                if ((Date.now() - cachedEntry.date) / 1000 / 60 / 60 / 24 <= 3) {
+                if ((Date.now() - cachedEntry.date) <= CACHE_REFRESH_INTERVAL) {
                     console.log('Recently cached copy of "' + set + '" emotes found.');
 
                     resolve(set);
                 } else {
-                    console.log('Cached copy of "' + set + '" found but are over 72 hours old.');
+                    console.log('Cached copy of "' + set + '" found but are over two weeks old.');
 
-                    reject('Cached copy of "' + set + '" found but are over 72 hours old.');
+                    reject('Cached copy of "' + set + '" found but are over two weeks old.');
                 }
             }
         }).catch(function() {

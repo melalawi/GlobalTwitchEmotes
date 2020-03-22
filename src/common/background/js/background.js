@@ -126,4 +126,4 @@ function onMessage(message, responseCallback, tab) {
 }
 
 
-browser.isBackgroundScript().then(initialize);
+browser.isBackgroundScript().then(initialize).catch(function(){});

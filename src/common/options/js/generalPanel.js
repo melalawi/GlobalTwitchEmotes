@@ -15,7 +15,7 @@ const INTERNAL_SET_TO_SET_URL = {
     twitchGlobal: 'https://twitchemotes.com/',
     bttvGlobal: 'https://api.betterttv.net/2/emotes',
     ffzGlobal: 'https://www.frankerfacez.com/channel/__ffz_global',
-    twitchChannels: 'https://twitchemotes.com/channel/%s',
+    twitchChannels: 'https://twitchemotes.com/search?query=%s',
     bttvChannels: 'https://api.betterttv.net/2/channels/%s',
     ffzChannels: 'https://www.frankerfacez.com/channel/%s'
 };
@@ -105,18 +105,20 @@ function generateSetURL(set) {
 
 function getSetAge(date) {
     var delta = Math.abs(Date.now() - date) / 1000;
+    var days = Math.floor(delta / 60 / 60 / 24);
 
     var minutes = Math.floor(delta / 60);
     var hours = Math.floor(minutes / 60);
 
     minutes -= hours * 60;
+    hours -= days * 24;
 
     var hoursString = hours < 10 ? '0' + hours : '' + hours;
     var minutesString = minutes < 10 ? '0' + minutes : '' + minutes;
 
     return {
-        displayValue: hoursString + ':' + minutesString,
-        altTextValue: 'Cached ' + hours + ' hours, ' + minutes + (minutes === 1 ? ' minute ago' : ' minutes ago')
+        displayValue: days + (days === 1 ? ' day ago' : ' days ago'),
+        altTextValue: 'Cached ' + days + ' days, ' + hours + ' hours, ' + minutes + (minutes === 1 ? ' minute ago' : ' minutes ago')
     };
 }
 
