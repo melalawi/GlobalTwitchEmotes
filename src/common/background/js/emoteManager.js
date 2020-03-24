@@ -48,12 +48,12 @@ function loadAllEmotes() {
         if (settings.twitchChannels && settings.twitchChannelsList.length > 0) {
             promises.push(new Promise(function(resolve, reject) {
                 for (var i = 0; i < settings.twitchChannelsList.length; ++i) {
-                    var channel = settings.twitchChannelsList[i].toLowerCase();
-
                     // TODO get out of promise hell
-                    promises.push(retrieveCachedEmotes('twitchChannels:' + channel).then(function(setName) {
+                    promises.push(retrieveCachedEmotes('twitchChannels:' + settings.twitchChannelsList[i].toLowerCase()).then(function(setName) {
                         generatedEmotes[setName] = cachedEmotes[setName];
-                    }).catch(function() {
+                    }).catch(function(set) {
+                        var channel = getChannelFromSet(set);
+
                         promises.push(EMOTE_SETS.twitchChannels.getChannelIdFromName(channel).then(function(channel_id) {
                             promises.push(generateEmoteSet('twitchChannels:' + channel, EMOTE_SETS.twitchChannels.getURL(channel_id)).then(function(setName) {
                                 generatedEmotes[setName] = cachedEmotes[setName];
@@ -82,7 +82,6 @@ function loadAllEmotes() {
                     }).catch(reject));
                 }
 
-            
                 resolve();
             }));
         }
@@ -176,7 +175,7 @@ function reflect(promise){
 
 function generateEmoteSet(set, url) {
     return new Promise(function(resolve, reject) {
-        retrieveCachedEmotes(set).then(resolve).catch(function() {
+        retrieveCachedEmotes(set).then(resolve).catch(function(set) {
             fetchAndCacheEmotesFromServer(set, url).then(resolve).catch(reject);
         });
     });
@@ -188,7 +187,7 @@ function retrieveCachedEmotes(set) {
             if (!cachedEntry) {
                 console.log('Cached copy of "' + set + '" NOT found.');
 
-                reject('Cached copy of "' + set + '" NOT found.');
+                reject(set);
             } else {
                 cachedEmotes[set] = cachedEntry;
 
@@ -199,15 +198,19 @@ function retrieveCachedEmotes(set) {
                 } else {
                     console.log('Cached copy of "' + set + '" found but are over two weeks old.');
 
-                    reject('Cached copy of "' + set + '" found but are over two weeks old.');
+                    reject(set);
                 }
             }
         }).catch(function() {
             console.error('Error when attempting to retrieve cache of "' + set + '".');
 
-            reject('Error when attempting to retrieve cache of "' + set + '".');
+            reject(set);
         });
     });
+}
+
+function getChannelFromSet(set) {
+    return set.indexOf(':') !== -1 ? set.substr(set.indexOf(':') + 1) : set;
 }
 
 function fetchAndCacheEmotesFromServer(set, url) {

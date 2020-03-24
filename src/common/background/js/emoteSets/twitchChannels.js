@@ -48,7 +48,7 @@ function parseEmotes(json) {
 }
 
 function getClientId() {
-    return ''; // twitch api client id
+    return ''; // add twitch api client id here
 }
 
 
