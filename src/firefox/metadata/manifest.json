@@ -12,7 +12,7 @@
     "short_name": "GTE",
     "description": "Twitch culture wherever you go! This extension replaces all Twitch.tv emote phrases with their actual emoticons.",
     "homepage_url": "https://ostrichtools.com/p/GlobalTwitchEmotes",
-    "version": "1.3.1011",
+    "version": "1.4.1000",
 
     "background": {
         "page": "popup.html"

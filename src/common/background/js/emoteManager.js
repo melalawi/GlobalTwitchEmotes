@@ -38,6 +38,7 @@ function initialize(importedSettings) {
 function loadAllEmotes() {
     return new Promise(function(resolve) {
         var promises = [];
+        var subscriberEmotePromises = [];
 
         if (settings.twitchGlobal) {
             promises.push(generateEmoteSet('twitchGlobal', EMOTE_SETS.twitchGlobal.getURL()).then(function() {
@@ -47,22 +48,17 @@ function loadAllEmotes() {
 
         if (settings.twitchChannels && settings.twitchChannelsList.length > 0) {
             promises.push(new Promise(function(resolve, reject) {
-                for (var i = 0; i < settings.twitchChannelsList.length; ++i) {
-                    // TODO get out of promise hell
-                    promises.push(retrieveCachedEmotes('twitchChannels:' + settings.twitchChannelsList[i].toLowerCase()).then(function(setName) {
-                        generatedEmotes[setName] = cachedEmotes[setName];
-                    }).catch(function(set) {
-                        var channel = getChannelFromSet(set);
+                subscriberEmotePromises.push(new Promise(function(innerResolve) {
+                    for (var i = 0; i < settings.twitchChannelsList.length; ++i) {
+                        var channel = settings.twitchChannelsList[i].toLowerCase();
 
-                        promises.push(EMOTE_SETS.twitchChannels.getChannelIdFromName(channel).then(function(channel_id) {
-                            promises.push(generateEmoteSet('twitchChannels:' + channel, EMOTE_SETS.twitchChannels.getURL(channel_id)).then(function(setName) {
-                                generatedEmotes[setName] = cachedEmotes[setName];
-                            }).catch(reject));
-                        }));
-                    }));
-                }
+                        subscriberEmotePromises.push(fetchSubscriberEmotes('twitchChannels:' + channel, channel));
+                    }
 
-                resolve();
+                    innerResolve();
+                }));
+                
+                Promise.all(subscriberEmotePromises.map(reflect)).then(resolve).catch(reject);
             }));
         }
 
@@ -211,6 +207,23 @@ function retrieveCachedEmotes(set) {
 
 function getChannelFromSet(set) {
     return set.indexOf(':') !== -1 ? set.substr(set.indexOf(':') + 1) : set;
+}
+
+function fetchSubscriberEmotes(set, channel) {
+    return new Promise(function(resolve, reject) {
+        retrieveCachedEmotes(set).then(function() {
+            generatedEmotes[set] = cachedEmotes[set];
+
+            resolve();
+        }).catch(function() {
+            EMOTE_SETS.twitchChannels.getChannelIdFromName(channel).then(function(channel_id) {
+                generateEmoteSet(set, EMOTE_SETS.twitchChannels.getURL(channel_id)).then(function() {
+                    generatedEmotes[set] = cachedEmotes[set];
+                    resolve();
+                }).catch(reject);
+            }).catch(reject);
+        });
+    });
 }
 
 function fetchAndCacheEmotesFromServer(set, url) {

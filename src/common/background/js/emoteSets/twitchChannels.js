@@ -1,8 +1,22 @@
 var httpRequest = require('../httpRequest');
 
-const CHANNEL_ID_ENDPOINT = 'https://api.twitch.tv/kraken/users?login={CHANNEL_NAME}';
+const CHANNEL_ID_ENDPOINT = 'https://api.twitch.tv/helix/users?login={CHANNEL_NAME}';
 const CHANNEL_EMOTES_ENDPOINT = 'https://api.twitchemotes.com/api/v4/channels/{CHANNEL_ID}';
 const BASE_EMOTE_URL = 'https://static-cdn.jtvnw.net/emoticons/v1/{EMOTE_ID}/1.0';
+
+function thing(set, channel) {
+    subscriberEmotePromises.push(retrieveCachedEmotes(set).then(function(setName) {
+        generatedEmotes[setName] = cachedEmotes[setName];
+    }).catch(function(set) {
+        var channel = getChannelFromSet(set);
+
+        subscriberEmotePromises.push(EMOTE_SETS.twitchChannels.getChannelIdFromName(channel).then(function(channel_id) {
+            subscriberEmotePromises.push(generateEmoteSet(set, EMOTE_SETS.twitchChannels.getURL(channel_id)).then(function(setName) {
+                generatedEmotes[setName] = cachedEmotes[setName];
+            }).catch(reject));
+        }));
+    }));
+}
 
 function getChannelIdFromName(channel_name) {
     return new Promise(function(resolve, reject) {
@@ -19,7 +33,7 @@ function getChannelIdFromName(channel_name) {
         }).then(function(responseJSON) {
             console.log(responseJSON);
 
-            resolve(responseJSON.users[0]._id);
+            resolve(responseJSON.data[0].id);
         }).catch(function(error) {
             console.error('Failed to retrieve "' + set + '" from ' + url + ' - ' + error);
 
@@ -47,8 +61,8 @@ function parseEmotes(json) {
     return channelEmotes;
 }
 
-function getClientId() {
-    return ''; // add twitch api client id here
+function getClientId(){
+    return ''; // twitch api client id
 }
 
 
