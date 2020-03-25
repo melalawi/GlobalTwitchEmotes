@@ -6,7 +6,7 @@ var browser = require('./browser');
 
 const URL_EXTRACTION_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\s\/]+(?:\/[^\s\/]+)*)\/*$/i;
 const DEFAULT_SETTINGS = {
-    version: '1.3.0',
+    version: '1.4.0',
 
     twitchStyleTooltips: true,
     replaceYouTubeKappa: false,
@@ -127,7 +127,7 @@ function migrateSettings(customEmotesList, sync) {
 
                 setAllSettings(local).then(resolve).catch(reject);
             }).catch(reject);
-        } else if (sync.version === '1.3.0') {
+        } else if (sync.version === '1.3.0' || sync.version === '1.4.0') {
             settings = sync;
             settings.customEmotesList = customEmotesList;
 

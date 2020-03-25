@@ -61,7 +61,7 @@ function parseEmotes(json) {
     return channelEmotes;
 }
 
-function getClientId(){
+function getClientId() {
     return ''; // twitch api client id
 }
 

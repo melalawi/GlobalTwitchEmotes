@@ -4,12 +4,16 @@ html(lang='en')
         meta(content='text/html; charset=UTF-8', http-equiv='content-type')
         meta(name='viewport', content='width=device-width', initial-scale='1')
 
-
         title Global Twitch Emotes - Settings
 
         link(rel='shortcut icon', href='/assets/images/favicon.ico', type='image/x-icon')
         link(rel='stylesheet', type='text/css', href='/options/css/style.css')
+
+        // Global site tag (gtag.js) - Google Analytics
+        script(async='' src='https://www.googletagmanager.com/gtag/js?id=UA-68894405-5')
+
         script(src='/options/js/options.js')
+
     body
         #header.bodySection
             img#banner(src='/assets/images/banner.png', alt='Global Twitch Emotes')
@@ -27,7 +31,7 @@ html(lang='en')
             include pug/filterPanel
             include pug/aboutPanel
         #footer.bodySection
-            .copyright Copyright © Mo Alawi 2020
+            #copyright
             .socialLinks
                 a(href='https://github.com/melalawi', target='_blank')
                     img(src='/assets/images/github.png')
