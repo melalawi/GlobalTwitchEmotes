@@ -1,5 +1,6 @@
 var httpRequest = require('./httpRequest');
 var storageHelper = require('storageHelper');
+var twitchHelix = require('./twitchHelix'); 
 
 
 const CACHE_REFRESH_INTERVAL = 1000 * 60 * 60 * 24 * 14;
@@ -38,7 +39,7 @@ function initialize(importedSettings) {
 function loadAllEmotes() {
     return new Promise(function(resolve) {
         var promises = [];
-        var subscriberEmotePromises = [];
+        var channelIdEmotePromises = [];
 
         if (settings.twitchGlobal) {
             promises.push(generateEmoteSet('twitchGlobal', EMOTE_SETS.twitchGlobal.getURL()).then(function() {
@@ -48,17 +49,17 @@ function loadAllEmotes() {
 
         if (settings.twitchChannels && settings.twitchChannelsList.length > 0) {
             promises.push(new Promise(function(resolve, reject) {
-                subscriberEmotePromises.push(new Promise(function(innerResolve) {
+                channelIdEmotePromises.push(new Promise(function(innerResolve) {
                     for (var i = 0; i < settings.twitchChannelsList.length; ++i) {
                         var channel = settings.twitchChannelsList[i].toLowerCase();
 
-                        subscriberEmotePromises.push(fetchSubscriberEmotes('twitchChannels:' + channel, channel));
+                        channelIdEmotePromises.push(fetchEmotesUsingChannelId('twitchChannels:' + channel, channel, EMOTE_SETS.twitchChannels));
                     }
 
                     innerResolve();
                 }));
                 
-                Promise.all(subscriberEmotePromises.map(reflect)).then(resolve).catch(reject);
+                Promise.all(channelIdEmotePromises.map(reflect)).then(resolve).catch(reject);
             }));
         }
 
@@ -68,17 +69,19 @@ function loadAllEmotes() {
             }));
         }
 
-        if (settings.bttvChannels) {
+        if (settings.bttvChannels && settings.bttvChannelsList.length > 0) {
             promises.push(new Promise(function(resolve, reject) {
-                for (var i = 0; i < settings.bttvChannelsList.length; ++i) {
-                    var channel = settings.bttvChannelsList[i].toLowerCase();
+                channelIdEmotePromises.push(new Promise(function(innerResolve) {
+                    for (var i = 0; i < settings.bttvChannelsList.length; ++i) {
+                        var channel = settings.bttvChannelsList[i].toLowerCase();
 
-                    promises.push(generateEmoteSet('bttvChannels:' + channel, EMOTE_SETS.bttvChannels.getURL(channel)).then(function(setName) {
-                        generatedEmotes[setName] = cachedEmotes[setName];
-                    }).catch(reject));
-                }
+                        channelIdEmotePromises.push(fetchEmotesUsingChannelId('bttvChannels:' + channel, channel, EMOTE_SETS.bttvChannels));
+                    }
 
-                resolve();
+                    innerResolve();
+                }));
+                
+                Promise.all(channelIdEmotePromises.map(reflect)).then(resolve).catch(reject);
             }));
         }
 
@@ -205,19 +208,15 @@ function retrieveCachedEmotes(set) {
     });
 }
 
-function getChannelFromSet(set) {
-    return set.indexOf(':') !== -1 ? set.substr(set.indexOf(':') + 1) : set;
-}
-
-function fetchSubscriberEmotes(set, channel) {
+function fetchEmotesUsingChannelId(set, channel, emote_set) {
     return new Promise(function(resolve, reject) {
         retrieveCachedEmotes(set).then(function() {
             generatedEmotes[set] = cachedEmotes[set];
 
             resolve();
         }).catch(function() {
-            EMOTE_SETS.twitchChannels.getChannelIdFromName(channel).then(function(channel_id) {
-                generateEmoteSet(set, EMOTE_SETS.twitchChannels.getURL(channel_id)).then(function() {
+            twitchHelix.getChannelIdFromName(channel).then(function(channel_id) {
+                generateEmoteSet(set, emote_set.getURL(channel_id)).then(function() {
                     generatedEmotes[set] = cachedEmotes[set];
                     resolve();
                 }).catch(reject);

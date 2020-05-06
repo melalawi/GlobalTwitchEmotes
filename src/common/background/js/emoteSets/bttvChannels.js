@@ -1,4 +1,4 @@
-const URL = 'https://api.betterttv.net/2/channels';
+const URL = 'https://api.betterttv.net/3/cached/users/twitch';
 
 
 function parseEmotes(json) {
@@ -18,10 +18,28 @@ function parseEmotes(json) {
     return result;
 }
 
+const BASE_EMOTE_URL = 'https://cdn.betterttv.net/emote/{EMOTE_ID}/1x'
+
+
+function parseEmotes(json) {
+    var result = {};
+
+    for (var i = 0; i < json.channelEmotes.length; ++i) {
+        var emote = json.channelEmotes[i];
+
+        result[emote.code] = {
+            url: BASE_EMOTE_URL.replace('{EMOTE_ID}', emote.id),
+            channel: 'BetterTTV Emote'
+        };
+    }
+
+    return result;
+}
+
 
 module.exports = {
     parseEmotes: parseEmotes,
-    getURL: function(channelName) {
-        return URL + '/' + channelName;
+    getURL: function(channelId) {
+        return URL + '/' + channelId;
     }
 };
