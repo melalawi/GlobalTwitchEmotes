@@ -40,9 +40,9 @@ function getChannelIdFromName(channel_name) {
     
                 resolve(responseJSON.data[0].id);
             }).catch(function(error) {
-                console.error('Failed to retrieve "' + set + '" from ' + url + ' - ' + error);
+                console.error(error);
     
-                reject(set);
+                reject(channel_name);
             });
         }).catch(reject);
         

@@ -51,7 +51,7 @@ function loadAllEmotes() {
             promises.push(new Promise(function(resolve, reject) {
                 channelIdEmotePromises.push(new Promise(function(innerResolve) {
                     for (var i = 0; i < settings.twitchChannelsList.length; ++i) {
-                        var channel = settings.twitchChannelsList[i].toLowerCase();
+                        var channel = settings.twitchChannelsList[i].toLowerCase().trim();
 
                         channelIdEmotePromises.push(fetchEmotesUsingChannelId('twitchChannels:' + channel, channel, EMOTE_SETS.twitchChannels));
                     }
@@ -59,7 +59,7 @@ function loadAllEmotes() {
                     innerResolve();
                 }));
                 
-                Promise.all(channelIdEmotePromises.map(reflect)).then(resolve).catch(reject);
+                Promise.allSettled(channelIdEmotePromises).then(resolve);
             }));
         }
 
@@ -73,7 +73,7 @@ function loadAllEmotes() {
             promises.push(new Promise(function(resolve, reject) {
                 channelIdEmotePromises.push(new Promise(function(innerResolve) {
                     for (var i = 0; i < settings.bttvChannelsList.length; ++i) {
-                        var channel = settings.bttvChannelsList[i].toLowerCase();
+                        var channel = settings.bttvChannelsList[i].toLowerCase().trim();
 
                         channelIdEmotePromises.push(fetchEmotesUsingChannelId('bttvChannels:' + channel, channel, EMOTE_SETS.bttvChannels));
                     }
@@ -81,7 +81,7 @@ function loadAllEmotes() {
                     innerResolve();
                 }));
                 
-                Promise.all(channelIdEmotePromises.map(reflect)).then(resolve).catch(reject);
+                Promise.allSettled(channelIdEmotePromises).then(resolve);
             }));
         }
 
@@ -94,7 +94,7 @@ function loadAllEmotes() {
         if (settings.ffzChannels) {
             promises.push(new Promise(function(resolve, reject) {
                 for (var i = 0; i < settings.ffzChannelsList.length; ++i) {
-                    var channel = settings.ffzChannelsList[i].toLowerCase();
+                    var channel = settings.ffzChannelsList[i].toLowerCase().trim();
 
                     promises.push(generateEmoteSet('ffzChannels:' + channel, EMOTE_SETS.ffzChannels.getURL(channel)).then(function(setName) {
                         generatedEmotes[setName] = cachedEmotes[setName];
@@ -146,29 +146,13 @@ function loadAllEmotes() {
         }
 
         // Run GTE with the emotes that managed to succeed
-        Promise.all(promises.map(reflect))
-        .then(function() {
+        Promise.allSettled(promises).then(function() {
             onReady();
 
             resolve();
         }).catch(function(error) {
             console.error(error);
         });
-    });
-}
-
-function reflect(promise){
-    return promise.then(function(v) {
-        return {
-            v: v,
-            status: 'resolved'
-        }
-    },
-    function(e) {
-        return {
-            e: e,
-            status: 'rejected'
-        }
     });
 }
 
