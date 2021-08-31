@@ -2,8 +2,7 @@ const CHANNEL_EMOTES_ENDPOINT = 'https://api.twitch.tv/helix/chat/emotes?broadca
 const BASE_EMOTE_URL = 'https://static-cdn.jtvnw.net/emoticons/v2/{EMOTE_ID}/default/light/1.0';
 
 
-function parseEmotes(json) {
-    var channelName = json.channel_name;
+function parseEmotes(json, channelName) {
     var emotes = json.data;
 
     var channelEmotes = {};
