@@ -6,18 +6,22 @@ const INTERNAL_TO_READABLE_SET_NAMES = {
     twitchGlobal: 'Twitchemotes.com - Global Emotes',
     bttvGlobal: 'BetterTTV - Global Emotes',
     ffzGlobal: 'FrankerFaceZ - Global Emotes',
+    seventvGlobal: '7TV - Global Emotes',
     twitchChannels: 'Twitchemotes.com',
     bttvChannels: 'BetterTTV',
-    ffzChannels: 'FrankerFaceZ'
+    ffzChannels: 'FrankerFaceZ',
+    seventvChannels: '7TV'
 };
 
 const INTERNAL_SET_TO_SET_URL = {
     twitchGlobal: 'https://twitchemotes.com/',
     bttvGlobal: 'https://api.betterttv.net/2/emotes',
     ffzGlobal: 'https://www.frankerfacez.com/channel/__ffz_global',
+    seventvGlobal: 'https://api.7tv.app/v2/emotes/global',
     twitchChannels: 'https://twitchemotes.com/search?query=%s',
     bttvChannels: 'https://api.betterttv.net/2/channels/%s',
-    ffzChannels: 'https://www.frankerfacez.com/channel/%s'
+    ffzChannels: 'https://www.frankerfacez.com/channel/%s',
+    seventvChannels: 'https://api.7tv.app/v2/users/%s/emotes'
 };
 
 

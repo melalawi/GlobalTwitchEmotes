@@ -10,6 +10,8 @@ const EMOTE_SETS = {
     bttvGlobal: require('./emoteSets/bttvGlobal'),
     ffzChannels: require('./emoteSets/ffzChannels'),
     ffzGlobal: require('./emoteSets/ffzGlobal'),
+    seventvChannels: require('./emoteSets/seventvChannels'),
+    seventvGlobal: require('./emoteSets/seventvGlobal'),
     twitchChannels: require('./emoteSets/twitchChannels'),
     twitchGlobal: require('./emoteSets/twitchGlobal'),
     twitchSmilies: require('./emoteSets/twitchSmilies'),
@@ -101,6 +103,24 @@ function loadAllEmotes() {
                     }).catch(reject));
                 }
 
+                resolve();
+            }));
+        }
+
+        if (settings.seventvGlobal) {
+            promises.push(generateEmoteSet('seventvGlobal', EMOTE_SETS.seventvGlobal.getURL()).then(function () {
+                generatedEmotes.seventvGlobal = cachedEmotes.seventvGlobal;
+            }));
+        }
+
+        if (settings.seventvChannels && settings.seventvChannelsList.length > 0) {
+            promises.push(new Promise(function (resolve, reject) {
+                for (var i = 0; i < settings.seventvChannelsList.length; ++i) {
+                    var channel = settings.seventvChannelsList[i].toLowerCase().trim();
+                    promises.push(generateEmoteSet('seventvChannels:' + channel, EMOTE_SETS.seventvChannels.getURL(channel)).then(function (setName) {
+                        generatedEmotes[setName] = cachedEmotes[setName];
+                    }).catch(reject));
+                }
                 resolve();
             }));
         }

@@ -23,11 +23,14 @@ const DEFAULT_SETTINGS = {
     bttvChannels: false,
     ffzGlobal: false,
     ffzChannels: false,
+    seventvGlobal: false,
+    seventvChannels: false,
     customEmotes: false,
 
     twitchChannelsList: [],
     bttvChannelsList: [],
     ffzChannelsList: [],
+    seventvChannelsList: [],
     customEmotesList: [],
 
     domainFilterMode: 'Blacklist',

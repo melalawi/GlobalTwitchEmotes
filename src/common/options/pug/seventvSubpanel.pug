@@ -1,0 +1,23 @@
+.subpanel#seventvSubpanel
+    strong
+        div 7TV Emotes
+        .tooltipTrigger(data-tooltip-html='#7TVEmotesTooltipHTML') ?
+
+    label.line
+        input(type='checkbox' id='seventvGlobalCheckbox')
+        | Enable Global 7TV Emotes
+        img.kappa(src='/assets/images/yeahbut7tv.gif')
+    label.inline
+        input(type='checkbox' id='seventvChannelsCheckbox')
+        | Enable 7TV Channel Emotes
+    .tooltipTrigger(data-tooltip-html='#seventvChannelsCheckboxTooltipHTML') ?
+
+    table#seventvChannelsList
+
+    #7TVEmotesTooltipHTML.tooltipHTML Allows Global Twitch Emotes to render emotes managed by&nbsp;
+        a(href='https://7tv.app/', target='_blank') 7TV
+    #seventvChannelsCheckboxTooltipHTML.tooltipHTML Enables Global Twitch Emotes to fetch and render 7TV emotes associated with the channels in the table below.
+        br
+        | For example, to enable&nbsp;
+        img.kappa(src='/assets/images/egsqzL.png')
+        | &nbsp; add the channel 'nymn' to the table below.
