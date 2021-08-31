@@ -1,16 +1,16 @@
-const URL = 'https://api.twitchemotes.com/api/v4/channels/0';
-const BASE_EMOTE_URL = 'https://static-cdn.jtvnw.net/emoticons/v1/{EMOTE_ID}/1.0';
+const URL = 'https://api.twitch.tv/helix/chat/emotes/global/';
+const BASE_EMOTE_URL = 'https://static-cdn.jtvnw.net/emoticons/v2/{EMOTE_ID}/default/light/1.0';
 
 
 function parseEmotes(json) {
     var result = {};
-    var emoteList = json.emotes;
+    var emoteList = json.data;
 
     for (var i = 0; i < emoteList.length; i++) {
-        var code = emoteList[i].code;
+        var name = emoteList[i].name;
         var id = emoteList[i].id;
 
-        result[code] = {
+        result[name] = {
             url: BASE_EMOTE_URL.replace('{EMOTE_ID}', id),
             channel: ''
         };

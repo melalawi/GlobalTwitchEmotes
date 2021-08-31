@@ -1,18 +1,17 @@
-
-const CHANNEL_EMOTES_ENDPOINT = 'https://api.twitchemotes.com/api/v4/channels/{CHANNEL_ID}';
-const BASE_EMOTE_URL = 'https://static-cdn.jtvnw.net/emoticons/v1/{EMOTE_ID}/1.0';
+const CHANNEL_EMOTES_ENDPOINT = 'https://api.twitch.tv/helix/chat/emotes?broadcaster_id=';
+const BASE_EMOTE_URL = 'https://static-cdn.jtvnw.net/emoticons/v2/{EMOTE_ID}/default/light/1.0';
 
 
 function parseEmotes(json) {
     var channelName = json.channel_name;
-    var emotes = json.emotes;
+    var emotes = json.data;
 
     var channelEmotes = {};
 
     for (var i = 0; i < emotes.length; ++i) {
-        var code = emotes[i].code;
+        var name = emotes[i].name;
 
-        channelEmotes[code] = {
+        channelEmotes[name] = {
             url: BASE_EMOTE_URL.replace('{EMOTE_ID}', emotes[i].id),
             channel: channelName
         };
@@ -24,7 +23,7 @@ function parseEmotes(json) {
 
 module.exports = {
     parseEmotes: parseEmotes,
-    getURL: function(channelId) {
-        return CHANNEL_EMOTES_ENDPOINT.replace('{CHANNEL_ID}', channelId);
+    getURL: function() {
+        return CHANNEL_EMOTES_ENDPOINT;
     }
 };
