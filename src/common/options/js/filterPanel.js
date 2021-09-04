@@ -17,7 +17,8 @@ function buildEmoteFilterListTable() {
                 options: [
                     'Twitch.tv',
                     'BetterTTV',
-                    'FrankerFaceZ'
+                    'FrankerFaceZ',
+                    '7TV'
                 ]
             },
             {
