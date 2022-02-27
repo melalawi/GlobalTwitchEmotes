@@ -11,10 +11,10 @@
 
         label.line.floatLeft
             input(type='radio', value='Blacklist', name='emoteFilterMode')
-            | Blacklist
+            | Denylist
         label.line
             input(type='radio', value='Whitelist', name='emoteFilterMode')
-            | Whitelist
+            | Allowlist
 
         table#emoteFilterList
 
@@ -30,10 +30,10 @@
 
         label.line.floatLeft
             input(type='radio', value='Blacklist', name='domainFilterMode')
-            | Blacklist
+            | Denylist
         label.line
             input(type='radio', value='Whitelist', name='domainFilterMode')
-            | Whitelist
+            | Allowlist
 
         table#domainFilterList
 
@@ -50,10 +50,10 @@
         b Value:&nbsp;
         | Either the name of the channel or the name of the emote to filter, depending on the selected rule type.
     #emoteFilterModeTooltipHTML.tooltipHTML
-        b Blacklist mode:&nbsp;
+        b Denylist mode:&nbsp;
         | The emotes listed in the table directly below will not be rendered.
         br
-        b Whitelist mode:&nbsp;
+        b Allowlist mode:&nbsp;
         | ONLY the emotes listed in the table below will be rendered.
 
     #FilterWebsitesTooltipHTML.tooltipHTML Allows you to disable or exclusively enable Global Twitch Emotes from running on certain websites. Asterisk wildcards supported.
@@ -71,8 +71,8 @@
         a(href='https://www.youtube.com/watch?v=IW--ZGJd5Fg', target='_blank') https://www.youtube.com/watch?v=IW--ZGJd5Fg
 
     #domainFilterModeTooltipHTML.tooltipHTML
-        b Blacklist mode:&nbsp;
+        b Denlylist mode:&nbsp;
         | Global Twitch Emotes will not run on websites listed in the table directly below.
         br
-        b Whitelist mode:&nbsp;
+        b Allowlist mode:&nbsp;
         | Global Twitch Emotes will ONLY run on websites listed in the table directly below.
