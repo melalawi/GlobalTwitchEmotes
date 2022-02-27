@@ -80,6 +80,7 @@ jspm_packages
 .node_repl_history
 # Created by .ignore support plugin (hsz.mobi)
 
+.history
 .idea/
 bin/
 build/

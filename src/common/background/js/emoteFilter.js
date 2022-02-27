@@ -3,7 +3,8 @@ var filteredEmotesCount;
 var filteredEmotes = {
     twitch: [],
     bttv: [],
-    ffz: []
+    ffz: [],
+    seventv: []
 };
 
 function initialize(mode, emotes) {
@@ -17,6 +18,8 @@ function initialize(mode, emotes) {
             filteredEmotes.bttv.push(emotes[i]);
         } else if (emotes[i].set === 'FrankerFaceZ') {
             filteredEmotes.ffz.push(emotes[i]);
+        } else if (emotes[i].set === '7TV') {
+            filteredEmotes.seventv.push(emotes[i]);
         } else {
             console.error('Unrecognized emote filter set "' + emotes[i].set + '".');
         }
@@ -62,6 +65,8 @@ function getMatchingFilterSet(emoteSet) {
         result = filteredEmotes.bttv;
     } else if (emoteSet.indexOf('ffz') === 0) {
         result = filteredEmotes.ffz;
+    } else if (emoteSet.indexOf('seventv') === 0) {
+        result = filteredEmotes.seventv;
     }
 
     return result;
