@@ -13,7 +13,7 @@ function parseEmotes(json) {
                 var emote = emotes[i];
 
                 result[emote.name] = {
-                    url: 'https:' + emote.urls['1'],
+                    url: emote.urls['1'],
                     channel: 'FrankerFaceZ Emote'
                 };
             }

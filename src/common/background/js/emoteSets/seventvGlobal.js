@@ -1,5 +1,5 @@
 const GLOBAL_EMOTES_ENDPOINT = 'https://api.7tv.app/v2/emotes/global';
-const BASE_EMOTE_URL = 'https://cdn.7tv.app/emote/{EMOTE_ID}/1x'
+const BASE_EMOTE_URL = 'https://cdn.7tv.app/emote/{EMOTE_ID}/1x.webp'
 
 
 function parseEmotes(json) {
