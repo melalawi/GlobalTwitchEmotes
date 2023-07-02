@@ -208,7 +208,7 @@ function buildCSS(source, destination, pathDirectory) {
     });
 }
 
-function zipFolder(source, destination) {
+ function zipFolder(source, destination) {
     return new Promise(function(resolve, reject) {
         console.log('Zipping...');
 

@@ -1,32 +1,22 @@
-const URL = 'https://api.frankerfacez.com/v1/';
+const URL = 'https://emotes.adamcy.pl/v1/channel/{CHANNEL_NAME}/emotes/ffz';
 
 
-function parseEmotes(json) {
-    var sets = json.sets;
+function parseEmotes(json, set) {
     var result = {};
 
-    for (var emoteSet in sets) {
-        if (sets.hasOwnProperty(emoteSet)) {
-            var emotes = sets[emoteSet].emoticons;
-
-            for (var i = 0; i < emotes.length; ++i) {
-                var emote = emotes[i];
-
-                result[emote.name] = {
-                    url: 'https:' + emote.urls['1'],
-                    channel: json.room.display_name
-                };
-            }
-        }
+    for (var i = 0; i < json.length; i++) {
+        result[json[i].code] = {
+            url: json[i].urls[0].url.substring(6),
+            channel: set.substring(12) + " FFZ Channel Emote"
+        };
     }
-
     return result;
 }
 
 
 module.exports = {
     parseEmotes: parseEmotes,
-    getURL: function(channelName) {
-        return URL + 'room/' + channelName.toLowerCase();
+    getURL: function(channel_name) {
+        return URL.replace('{CHANNEL_NAME}', channel_name);
     }
 };
