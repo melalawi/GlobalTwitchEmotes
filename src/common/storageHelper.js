@@ -6,7 +6,7 @@ var browser = require('./browser');
 
 const URL_EXTRACTION_REGEX = /^(?:\w+:\/\/)?(?:www\.)?([^\s\/]+(?:\/[^\s\/]+)*)\/*$/i;
 const DEFAULT_SETTINGS = {
-    version: '1.4.0',
+    version: '1.5.0',
 
     twitchStyleTooltips: true,
     replaceYouTubeKappa: false,
@@ -110,33 +110,23 @@ function migrateSettings(customEmotesList, sync) {
     return new Promise(function(resolve, reject) {
         var settings;
 
-        if (sync.hasOwnProperty('version') === false) {
-            // Version 1.2.0 and below
-            console.log('Old settings detected.');
+        if (sync.version === '1.4.0') {
+            settings = sync;
+            settings.customEmotesList = customEmotesList;
+            
+            settings.seventvGlobal = false;
+            settings.seventvChannels = false;
+            settings.seventvChannelsList = [];
 
-            browser.loadStorage('local').then(function(local) {
-                if (local.hasOwnProperty('emoteFilterList')) {
-                    // Channel filtering has been deprecated
-                    for (var i = local.emoteFilterList.length - 1; i >= 0; --i) {
-                        var currentRule = local.emoteFilterList[i];
-
-                        if (currentRule.type === 'Channel') {
-                            local.emoteFilterList.splice(i, 1);
-                        } else {
-                            delete local.emoteFilterList[i].type;
-                        }
-                    }
-                }
-
-                setAllSettings(local).then(resolve).catch(reject);
-            }).catch(reject);
-        } else if (sync.version === '1.3.0' || sync.version === '1.4.0') {
+            resolve(settings);
+        } else if (sync.version === '1.5.0') {
             settings = sync;
             settings.customEmotesList = customEmotesList;
 
             resolve(settings);
         } else {
-            reject('Unrecognized settings version.');
+            // Cannot recover, reset to default
+            resolve({});
         }
     });
 

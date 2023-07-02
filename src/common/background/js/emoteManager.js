@@ -44,7 +44,7 @@ function loadAllEmotes() {
         var promises = [];
 
         if (settings.twitchGlobal) {
-            promises.push(generateEmoteSet('twitchGlobal', EMOTE_SETS.twitchGlobal.getURL()).then(function() {
+            promises.push(generateTwitchEmoteSet('twitchGlobal', EMOTE_SETS.twitchGlobal.getURL()).then(function() {
                 generatedEmotes.twitchGlobal = cachedEmotes.twitchGlobal;
             }));
         }
@@ -174,6 +174,14 @@ function generateEmoteSet(set, url) {
     });
 }
 
+function generateTwitchEmoteSet(set, url) {
+    return new Promise(function (resolve, reject) {
+        retrieveCachedEmotes(set).then(resolve).catch(function (set) {
+            fetchAndCacheEmotesFromTwitchServer(set, url).then(resolve).catch(reject);
+        });
+    });
+}
+
 function retrieveCachedEmotes(set) {
     return new Promise(function(resolve, reject) {
         storageHelper.getCacheEntry(set).then(function(cachedEntry) {
@@ -261,6 +269,67 @@ function fetchAndCacheEmotesFromServer(set, url) {
             console.error('Failed to retrieve "' + set + '" from ' + url + ' - ' + error);
 
             reject(set);
+        });
+    });
+}
+
+function fetchAndCacheEmotesFromTwitchServer(set, url) {
+    return new Promise(function (resolve, reject) {
+        twitchHelix.getBearerToken().then(function (access_token) {
+            console.log('Retrieving "' + set + '" from twitch\'s server...');
+            if (set == 'twitchGlobal') {
+                httpRequest.get(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + access_token,
+                        'Client-Id': twitchHelix.getClientID()
+                    }
+                }).then(function (jsonData) {
+                    var parserModule = set.indexOf(':') !== -1 ? set.substr(0, set.indexOf(':')) : set;
+                    var emotes = {
+                        emotes: EMOTE_SETS[parserModule].parseEmotes(jsonData),
+                        date: Date.now()
+                    };
+                    console.log('Successfully retrieved "' + set + '" from twitch\'s server. Caching...');
+
+                    cachedEmotes[set] = emotes;
+
+                    storageHelper.setCacheEntry(set, emotes.emotes, emotes.date).then(function () {
+                        console.log('Cached copy of "' + set + '" successfully.');
+                    });
+                    resolve(set);
+                }).catch(function (error) {
+                    console.error('Failed to retrieve "' + set + '" from ' + url + ' - ' + error);
+                    reject(set);
+                });
+            } else {
+                twitchHelix.getChannelIdFromName(set.substr(set.indexOf(':') + 1, set.length)).then(function (channel_id) {
+                    httpRequest.get(url + channel_id, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + access_token,
+                            'Client-Id': twitchHelix.getClientID()
+                        }
+                    }).then(function (jsonData) {
+                        var parserModule = set.indexOf(':') !== -1 ? set.substr(0, set.indexOf(':')) : set;
+                        var emotes = {
+                            emotes: EMOTE_SETS[parserModule].parseEmotes(jsonData, set.substr(set.indexOf(':') + 1, set.length)),
+                            date: Date.now()
+                        };
+                        console.log('Successfully retrieved "' + set + '" from twitch\'s server. Caching...');
+
+                        cachedEmotes[set] = emotes;
+
+                        storageHelper.setCacheEntry(set, emotes.emotes, emotes.date).then(function () {
+                            console.log('Cached copy of "' + set + '" successfully.');
+                        });
+                        resolve(set);
+                    }).catch(function (error) {
+                        console.error('Failed to retrieve "' + set + '" from ' + url + channel_id + ' - ' + error);
+                        reject(set);
+                    });
+                });
+            }
         });
     });
 }
