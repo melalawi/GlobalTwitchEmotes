@@ -1,6 +1,7 @@
 var httpRequest = require('./httpRequest');
 var storageHelper = require('storageHelper');
 var twitchHelix = require('./twitchHelix'); 
+//const seventvChannels = require('./emoteSets/seventvChannels');
 
 
 const CACHE_REFRESH_INTERVAL = 1000 * 60 * 60 * 24 * 14;
@@ -41,7 +42,6 @@ function initialize(importedSettings) {
 function loadAllEmotes() {
     return new Promise(function(resolve) {
         var promises = [];
-        var channelIdEmotePromises = [];
 
         if (settings.twitchGlobal) {
             promises.push(generateEmoteSet('twitchGlobal', EMOTE_SETS.twitchGlobal.getURL()).then(function() {
@@ -51,17 +51,13 @@ function loadAllEmotes() {
 
         if (settings.twitchChannels && settings.twitchChannelsList.length > 0) {
             promises.push(new Promise(function(resolve, reject) {
-                channelIdEmotePromises.push(new Promise(function(innerResolve) {
-                    for (var i = 0; i < settings.twitchChannelsList.length; ++i) {
-                        var channel = settings.twitchChannelsList[i].toLowerCase().trim();
-
-                        channelIdEmotePromises.push(fetchEmotesUsingChannelId('twitchChannels:' + channel, channel, EMOTE_SETS.twitchChannels));
-                    }
-
-                    innerResolve();
-                }));
-                
-                Promise.allSettled(channelIdEmotePromises).then(resolve);
+                for (var i = 0; i < settings.twitchChannelsList.length; ++i) {
+                    var channel = settings.twitchChannelsList[i].toLowerCase().trim();
+                    promises.push(generateEmoteSet('twitchChannels:' + channel, EMOTE_SETS.twitchChannels.getURL(channel)).then(function(setName) {
+                        generatedEmotes[setName] = cachedEmotes[setName];
+                    }).catch(reject));
+                }
+                resolve();
             }));
         }
 
@@ -73,17 +69,12 @@ function loadAllEmotes() {
 
         if (settings.bttvChannels && settings.bttvChannelsList.length > 0) {
             promises.push(new Promise(function(resolve, reject) {
-                channelIdEmotePromises.push(new Promise(function(innerResolve) {
-                    for (var i = 0; i < settings.bttvChannelsList.length; ++i) {
-                        var channel = settings.bttvChannelsList[i].toLowerCase().trim();
-
-                        channelIdEmotePromises.push(fetchEmotesUsingChannelId('bttvChannels:' + channel, channel, EMOTE_SETS.bttvChannels));
-                    }
-
-                    innerResolve();
-                }));
-                
-                Promise.allSettled(channelIdEmotePromises).then(resolve);
+                for (var i = 0; i < settings.bttvChannelsList.length; ++i) {
+                    var channel = settings.bttvChannelsList[i].toLowerCase().trim();
+                    promises.push(generateEmoteSet('bttvChannels:' + channel, EMOTE_SETS.bttvChannels.getURL(channel)).then(function(setName) {
+                        generatedEmotes[setName] = cachedEmotes[setName];}).catch(reject));
+                    resolve();
+                }
             }));
         }
 
@@ -93,11 +84,10 @@ function loadAllEmotes() {
             }));
         }
 
-        if (settings.ffzChannels) {
+        if (settings.ffzChannels && settings.ffzChannelsList.length > 0) {
             promises.push(new Promise(function(resolve, reject) {
                 for (var i = 0; i < settings.ffzChannelsList.length; ++i) {
                     var channel = settings.ffzChannelsList[i].toLowerCase().trim();
-
                     promises.push(generateEmoteSet('ffzChannels:' + channel, EMOTE_SETS.ffzChannels.getURL(channel)).then(function(setName) {
                         generatedEmotes[setName] = cachedEmotes[setName];
                     }).catch(reject));
@@ -117,7 +107,7 @@ function loadAllEmotes() {
             promises.push(new Promise(function (resolve, reject) {
                 for (var i = 0; i < settings.seventvChannelsList.length; ++i) {
                     var channel = settings.seventvChannelsList[i].toLowerCase().trim();
-                    promises.push(generateEmoteSet('seventvChannels:' + channel, EMOTE_SETS.seventvChannels.getURL(channel)).then(function (setName) {
+                    promises.push(generateEmoteSet('seventvChannels:' + channel, EMOTE_SETS.seventvChannels.getURL(channel)).then(function(setName) {
                         generatedEmotes[setName] = cachedEmotes[setName];
                     }).catch(reject));
                 }
@@ -212,6 +202,22 @@ function retrieveCachedEmotes(set) {
     });
 }
 
+/*function fetchEmotesUsingChannelNameSevenTV(set, channel, emote_set) {
+    return new Promise(function(resolve, reject) {
+        retrieveCachedEmotes(set).then(function() {
+            generateEmoteSet[set] = cachedEmotes[set];
+            resolve();
+        }).catch(function() {
+            seventvChannels.getChannelIdFromName(channel).then(function(channel_id) {
+                generateEmoteSet(set, emote_set.getURL(channel_id)).then(function() {
+                    generateEmoteSet[set] = cachedEmotes[set];
+                    resolve();
+                }).catch(reject);
+            }).catch(reject);
+        });
+    });
+}
+
 function fetchEmotesUsingChannelId(set, channel, emote_set) {
     return new Promise(function(resolve, reject) {
         retrieveCachedEmotes(set).then(function() {
@@ -227,7 +233,7 @@ function fetchEmotesUsingChannelId(set, channel, emote_set) {
             }).catch(reject);
         });
     });
-}
+}*/
 
 function fetchAndCacheEmotesFromServer(set, url) {
     return new Promise(function(resolve, reject) {
@@ -238,7 +244,7 @@ function fetchAndCacheEmotesFromServer(set, url) {
             var parserModule = set.indexOf(':') !== -1 ? set.substr(0, set.indexOf(':')) : set;
 
             var emotes = {
-                emotes: EMOTE_SETS[parserModule].parseEmotes(responseJSON),
+                emotes: EMOTE_SETS[parserModule].parseEmotes(responseJSON, set),
                 date: Date.now()
             };
 

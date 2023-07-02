@@ -1,16 +1,11 @@
-const GLOBAL_EMOTES_ENDPOINT = 'https://api.7tv.app/v2/emotes/global';
-const BASE_EMOTE_URL = 'https://cdn.7tv.app/emote/{EMOTE_ID}/1x.webp'
+const GLOBAL_EMOTES_ENDPOINT = 'https://emotes.adamcy.pl/v1/global/emotes/7tv';
 
-
-function parseEmotes(json) {
+function parseEmotes(json, set) {
     var result = {};
-
     for (var i = 0; i < json.length; ++i) {
-        var emote = json[i];
-
-        result[emote.name] = {
-            url: BASE_EMOTE_URL.replace('{EMOTE_ID}', emote.id),
-            channel: '7TV Emote'
+        result[json[i].code] = {
+            url: json[i].urls[0].url,
+            channel: '7TV Global Emote'
         };
     }
 

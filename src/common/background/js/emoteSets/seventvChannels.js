@@ -1,16 +1,12 @@
-const URL = 'https://api.7tv.app/v2/users/';
-const BASE_EMOTE_URL = 'https://cdn.7tv.app/emote/{EMOTE_ID}/1x.webp'
+const URL = 'https://emotes.adamcy.pl/v1/channel/{CHANNEL_NAME}/emotes/7tv';
 
-
-function parseEmotes(json) {
+function parseEmotes(json, set) {
     var result = {};
 
     for (var i = 0; i < json.length; ++i) {
-        var emote = json[i];
-
-        result[emote.name] = {
-            url: BASE_EMOTE_URL.replace('{EMOTE_ID}', emote.id),
-            channel: '7TV Emote'
+        result[json[i].code] = {
+            url: json[i].urls[0].url,
+            channel: set.substring(16) + " 7TV Channel Emote"
         };
     }
 
@@ -19,7 +15,7 @@ function parseEmotes(json) {
 
 module.exports = {
     parseEmotes: parseEmotes,
-    getURL: function (channelName) {
-        return URL + channelName + '/emotes';
-    }
+    getURL: function (channel_name) {
+        return URL.replace('{CHANNEL_NAME}', channel_name);
+    },
 };

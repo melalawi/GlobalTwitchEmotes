@@ -1,15 +1,15 @@
 var httpRequest = require('./httpRequest');
 
 const CHANNEL_ID_ENDPOINT = 'https://api.twitch.tv/helix/users?login={CHANNEL_NAME}';
-const CLIENT_ID = '8u46rkmb38ovr4be1xue3hbb0ooagj';
-const BEARER_TOKEN_ENDPOINT = 'https://id.twitch.tv/oauth2/token?client_id=8u46rkmb38ovr4be1xue3hbb0ooagj&grant_type=client_credentials&client_secret={CLIENT_SECRET}'
+const CLIENT_ID = '';
+const BEARER_TOKEN_ENDPOINT = 'https://id.twitch.tv/oauth2/token?client_id={CLIENT_ID}&grant_type=client_credentials&client_secret={CLIENT_SECRET}'
 
 function getBearerToken() {
     return new Promise(function(resolve, reject) {
-        httpRequest.get(BEARER_TOKEN_ENDPOINT.replace('{CLIENT_SECRET}', getClientSecret()), {
+        httpRequest.get(BEARER_TOKEN_ENDPOINT.replace('{CLIENT_SECRET}', getClientSecret()).replace('{CLIENT_ID}', CLIENT_ID), {
             method: 'POST',
             headers: {
-                'Accept': 'application/vnd.twitchtv.v5+json'
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
         }).then(function(responseJSON) {
             console.log(responseJSON);
@@ -31,7 +31,7 @@ function getChannelIdFromName(channel_name) {
             httpRequest.get(CHANNEL_ID_ENDPOINT.replace('{CHANNEL_NAME}', channel_name), {
                 method: 'GET',
                 headers: {
-                    'Accept': 'application/vnd.twitchtv.v5+json',
+                    'Content-Type': 'application/x-www-form-urlencoded',
                     'Authorization': 'Bearer ' + access_token,
                     'Client-Id': CLIENT_ID
                 }
