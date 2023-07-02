@@ -1,3 +1,4 @@
+/*
 var httpRequest = require('./httpRequest');
 
 const CHANNEL_ID_ENDPOINT = 'https://api.twitch.tv/helix/users?login={CHANNEL_NAME}';
@@ -61,4 +62,4 @@ module.exports = {
     getClientID: getClientID,
     getBearerToken: getBearerToken,
     getChannelIdFromName: getChannelIdFromName
-};
+};*/

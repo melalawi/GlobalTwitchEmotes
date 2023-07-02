@@ -1,6 +1,6 @@
 var httpRequest = require('./httpRequest');
 var storageHelper = require('storageHelper');
-var twitchHelix = require('./twitchHelix'); 
+//var twitchHelix = require('./twitchHelix');
 //const seventvChannels = require('./emoteSets/seventvChannels');
 
 
@@ -44,7 +44,7 @@ function loadAllEmotes() {
         var promises = [];
 
         if (settings.twitchGlobal) {
-            promises.push(generateTwitchEmoteSet('twitchGlobal', EMOTE_SETS.twitchGlobal.getURL()).then(function() {
+            promises.push(generateEmoteSet('twitchGlobal', EMOTE_SETS.twitchGlobal.getURL()).then(function() {
                 generatedEmotes.twitchGlobal = cachedEmotes.twitchGlobal;
             }));
         }
@@ -174,13 +174,13 @@ function generateEmoteSet(set, url) {
     });
 }
 
-function generateTwitchEmoteSet(set, url) {
+/*function generateTwitchEmoteSet(set, url) {
     return new Promise(function (resolve, reject) {
         retrieveCachedEmotes(set).then(resolve).catch(function (set) {
             fetchAndCacheEmotesFromTwitchServer(set, url).then(resolve).catch(reject);
         });
     });
-}
+}*/
 
 function retrieveCachedEmotes(set) {
     return new Promise(function(resolve, reject) {
@@ -273,7 +273,7 @@ function fetchAndCacheEmotesFromServer(set, url) {
     });
 }
 
-function fetchAndCacheEmotesFromTwitchServer(set, url) {
+/*function fetchAndCacheEmotesFromTwitchServer(set, url) {
     return new Promise(function (resolve, reject) {
         twitchHelix.getBearerToken().then(function (access_token) {
             console.log('Retrieving "' + set + '" from twitch\'s server...');
@@ -332,7 +332,7 @@ function fetchAndCacheEmotesFromTwitchServer(set, url) {
             }
         });
     });
-}
+}*/
 
 function onReady() {
     emoteRefreshTimeout = setTimeout(loadAllEmotes, EMOTE_REFRESH_INTERVAL);
