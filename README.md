@@ -40,6 +40,12 @@ Global Twitch Emotes is built using Node.js. Download and install the latest ver
 
 Built extensions can be found in the newly-generated `build` directory. You can side-load the unpacked extension in order to run it in your browser. Please refer to your browser's extension installation guide for details.
 
+If installing from the releases tab:
+
+Chromium browsers: Enable developer mode on the `chrome://extensions` page, then drag the downloaded zip onto that page.
+
+Firefox: Use the `Load Temporary Add-on` button in `about:debugging#/runtime/this-firefox`, then select the zip file in the window that pops up.
+
 ##  Testing
 
 In the parent directory, run `npm run-script test` to run all test files found in the `test` directory.
