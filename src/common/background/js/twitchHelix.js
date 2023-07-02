@@ -48,10 +48,17 @@ function getChannelIdFromName(channel_name) {
         
     });
 }
+
 function getClientSecret() {
     return ''; // twitch client secret
 }
 
+function getClientID() {
+    return CLIENT_ID;
+}
+
 module.exports = {
+    getClientID: getClientID,
+    getBearerToken: getBearerToken,
     getChannelIdFromName: getChannelIdFromName
 };
