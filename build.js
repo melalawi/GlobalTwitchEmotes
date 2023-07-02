@@ -8,7 +8,7 @@ var Promise = require('promise');
 var pug = require('pug');
 var Stream = require('stream');
 var stylus = require('stylus');
-//var zip = require('zip-folder');
+var zip = require('zip-folder');
 
 
 var BIN_DIRECTORY = __dirname + '/bin/{browser}';
@@ -113,9 +113,9 @@ function build(browser, buildMode) {
             } else {
                 fs.mkdirsSync(RELEASE_DIRECTORY);
 
-                //zipFolder(destDirectory, RELEASE_DIRECTORY + '/GTE_' + browser + '_' + projectJSON.version + '.zip').then(function () {
-                //    resolve();
-                //});
+                zipFolder(destDirectory, RELEASE_DIRECTORY + '/GTE_' + browser + '_' + projectJSON.version + '.zip').then(function () {
+                    resolve();
+                });
             }
         });
     });
@@ -208,7 +208,7 @@ function buildCSS(source, destination, pathDirectory) {
     });
 }
 
-/* function zipFolder(source, destination) {
+ function zipFolder(source, destination) {
     return new Promise(function(resolve, reject) {
         console.log('Zipping...');
 
@@ -218,6 +218,6 @@ function buildCSS(source, destination, pathDirectory) {
             resolve();
         });
     });
-} */
+}
 
 init();
