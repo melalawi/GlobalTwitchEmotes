@@ -26,13 +26,13 @@ Global Twitch Emotes is built using Node.js. Download and install the latest ver
     
     **BROWSER:** The browser type you want to build for.
 
-    `webkit` | `firefox` | `edge`
+    `webkit` | `firefox`
     
-    | **Parameter** | **Applicable Browser(s)**                         |
-    |---------------|---------------------------------------------------|
-    | webkit        | Chromium-based browsers (Chrome, Opera, etc.)     |
-    | firefox       | Firefox                                           |
-    | edge          | Edge                                              |
+    | **Parameter** | **Applicable Browser(s)**                    |
+    |---------------|----------------------------------------------|
+    | webkit        | Chromium-based browsers (Chrome, Edge, etc.) |
+    | firefox       | Firefox                                      |
+
     
     *The script will build for all browser types if the browser parameter is not specified.*
 
@@ -40,11 +40,12 @@ Global Twitch Emotes is built using Node.js. Download and install the latest ver
 
 Built extensions can be found in the newly-generated `build` directory. You can side-load the unpacked extension in order to run it in your browser. Please refer to your browser's extension installation guide for details.
 
-If installing from the releases tab:
+If you are using the zip file from [github releases](https://github.com/melalawi/GlobalTwitchEmotes/releases):
 
-Chromium browsers: Enable developer mode on the `chrome://extensions` page, then drag the downloaded zip onto that page.
+- Chromium Based Browsers: Navigate to `chrome://extensions/`, enable developer mode, and drag the zip you downloaded into the window.
 
-Firefox: Use the `Load Temporary Add-on` button in `about:debugging#/runtime/this-firefox`, then select the zip file in the window that pops up.
+
+- Firefox: You must use Firefox Developer Edition since I (Electrolyte) can't sign these releases. Navigate to `about:config`, at the top, search for `xpinstall.signatures.required` and change it to false. Then, navigate to `about:addons` and click `Install Add-on from file` from the gear at the top right and select the zip file you downloaded.
 
 ##  Testing
 

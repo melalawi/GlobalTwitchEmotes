@@ -4,6 +4,7 @@ var pageObserver = require('./pageObserver');
 const MAX_EMOTE_PARSES_PER_ITERATION = 20;
 const COUNTER_UPDATE_COOLDOWN = 2000;
 const EMOTE_CSS = 'display:inline !important;height:auto !important;width:auto !important;max-height:100% !important;max-width:auto !important;opacity:1 !important;outline:0 !important;border:0 !important;margin:0 !important;padding:0 !important;z-index:auto !important;visibility:visible !important;';
+const ZW_EMOTE_CSS = 'display:inline !important;height:auto !important;width:auto !important;max-height:100% !important;max-width:auto !important;opacity:1 !important;outline:0 !important;border:0 !important;margin:0 !important;padding:0 !important;z-index:auto !important;visibility:visible !important;left:-36px !important;position:relative !important;';
 const TIPSY_DATA_ATTRIBUTE = 'gte-tipsy-text';
 const KAPPER_SHARED_TOOLTIP_TEXT = ':full_moon_with_face:';
 const KAPPA_IMAGE_URL = 'https://static-cdn.jtvnw.net/emoticons/v1/25/1.0';
@@ -132,7 +133,7 @@ function applyEmoteSearchResults() {
             parseSet.lastLength = parseSet.foundEmotes[j].emote.length;
 
             try {
-                parseSet.node = parseEmoteString(parseSet.node, currentIndex, parseSet.foundEmotes[j].emote, parseSet.foundEmotes[j].channel, parseSet.foundEmotes[j].url, parseSet.foundEmotes[j].emoji);
+                parseSet.node = parseEmoteString(parseSet.node, currentIndex, parseSet.foundEmotes[j].emote, parseSet.foundEmotes[j].channel, parseSet.foundEmotes[j].url, parseSet.foundEmotes[j].zerowidth, parseSet.foundEmotes[j].emoji);
             } catch (e) {
                 console.error(e);
             } finally {
@@ -146,7 +147,7 @@ function applyEmoteSearchResults() {
     }
 }
 
-function parseEmoteString(node, index, emoteKey, emoteChannel, emoteURL, unicodeEmoji) {
+function parseEmoteString(node, index, emoteKey, emoteChannel, emoteURL, emoteZeroWidth, unicodeEmoji) {
     var parent = node.parentNode;
     var nodeText = node.nodeValue;
     var postEmoteTextNode = null;
@@ -156,7 +157,7 @@ function parseEmoteString(node, index, emoteKey, emoteChannel, emoteURL, unicode
         return;
     }
 
-    emoteNode = emoteURL ? createEmoteImage(emoteKey, emoteChannel, emoteURL) : createUnicodeEmoji(emoteKey, emoteChannel, unicodeEmoji);
+    emoteNode = emoteURL ? createEmoteImage(emoteKey, emoteChannel, emoteURL, emoteZeroWidth) : createUnicodeEmoji(emoteKey, emoteChannel, unicodeEmoji);
 
     console.log('Emote ' + emoteKey + ' found at index ' + index);
 
@@ -185,7 +186,7 @@ function parseEmoteString(node, index, emoteKey, emoteChannel, emoteURL, unicode
     return postEmoteTextNode;
 }
 
-function createEmoteImage(emoteKey, emoteChannel, emoteURL) {
+function createEmoteImage(emoteKey, emoteChannel, emoteURL, emoteZeroWidth) {
     var emote = document.createElement('img');
 
     emote.setAttribute('class', 'GTEEmote');
@@ -193,7 +194,11 @@ function createEmoteImage(emoteKey, emoteChannel, emoteURL) {
     emote.setAttribute('title', emoteKey);
     emote.setAttribute(TIPSY_DATA_ATTRIBUTE, generateTipsyAlt(emoteKey, emoteChannel));
     emote.setAttribute('alt', emoteKey);
-    emote.style.cssText = EMOTE_CSS;
+    if (emoteZeroWidth === true) {
+        emote.style.cssText = ZW_EMOTE_CSS;
+    } else {
+        emote.style.cssText = EMOTE_CSS;
+    }
 
     return emote;
 }

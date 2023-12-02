@@ -54,6 +54,7 @@ function searchForEmotes(text, allowSubscriberEmotes) {
                             index: nextWord.index,
                             emote: emote,
                             url: emoteData.url,
+                            zerowidth: emoteData.zerowidth,
                             emoji: emoteData.emoji,
                             channel: emoteData.channel
                         });

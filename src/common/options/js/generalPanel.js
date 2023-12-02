@@ -7,7 +7,7 @@ const INTERNAL_TO_READABLE_SET_NAMES = {
     bttvGlobal: 'BetterTTV - Global Emotes',
     ffzGlobal: 'FrankerFaceZ - Global Emotes',
     seventvGlobal: '7TV - Global Emotes',
-    twitchChannels: 'Twitch',
+    twitchChannels: 'Twitchemotes.com',
     bttvChannels: 'BetterTTV',
     ffzChannels: 'FrankerFaceZ',
     seventvChannels: '7TV'
@@ -15,13 +15,9 @@ const INTERNAL_TO_READABLE_SET_NAMES = {
 
 const INTERNAL_SET_TO_SET_URL = {
     twitchGlobal: 'https://twitchemotes.com/',
-    bttvGlobal: 'https://emotes.adamcy.pl/v1/global/emotes/bttv',
+    bttvGlobal: 'https://betterttv.com/emotes/global',
     ffzGlobal: 'https://www.frankerfacez.com/channel/__ffz_global',
-    seventvGlobal: 'https://emotes.adamcy.pl/v1/global/emotes/7tv',
-    twitchChannels: 'https://emotes.adamcy.pl/v1/channel/%s/emotes/twitch',
-    bttvChannels: 'https://emotes.adamcy.pl/v1/channel/%s/emotes/bttv',
-    ffzChannels: 'https://www.frankerfacez.com/channel/%s',
-    seventvChannels: 'https://emotes.adamcy.pl/v1/channel/%s/emotes/7tv'
+    seventvGlobal: 'https://7tv.io/v3/emote-sets/global'
 };
 
 
@@ -78,7 +74,17 @@ function loadEmoteSetsIntoTable(emotes) {
             var readableSetName = generateReadableSetName(key);
             var ageInfo = getSetAge(set.date);
 
-            var $entryName = $('<div>').append($('<a>', {target: '_blank', href: generateSetURL(key), title: readableSetName, alt: readableSetName}).text(readableSetName));
+            var $entryName = '';
+            if(INTERNAL_SET_TO_SET_URL.hasOwnProperty(key)) {
+                $entryName = $('<div>').append($('<a>', {
+                    target: '_blank',
+                    href: generateSetURL(key),
+                    title: readableSetName,
+                    alt: readableSetName
+                }).text(readableSetName));
+            } else {
+                $entryName = $('<div>', {title: readableSetName, alt: readableSetName}).text(readableSetName)
+            }
             var $entryAge = $('<div>', {title: ageInfo.altTextValue, alt: ageInfo.altTextValue}).text(ageInfo.displayValue);
 
             $nameColumn.append($entryName);
@@ -101,8 +107,7 @@ function generateSetURL(set) {
     if (INTERNAL_SET_TO_SET_URL.hasOwnProperty(set)) {
         return INTERNAL_SET_TO_SET_URL[set];
     } else {
-        set = set.split(':');
-        return INTERNAL_SET_TO_SET_URL[set[0]].replace('%s', set[1]);
+        return '';
     }
 }
 
