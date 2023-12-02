@@ -1,21 +1,37 @@
-const URL = 'https://emotes.adamcy.pl/v1/channel/{CHANNEL_NAME}/emotes/7tv';
+const URL = 'https://api.electrolyte.dev/seventv?channel_name={CHANNEL_NAME}';
+const BASE_EMOTE_URL = 'https://cdn.7tv.app/emote/{EMOTE_ID}/1x.webp'
 
-function parseEmotes(json, set) {
-    var result = {};
 
-    for (var i = 0; i < json.length; ++i) {
-        result[json[i].code] = {
-            url: json[i].urls[0].url,
-            channel: set.substring(16) + " 7TV Channel Emote"
-        };
+function parseEmotes(json) {
+    var channelName = json.channel_information;
+    var emotes = json.data;
+
+    var channelEmotes = {};
+
+    for (var i = 0; i < emotes.length; ++i) {
+        var name = emotes[i].name;
+        var zeroWidthFlag = emotes[i].flags;
+
+        if(zeroWidthFlag === 1) {
+            channelEmotes[name] = {
+                url: BASE_EMOTE_URL.replace('{EMOTE_ID}', emotes[i].id),
+                channel: channelName.channel_name + ' 7TV Emote',
+                zerowidth: true
+            };
+        } else {
+            channelEmotes[name] = {
+                url: BASE_EMOTE_URL.replace('{EMOTE_ID}', emotes[i].id),
+                channel: channelName.channel_name + ' 7TV Emote'
+            };
+        }
     }
 
-    return result;
+    return channelEmotes;
 }
 
 module.exports = {
     parseEmotes: parseEmotes,
-    getURL: function (channel_name) {
-        return URL.replace('{CHANNEL_NAME}', channel_name);
-    },
+    getURL: function (channelName) {
+        return URL.replace("{CHANNEL_NAME}", channelName);
+    }
 };

@@ -1,14 +1,31 @@
-const URL = 'https://emotes.adamcy.pl/v1/global/emotes/bttv';
+const GLOBAL_EMOTES_ENDPOINT = 'https://api.electrolyte.dev/bttv/global';
+const BASE_EMOTE_URL = 'https://cdn.betterttv.net/emote/{EMOTE_ID}/1x'
 
 
 function parseEmotes(json) {
     var result = {};
+    var emoteList = json.data;
 
-    for (var i = 0; i < json.length; ++i) {
-        result[json[i].code] = {
-            url: json[i].urls[0].url,
-            channel: 'BTTV Global Emote'
-        };
+    for (var i = 0; i < emoteList.length; ++i) {
+        var name = emoteList[i].code;
+        var id = emoteList[i].id;
+
+        if (name === 'CandyCane' || name === 'cvHazmat' ||
+            name === 'cvMask' || name === 'IceCold' ||
+            name === 'ReinDeer' || name === 'SantaHat' ||
+            name === 'SoSnowy' || name === 'TopHat') {
+            result[name] = {
+                url: BASE_EMOTE_URL.replace('{EMOTE_ID}', id),
+                channel: 'Global BTTV Emote',
+                zerowidth: true
+            };
+        }
+        else {
+            result[name] = {
+                url: BASE_EMOTE_URL.replace('{EMOTE_ID}', id),
+                channel: 'Global BTTV Emote'
+            };
+        }
     }
 
     return result;
@@ -17,6 +34,6 @@ function parseEmotes(json) {
 module.exports = {
     parseEmotes: parseEmotes,
     getURL: function() {
-        return URL;
+        return GLOBAL_EMOTES_ENDPOINT;
     }
 };

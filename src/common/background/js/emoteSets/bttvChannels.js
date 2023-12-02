@@ -1,13 +1,18 @@
-const URL = 'https://emotes.adamcy.pl/v1/channel/{CHANNEL_NAME}/emotes/bttv';
+const URL = 'https://api.electrolyte.dev/bttv?channel_name={CHANNEL_NAME}';
+const BASE_EMOTE_URL = 'https://cdn.betterttv.net/emote/{EMOTE_ID}/1x'
 
 
-function parseEmotes(json, set) {
+function parseEmotes(json) {
     var result = {};
+    var emotes = json.channelEmotes.concat(json.sharedEmotes);
+    var channelName = json.channel_information
 
-    for (var i = 0; i < json.length; ++i) {
-        result[json[i].code] = {
-            url: json[i].urls[0].url,
-            channel: set.substring(13) + ' BTTV Channel Emote'
+    for (var i = 0; i < emotes.length; ++i) {
+        var emote = emotes[i];
+
+        result[emote.code] = {
+            url: BASE_EMOTE_URL.replace('{EMOTE_ID}', emote.id),
+            channel: channelName.channel_name + ' BTTV Emote'
         };
     }
 
@@ -17,7 +22,7 @@ function parseEmotes(json, set) {
 
 module.exports = {
     parseEmotes: parseEmotes,
-    getURL: function(channel_name) {
-        return URL.replace('{CHANNEL_NAME}', channel_name);
+    getURL: function(channelName) {
+        return URL.replace('{CHANNEL_NAME}', channelName);
     }
 };
