@@ -1,10 +1,7 @@
 var httpRequest = require('./httpRequest');
 var storageHelper = require('storageHelper');
-//var twitchHelix = require('./twitchHelix');
-//const seventvChannels = require('./emoteSets/seventvChannels');
 
-
-const CACHE_REFRESH_INTERVAL = 1000 * 60 * 60 * 24 * 14;
+const CACHE_REFRESH_INTERVAL = 1000 * 60 * 60 * 24;
 const EMOTE_REFRESH_INTERVAL = 1000 * 60 * 30;
 const EMOTE_SETS = {
     bttvChannels: require('./emoteSets/bttvChannels'),
@@ -42,6 +39,7 @@ function initialize(importedSettings) {
 function loadAllEmotes() {
     return new Promise(function(resolve) {
         var promises = [];
+        var channelIdEmotePromises = [];
 
         if (settings.twitchGlobal) {
             promises.push(generateEmoteSet('twitchGlobal', EMOTE_SETS.twitchGlobal.getURL()).then(function() {
@@ -71,10 +69,11 @@ function loadAllEmotes() {
             promises.push(new Promise(function(resolve, reject) {
                 for (var i = 0; i < settings.bttvChannelsList.length; ++i) {
                     var channel = settings.bttvChannelsList[i].toLowerCase().trim();
-                    promises.push(generateEmoteSet('bttvChannels:' + channel, EMOTE_SETS.bttvChannels.getURL(channel)).then(function(setName) {
-                        generatedEmotes[setName] = cachedEmotes[setName];}).catch(reject));
-                    resolve();
+                    promises.push(generateEmoteSet('bttvChannels:' + channel, EMOTE_SETS.bttvChannels.getURL(channel)).then(function (setName) {
+                        generatedEmotes[setName] = cachedEmotes[setName];
+                    }).catch(reject));
                 }
+                resolve();
             }));
         }
 
@@ -88,6 +87,7 @@ function loadAllEmotes() {
             promises.push(new Promise(function(resolve, reject) {
                 for (var i = 0; i < settings.ffzChannelsList.length; ++i) {
                     var channel = settings.ffzChannelsList[i].toLowerCase().trim();
+
                     promises.push(generateEmoteSet('ffzChannels:' + channel, EMOTE_SETS.ffzChannels.getURL(channel)).then(function(setName) {
                         generatedEmotes[setName] = cachedEmotes[setName];
                     }).catch(reject));
@@ -98,7 +98,7 @@ function loadAllEmotes() {
         }
 
         if (settings.seventvGlobal) {
-            promises.push(generateEmoteSet('seventvGlobal', EMOTE_SETS.seventvGlobal.getURL()).then(function () {
+            promises.push(generateEmoteSet('seventvGlobal', EMOTE_SETS.seventvGlobal.getURL()).then(function() {
                 generatedEmotes.seventvGlobal = cachedEmotes.seventvGlobal;
             }));
         }
@@ -107,7 +107,7 @@ function loadAllEmotes() {
             promises.push(new Promise(function (resolve, reject) {
                 for (var i = 0; i < settings.seventvChannelsList.length; ++i) {
                     var channel = settings.seventvChannelsList[i].toLowerCase().trim();
-                    promises.push(generateEmoteSet('seventvChannels:' + channel, EMOTE_SETS.seventvChannels.getURL(channel)).then(function(setName) {
+                    promises.push(generateEmoteSet('seventvChannels:' + channel, EMOTE_SETS.seventvChannels.getURL(channel)).then(function (setName) {
                         generatedEmotes[setName] = cachedEmotes[setName];
                     }).catch(reject));
                 }
@@ -174,14 +174,6 @@ function generateEmoteSet(set, url) {
     });
 }
 
-/*function generateTwitchEmoteSet(set, url) {
-    return new Promise(function (resolve, reject) {
-        retrieveCachedEmotes(set).then(resolve).catch(function (set) {
-            fetchAndCacheEmotesFromTwitchServer(set, url).then(resolve).catch(reject);
-        });
-    });
-}*/
-
 function retrieveCachedEmotes(set) {
     return new Promise(function(resolve, reject) {
         storageHelper.getCacheEntry(set).then(function(cachedEntry) {
@@ -210,39 +202,6 @@ function retrieveCachedEmotes(set) {
     });
 }
 
-/*function fetchEmotesUsingChannelNameSevenTV(set, channel, emote_set) {
-    return new Promise(function(resolve, reject) {
-        retrieveCachedEmotes(set).then(function() {
-            generateEmoteSet[set] = cachedEmotes[set];
-            resolve();
-        }).catch(function() {
-            seventvChannels.getChannelIdFromName(channel).then(function(channel_id) {
-                generateEmoteSet(set, emote_set.getURL(channel_id)).then(function() {
-                    generateEmoteSet[set] = cachedEmotes[set];
-                    resolve();
-                }).catch(reject);
-            }).catch(reject);
-        });
-    });
-}
-
-function fetchEmotesUsingChannelId(set, channel, emote_set) {
-    return new Promise(function(resolve, reject) {
-        retrieveCachedEmotes(set).then(function() {
-            generatedEmotes[set] = cachedEmotes[set];
-
-            resolve();
-        }).catch(function() {
-            twitchHelix.getChannelIdFromName(channel).then(function(channel_id) {
-                generateEmoteSet(set, emote_set.getURL(channel_id)).then(function() {
-                    generatedEmotes[set] = cachedEmotes[set];
-                    resolve();
-                }).catch(reject);
-            }).catch(reject);
-        });
-    });
-}*/
-
 function fetchAndCacheEmotesFromServer(set, url) {
     return new Promise(function(resolve, reject) {
         console.log('Retrieving "' + set + '" from server...');
@@ -252,7 +211,7 @@ function fetchAndCacheEmotesFromServer(set, url) {
             var parserModule = set.indexOf(':') !== -1 ? set.substr(0, set.indexOf(':')) : set;
 
             var emotes = {
-                emotes: EMOTE_SETS[parserModule].parseEmotes(responseJSON, set),
+                emotes: EMOTE_SETS[parserModule].parseEmotes(responseJSON),
                 date: Date.now()
             };
 
@@ -272,67 +231,6 @@ function fetchAndCacheEmotesFromServer(set, url) {
         });
     });
 }
-
-/*function fetchAndCacheEmotesFromTwitchServer(set, url) {
-    return new Promise(function (resolve, reject) {
-        twitchHelix.getBearerToken().then(function (access_token) {
-            console.log('Retrieving "' + set + '" from twitch\'s server...');
-            if (set == 'twitchGlobal') {
-                httpRequest.get(url, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + access_token,
-                        'Client-Id': twitchHelix.getClientID()
-                    }
-                }).then(function (jsonData) {
-                    var parserModule = set.indexOf(':') !== -1 ? set.substr(0, set.indexOf(':')) : set;
-                    var emotes = {
-                        emotes: EMOTE_SETS[parserModule].parseEmotes(jsonData),
-                        date: Date.now()
-                    };
-                    console.log('Successfully retrieved "' + set + '" from twitch\'s server. Caching...');
-
-                    cachedEmotes[set] = emotes;
-
-                    storageHelper.setCacheEntry(set, emotes.emotes, emotes.date).then(function () {
-                        console.log('Cached copy of "' + set + '" successfully.');
-                    });
-                    resolve(set);
-                }).catch(function (error) {
-                    console.error('Failed to retrieve "' + set + '" from ' + url + ' - ' + error);
-                    reject(set);
-                });
-            } else {
-                twitchHelix.getChannelIdFromName(set.substr(set.indexOf(':') + 1, set.length)).then(function (channel_id) {
-                    httpRequest.get(url + channel_id, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': 'Bearer ' + access_token,
-                            'Client-Id': twitchHelix.getClientID()
-                        }
-                    }).then(function (jsonData) {
-                        var parserModule = set.indexOf(':') !== -1 ? set.substr(0, set.indexOf(':')) : set;
-                        var emotes = {
-                            emotes: EMOTE_SETS[parserModule].parseEmotes(jsonData, set.substr(set.indexOf(':') + 1, set.length)),
-                            date: Date.now()
-                        };
-                        console.log('Successfully retrieved "' + set + '" from twitch\'s server. Caching...');
-
-                        cachedEmotes[set] = emotes;
-
-                        storageHelper.setCacheEntry(set, emotes.emotes, emotes.date).then(function () {
-                            console.log('Cached copy of "' + set + '" successfully.');
-                        });
-                        resolve(set);
-                    }).catch(function (error) {
-                        console.error('Failed to retrieve "' + set + '" from ' + url + channel_id + ' - ' + error);
-                        reject(set);
-                    });
-                });
-            }
-        });
-    });
-}*/
 
 function onReady() {
     emoteRefreshTimeout = setTimeout(loadAllEmotes, EMOTE_REFRESH_INTERVAL);

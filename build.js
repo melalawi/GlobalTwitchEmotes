@@ -17,7 +17,7 @@ var COMMON_DIRECTORY = __dirname + '/src/common';
 var DESTINATION_DIRECTORY = __dirname + '/build/{browser}';
 var RELEASE_DIRECTORY = __dirname + '/release';
 var VALID_BROWSERS = [
-    'webkit', 'edge', 'firefox'
+    'webkit', 'firefox'
 ];
 var VALID_BUILD_MODES = [
     'test', 'release'
