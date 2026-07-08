@@ -88,12 +88,12 @@ function openOptionsPage() {
 function setBadgeText(tab, string, backgroundColor) {
     var text = string.length > 4 ? '∞' : string;
 
-    browser.browserAction.setBadgeBackgroundColor({
+    browser.action.setBadgeBackgroundColor({
         color: backgroundColor,
         tabId: tab.id
     });
 
-    browser.browserAction.setBadgeText({
+    browser.action.setBadgeText({
         text: text,
         tabId: tab.id
     });

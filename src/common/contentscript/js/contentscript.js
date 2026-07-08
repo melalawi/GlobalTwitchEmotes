@@ -11,10 +11,12 @@ function initialize() {
         window.contentScriptInjected = true;
 
         client = new MessageClient();
-
         client.listen(onMessageFromBackground);
 
-        emoteParser.run(client);
+        client.messageBackground({
+            header: 'checkDomainAllowed',
+            payload: window.location.href
+        });
     } else {
         console.log('Reinjection detected and averted');
     }
@@ -28,6 +30,7 @@ function onMessageFromBackground(message, responseCallback) {
     console.log('Received message with header "' + message.header + '"');
 
     if (message.header === 'settings') {
+        emoteParser.run(client);
         if (message.payload.twitchStyleTooltips === true) {
             tipsy.init();
         }

@@ -14,7 +14,7 @@
 
     "browser_action": {
         "default_title": "Global Twitch Emotes",
-        "default_popup": "browseraction/popup.html",
+        "default_popup": "action/popup.html",
         "default_icon": {
             "16": "assets/images/logo16.png",
             "19": "assets/images/logo19.png",

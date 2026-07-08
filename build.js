@@ -83,9 +83,9 @@ function build(browser, buildMode) {
         fs.copySync(COMMON_DIRECTORY, binDirectory);
         fs.copySync(browserSourceDirectory, binDirectory);
 
-        fs.mkdirsSync(destDirectory + '/browseraction');
-        fs.mkdirsSync(destDirectory + '/browseraction/css');
-        fs.mkdirsSync(destDirectory + '/browseraction/js');
+        fs.mkdirsSync(destDirectory + '/action');
+        fs.mkdirsSync(destDirectory + '/action/css');
+        fs.mkdirsSync(destDirectory + '/action/js');
 
         fs.mkdirsSync(destDirectory + '/options');
         fs.mkdirsSync(destDirectory + '/options/css');
@@ -95,7 +95,6 @@ function build(browser, buildMode) {
         fs.copySync(binDirectory + '/metadata', destDirectory);
 
         buildPromises.push(buildScript(binDirectory + '/background/js/background.js', destDirectory + '/background.js', binDirectory, minifyCode, firefoxDummyVariable));
-        buildPromises.push(buildScript(binDirectory + '/background/js/searchWorker.js', destDirectory + '/searchWorker.js', binDirectory, minifyCode, firefoxDummyVariable));
 
         buildPromises.push(buildScript(binDirectory + '/contentscript/js/contentscript.js', destDirectory + '/contentscript.js', binDirectory, minifyCode, firefoxDummyVariable));
 
@@ -103,9 +102,9 @@ function build(browser, buildMode) {
         buildPromises.push(buildCSS(binDirectory + '/options/css/style.styl', destDirectory + '/options/css/style.css', binDirectory + '/options/css/'));
         buildPromises.push(buildHTML(binDirectory + '/options/options.pug', destDirectory + '/options/index.html'));
 
-        buildPromises.push(buildScript(binDirectory + '/browseraction/js/popup.js', destDirectory + '/browseraction/js/popup.js', binDirectory, minifyCode, firefoxDummyVariable));
-        buildPromises.push(buildCSS(binDirectory + '/browseraction/css/style.styl', destDirectory + '/browseraction/css/style.css', binDirectory + '/browseraction/css/'));
-        buildPromises.push(buildHTML(binDirectory + '/browseraction/popup.pug', destDirectory + '/popup.html'));
+        buildPromises.push(buildScript(binDirectory + '/action/js/popup.js', destDirectory + '/action/js/popup.js', binDirectory, minifyCode, firefoxDummyVariable));
+        buildPromises.push(buildCSS(binDirectory + '/action/css/style.styl', destDirectory + '/action/css/style.css', binDirectory + '/action/css/'));
+        buildPromises.push(buildHTML(binDirectory + '/action/popup.pug', destDirectory + '/popup.html'));
 
         Promise.all(buildPromises).then(function() {
             if (buildMode === 'test') {

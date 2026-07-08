@@ -208,5 +208,5 @@ function disableButtons() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    browser.isBackgroundScript().catch(initialize);
+    initialize();
 }, false);

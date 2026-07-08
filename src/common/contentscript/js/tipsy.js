@@ -1,6 +1,3 @@
-var pageObserver = require('./pageObserver');
-
-
 const OUTER_TIPSY_CSS = 'display:block !important;position:absolute !important;opacity:1 !important;z-index:9999999 !important;visibility:visible !important;word-break:break-all !important;padding:5px !important;box-sizing:border-box !important;';
 const INNER_TIPSY_CSS = 'display:block !important;position:static !important;background:rgba(0,0,0,0.8) !important;visibility:visible !important;font-size:12px !important;line-height:16px !important;font-family:Arial !important;color:#FFFFFF !important;max-width:200px !important;padding:5px 8px 4px !important;text-align:center !important;white-space:pre !important;';
 const ARROW_TIPSY_CSS = 'display:block !important;position:absolute !important;width:0 !important;height:0 !important;border:5px solid transparent !important;right:10px !important;opacity: 0.8 !important;background-color:rgba(0,0,0,0) !important;box-sizing:border-box !important;';
@@ -13,6 +10,14 @@ var tipsy = null;
 
 
 function init() {
+    if (document.body) {
+        attachTipsyListener();
+    } else {
+        document.addEventListener('DOMContentLoaded', attachTipsyListener);
+    }
+}
+
+function attachTipsyListener() {
     if (tipsy === null) {
         document.body.addEventListener('mouseover', mouseoverEventHandler);
 

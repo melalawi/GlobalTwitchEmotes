@@ -31,9 +31,17 @@ var pageURL = '';
 
 
 function startMutationObserver(callback) {
-    mutationObserver = new MutationObserver(onPageChange);
     nodeCallback = callback;
 
+    if (document.body) {
+        beginObserving();
+    } else {
+        document.addEventListener('DOMContentLoaded', beginObserving)
+    }
+}
+
+function beginObserving() {
+    mutationObserver = new MutationObserver(onPageChange);
     mutationObserver.observe(document.body, PAGE_OBSERVER_PARAMETERS);
 
     addMutatedNode(document.body);
@@ -78,7 +86,7 @@ function fixModifiedNodes() {
             }
             if(node.previousSibling != null && node.previousSibling.isGTENode) {
                 delete node.previousSibling.isGTENode;
-            }  
+            }
             node.remove();
         }
     })(document.body);

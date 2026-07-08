@@ -19,7 +19,7 @@ function parseEmotes(emotesJSON, emoteSetName, overrideWithMonkeys) {
 
             result[emoteKey] = {
                 url: emoteURL,
-                channel: 'Global Twitch Emote'
+                channel: ''
             };
         }
     }

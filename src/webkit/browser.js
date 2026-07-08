@@ -4,17 +4,6 @@ const FORBIDDEN_DOMAINS = [
 
 var tabListener = null;
 
-
-function isBackgroundScript() {
-    return new Promise(function(resolve, reject) {
-        if (chrome.extension.getBackgroundPage() === window) {
-            resolve();
-        } else {
-            reject();
-        }
-    });
-}
-
 function addOnMessageCallback(callback) {
     chrome.runtime.onMessage.removeListener(callback);
     chrome.runtime.onMessage.addListener(callback);
@@ -62,10 +51,12 @@ function saveStorage(data, storageType) {
 
 function injectScriptToTab(script, tab, allFrames) {
     return new Promise(function(resolve, reject) {
-        chrome.tabs.executeScript(tab.id, {
-            file: script,
-            runAt: allFrames === true ? 'document_idle' : 'document_start',
-            allFrames: allFrames
+        chrome.scripting.executeScript({
+            target: {
+                tabId: tab.id,
+                allFrames: allFrames === true
+            },
+            files: [script]
         }, function() {
             if (!chrome.runtime.lastError) {
                 resolve();
@@ -120,23 +111,22 @@ function openOptionsPage() {
 function setBadgeText(tab, string, backgroundColor) {
     var text = string.length > 4 ? '∞' : string;
 
-    chrome.browserAction.setBadgeBackgroundColor({
+    chrome.action.setBadgeBackgroundColor({
         color: backgroundColor,
         tabId: tab.id
     });
 
-    chrome.browserAction.setBadgeText({
+    chrome.action.setBadgeText({
         text: text,
         tabId: tab.id
     });
 }
 
 function getURL(url) {
-    return chrome.extension.getURL(url);
+    return chrome.runtime.getURL(url);
 }
 
 module.exports = {
-    isBackgroundScript: isBackgroundScript,
     addOnMessageCallback: addOnMessageCallback,
     removeOnMessageCallback: removeOnMessageCallback,
     sendMessageToTab: sendMessageToTab,

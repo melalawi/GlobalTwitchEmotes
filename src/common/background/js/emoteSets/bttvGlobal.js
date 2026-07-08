@@ -1,25 +1,28 @@
-const GLOBAL_EMOTES_ENDPOINT = 'https://api.betterttv.net/3/cached/emotes/global';
+const GLOBAL_EMOTES_ENDPOINT = 'https://api.electrolyte.dev/bttv/global';
 const BASE_EMOTE_URL = 'https://cdn.betterttv.net/emote/{EMOTE_ID}/1x'
 
 
 function parseEmotes(json) {
     var result = {};
+    var emoteList = json.data;
 
-    for (var i = 0; i < json.length; ++i) {
-        var emote = json[i];
+    for (var i = 0; i < emoteList.length; ++i) {
+        var name = emoteList[i].code;
+        var id = emoteList[i].id;
 
-        if (emote.code === 'CandyCane' || emote.code === 'cvHazmat' || 
-            emote.code === 'cvMask' || emote.code === 'IceCold' ||
-            emote.code === 'ReinDeer' || emote.code === 'SantaHat' ||
-            emote.code === 'SoSnowy' || emote.code === 'TopHat') {
-            result[emote.code] = {
-                url: BASE_EMOTE_URL.replace('{EMOTE_ID}', emote.id),
+        if (name === 'CandyCane' || name === 'cvHazmat' ||
+            name === 'cvMask' || name === 'IceCold' ||
+            name === 'ReinDeer' || name === 'SantaHat' ||
+            name === 'SoSnowy' || name === 'TopHat') {
+            result[name] = {
+                url: BASE_EMOTE_URL.replace('{EMOTE_ID}', id),
                 channel: 'Global BTTV Emote',
                 zerowidth: true
             };
-        } else {
-            result[emote.code] = {
-                url: BASE_EMOTE_URL.replace('{EMOTE_ID}', emote.id),
+        }
+        else {
+            result[name] = {
+                url: BASE_EMOTE_URL.replace('{EMOTE_ID}', id),
                 channel: 'Global BTTV Emote'
             };
         }
