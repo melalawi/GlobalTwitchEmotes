@@ -10,12 +10,6 @@ Currently supports Chrome, Firefox, and Opera. Edge support is planned, Safari s
 
 [FAQ Section](https://ostrichtools.com/p/GlobalTwitchEmotes#FAQ)
 
-## Dev Version
-
-The dev version of this extension contains fixes for twitch global and channel emotes, support for 7TV emotes, as well as a couple of other fixes. If you encounter any issues using this dev version, please [REPORT IT HERE](https://github.com/Electrolyte220/GlobalTwitchEmotes/issues), rather than on the official page. (Until the PRs get merged).
-
-Also, if you are running the dev version of this extension, you will have to supply your own twitch client id and client secret which can be made [here](https://dev.twitch.tv/console/apps). Look at the twitchHelix.js file in `src/common/background/js/` for variables to change.
-
 ##  Building
 
 Global Twitch Emotes is built using Node.js. Download and install the latest version of Node.js [here](https://nodejs.org/).
