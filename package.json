@@ -1,6 +1,6 @@
 {
     "name": "global-twitch-emotes",
-    "version": "2.0.0",
+    "version": "1.8.0",
     "description": "twitch emote parser",
     "main": "build.js",
     "scripts": {
@@ -19,7 +19,7 @@
     },
     "homepage": "https://github.com/melalawi/GlobalTwitchEmotes#readme",
     "devDependencies": {
-        "browserify": "^17.0.0",
+        "browserify": "^17.0.1",
         "chai": "^4.3.4",
         "clean-css": "^5.2.2",
         "clone": "^2.1.2",
@@ -29,7 +29,7 @@
         "fs-extra": "^10.0.0",
         "jquery": "^3.6.0",
         "jsdom": "^19.0.0",
-        "mocha": "^9.1.4",
+        "mocha": "^11.7.5",
         "multistream": "^2.1.1",
         "promise": "^8.1.0",
         "pug": "^3.0.1",
