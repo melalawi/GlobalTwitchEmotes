@@ -1,6 +1,6 @@
 {
     "name": "global-twitch-emotes",
-    "version": "1.8.0",
+    "version": "1.8.1",
     "description": "twitch emote parser",
     "main": "build.js",
     "scripts": {
